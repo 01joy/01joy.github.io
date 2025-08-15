@@ -5,7 +5,7 @@ title: 'Git相关笔记'
 ---
 # 一、第一次使用Github的步骤：
 
-1. 在这个页面中填写Repo名称
+1. 在[这个页面](https://github.com/new)中填写Repo名称
 2. 不要勾选Initialize this repository with a README
 3. 点击Create repository
 4. 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令：
@@ -14,16 +14,16 @@ title: 'Git相关笔记'
 git init
 touch README.md #optional
 git add .
-git commit -m ‘your comment’
+git commit -m 'your comment'
 git remote add origin https://github.com/UserName/RepoName
 git push origin master
 ```
 
 5. 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地
-6. 关于Git命令中的fetch和pull的区别，请看这篇博文
-7. 关于Git bash和Github的连接，请看这篇博文
+6. 关于Git命令中的fetch和pull的区别，请看[这篇博文](https://blog.csdn.net/wfdtxz/article/details/8632811)
+7. 关于Git bash和Github的连接，请看[这篇博文](https://www.cnblogs.com/fnng/archive/2011/08/25/2153807.html)
 
-# 二、Git命令中fetch和pull的区别（转载）
+# 二、Git命令中fetch和pull的区别（[转载](https://blog.csdn.net/wfdtxz/article/details/8632811)）
 
 Git中从远程的分支获取最新的版本到本地有这样2个命令：
 
