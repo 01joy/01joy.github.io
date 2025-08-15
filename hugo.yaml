@@ -1,7 +1,23 @@
 baseURL: https://example.org/
 languageCode: en-us
-title: My New Hugo Site
+title: bitJoy
 theme: ["PaperMod"]
 caches:
   images:
     dir: :cacheDir/images
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        delimiters:
+          block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+          inline:
+          - - \(
+            - \)
+        enable: true
+params:
+  math: true
