@@ -76,3 +76,6 @@ outputs:
     - HTML
     - RSS
     - JSON # necessary for search
+services:
+  googleAnalytics:
+    id: G-FWT7RY608D

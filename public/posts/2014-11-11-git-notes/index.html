@@ -4,7 +4,7 @@
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Git相关笔记 | bitJoy</title>
 <meta name="keywords" content="Git, GitHub">
 <meta name="description" content="一、第一次使用Github的步骤：
@@ -87,6 +87,118 @@ git merge tmp
 
     </style>
 </noscript>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-FWT7RY608D"></script>
+      <script>
+        var doNotTrack = false;
+        if ( false ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-FWT7RY608D');
+        }
+      </script><meta property="og:url" content="http://localhost:1313/posts/2014-11-11-git-notes/">
+  <meta property="og:site_name" content="bitJoy">
+  <meta property="og:title" content="Git相关笔记">
+  <meta property="og:description" content="一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： git init touch README.md #optional git add . git commit -m &#39;your comment&#39; git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：
+git fetch：相当于是从远程获取最新版本到本地，不会自动merge git fetch origin master git log -p master..origin/master git merge origin/master 以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。
+上述过程其实可以用以下更清晰的方式来进行：
+git fetch origin master:tmp git diff tmp git merge tmp 从远程获取最新的版本到本地的test分支上，之后再进行比较合并。">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2014-11-11T23:12:34+08:00">
+    <meta property="article:modified_time" content="2014-11-11T23:12:34+08:00">
+    <meta property="article:tag" content="Git">
+    <meta property="article:tag" content="GitHub">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git相关笔记">
+<meta name="twitter:description" content="一、第一次使用Github的步骤：
+
+在这个页面中填写Repo名称
+不要勾选Initialize this repository with a README
+点击Create repository
+在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令：
+
+git init
+touch README.md #optional
+git add .
+git commit -m &#39;your comment&#39;
+git remote add origin https://github.com/UserName/RepoName
+git push origin master
+
+如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地
+关于Git命令中的fetch和pull的区别，请看这篇博文
+关于Git bash和Github的连接，请看这篇博文
+
+二、Git命令中fetch和pull的区别（转载）
+Git中从远程的分支获取最新的版本到本地有这样2个命令：
+
+git fetch：相当于是从远程获取最新版本到本地，不会自动merge
+
+git fetch origin master
+git log -p master..origin/master
+git merge origin/master
+以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。
+上述过程其实可以用以下更清晰的方式来进行：
+git fetch origin master:tmp
+git diff tmp
+git merge tmp
+从远程获取最新的版本到本地的test分支上，之后再进行比较合并。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Git相关笔记",
+      "item": "http://localhost:1313/posts/2014-11-11-git-notes/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Git相关笔记",
+  "name": "Git相关笔记",
+  "description": "一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： git init touch README.md #optional git add . git commit -m \u0026#39;your comment\u0026#39; git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：\ngit fetch：相当于是从远程获取最新版本到本地，不会自动merge git fetch origin master git log -p master..origin/master git merge origin/master 以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。\n上述过程其实可以用以下更清晰的方式来进行：\ngit fetch origin master:tmp git diff tmp git merge tmp 从远程获取最新的版本到本地的test分支上，之后再进行比较合并。\n",
+  "keywords": [
+    "Git", "GitHub"
+  ],
+  "articleBody": "一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： git init touch README.md #optional git add . git commit -m 'your comment' git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：\ngit fetch：相当于是从远程获取最新版本到本地，不会自动merge git fetch origin master git log -p master..origin/master git merge origin/master 以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。\n上述过程其实可以用以下更清晰的方式来进行：\ngit fetch origin master:tmp git diff tmp git merge tmp 从远程获取最新的版本到本地的test分支上，之后再进行比较合并。\ngit pull：相当于是从远程获取最新版本并merge到本地 git pull origin master 上述命令其实相当于git fetch + git merge。\n在实际使用中，git fetch更安全一些，因为在merge前，我们可以查看更新情况，然后再决定是否合并。\n",
+  "wordCount" : "89",
+  "inLanguage": "en",
+  "datePublished": "2014-11-11T23:12:34+08:00",
+  "dateModified": "2014-11-11T23:12:34+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/2014-11-11-git-notes/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "bitJoy",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
     
     
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
