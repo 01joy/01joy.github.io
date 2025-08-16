@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Tags | bitJoy</title>
+<title>Git | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/tags/">
+<link rel="canonical" href="http://localhost:1313/tags/git/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/git/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/git/">
 <noscript>
     <style>
         #theme-toggle,
@@ -126,7 +126,7 @@
             </li>
             <li>
                 <a href="http://localhost:1313/tags/" title="Tags">
-                    <span class="active">Tags</span>
+                    <span>Tags</span>
                 </a>
             </li>
             <li>
@@ -142,19 +142,28 @@
         </ul>
     </nav>
 </header>
-<main class="main">
+<main class="main"> 
 <header class="page-header">
-    <h1>Tags</h1>
+  <h1>
+    Git
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="http://localhost:1313/tags/git/">Git <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/tags/github/">GitHub <sup><strong><sup>1</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Git相关笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： git init touch README.md #optional git add . git commit -m &#39;your comment&#39; git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：
+git fetch：相当于是从远程获取最新版本到本地，不会自动merge git fetch origin master git log -p master..origin/master git merge origin/master 以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。
+上述过程其实可以用以下更清晰的方式来进行：
+git fetch origin master:tmp git diff tmp git merge tmp 从远程获取最新的版本到本地的test分支上，之后再进行比较合并。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2014-11-11 23:12:34 +0800 CST'>November 11, 2014</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Git相关笔记" href="http://localhost:1313/posts/2014-11-11-git-notes/"></a>
+</article>
     </main>
     
 <footer class="footer">

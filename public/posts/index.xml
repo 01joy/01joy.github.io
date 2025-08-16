@@ -5,7 +5,7 @@
     <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
-    <language>en-us</language>
+    <language>en</language>
     <lastBuildDate>Fri, 15 Aug 2025 22:03:06 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
@@ -39,6 +39,44 @@ a^*=x-b^*
 $$a^*=x-b^*$$$$ a^*=x-b^* $$$$
 a^*=x-b^*
 $$</description>
+    </item>
+    <item>
+      <title>Git相关笔记</title>
+      <link>http://localhost:1313/posts/2014-11-11-git-notes/</link>
+      <pubDate>Tue, 11 Nov 2014 23:12:34 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2014-11-11-git-notes/</guid>
+      <description>&lt;h1 id=&#34;一第一次使用github的步骤&#34;&gt;一、第一次使用Github的步骤：&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;在&lt;a href=&#34;https://github.com/new&#34;&gt;这个页面&lt;/a&gt;中填写Repo名称&lt;/li&gt;
+&lt;li&gt;不要勾选Initialize this repository with a README&lt;/li&gt;
+&lt;li&gt;点击Create repository&lt;/li&gt;
+&lt;li&gt;在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;touch README.md &lt;span style=&#34;color:#75715e&#34;&gt;#optional&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit -m &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;your comment&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git remote add origin https://github.com/UserName/RepoName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git push origin master
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;5&#34;&gt;
+&lt;li&gt;如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地&lt;/li&gt;
+&lt;li&gt;关于Git命令中的fetch和pull的区别，请看&lt;a href=&#34;https://blog.csdn.net/wfdtxz/article/details/8632811&#34;&gt;这篇博文&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;关于Git bash和Github的连接，请看&lt;a href=&#34;https://www.cnblogs.com/fnng/archive/2011/08/25/2153807.html&#34;&gt;这篇博文&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;二git命令中fetch和pull的区别转载&#34;&gt;二、Git命令中fetch和pull的区别（&lt;a href=&#34;https://blog.csdn.net/wfdtxz/article/details/8632811&#34;&gt;转载&lt;/a&gt;）&lt;/h1&gt;
+&lt;p&gt;Git中从远程的分支获取最新的版本到本地有这样2个命令：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;git fetch：相当于是从远程获取最新版本到本地，不会自动merge&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git fetch origin master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git log -p master..origin/master
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git merge origin/master
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。&lt;/p&gt;
+&lt;p&gt;上述过程其实可以用以下更清晰的方式来进行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git fetch origin master:tmp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git diff tmp
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git merge tmp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;从远程获取最新的版本到本地的test分支上，之后再进行比较合并。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

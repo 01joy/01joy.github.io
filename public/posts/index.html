@@ -114,6 +114,31 @@
             </div>
         </div>
         <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
@@ -137,8 +162,24 @@ These are block equations:
 \[a^*=x-b^*\]\[ a^*=x-b^* \]\[ a^*=x-b^* \]These are also block equations:
 $$a^*=x-b^*$$$$ a^*=x-b^* $$$$ a^*=x-b^* $$</p>
   </div>
-  <footer class="entry-footer"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span></footer>
+  <footer class="entry-footer"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 公告" href="http://localhost:1313/posts/2025-08-15-announcement/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Git相关笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： git init touch README.md #optional git add . git commit -m &#39;your comment&#39; git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：
+git fetch：相当于是从远程获取最新版本到本地，不会自动merge git fetch origin master git log -p master..origin/master git merge origin/master 以上命令的含义：首先从远程的origin的master主分支下载最新的版本到origin/master分支上，然后比较本地的master分支和origin/master分支的差别，最后进行合并。
+上述过程其实可以用以下更清晰的方式来进行：
+git fetch origin master:tmp git diff tmp git merge tmp 从远程获取最新的版本到本地的test分支上，之后再进行比较合并。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2014-11-11 23:12:34 +0800 CST'>November 11, 2014</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Git相关笔记" href="http://localhost:1313/posts/2014-11-11-git-notes/"></a>
 </article>
     </main>
     
