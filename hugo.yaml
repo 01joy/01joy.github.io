@@ -19,5 +19,59 @@ markup:
           - - \(
             - \)
         enable: true
+languages:
+  en:
+    languageName: "English"
+    weight: 1
+    taxonomies:
+      category: categories
+      tag: tags
+      series: series
+    menu:
+      main:
+        - name: Categories
+          url: categories
+          weight: 1
+        - name: Archives
+          url: archives
+          weight: 2
+        - name: Tags
+          url: tags/
+          weight: 3
+        - name: Search
+          url: search/
+          weight: 4
+        - name: About
+          url: about
 params:
   math: true
+  ShowReadingTime: true
+  ShowPostNavLinks: true
+  ShowCodeCopyButtons: true
+  ShowAllPagesInArchive: true
+  ShowPageNums: true
+  ShowToc: true
+  profileMode:
+    enabled: true
+    title: "bitJoy" # optional default will be site title
+    subtitle: "A little bit of 01 joy"
+    imageUrl: "bitjoy_icon.png" # optional
+    imageTitle: "bitJoy logo | 由字节豆包生成" # optional
+    imageWidth: 256 # custom size
+    imageHeight: 256 # custom size
+    # buttons:
+    #   - name: Category
+    #     url: "/categories"
+    #   - name: Archive
+    #     url: "/archives"
+    #   - name: Tags
+    #     url: "/tags"
+    #   - name: Search
+    #     url: "/search"
+    #   - name: About
+    #     url: "/about"
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON # necessary for search

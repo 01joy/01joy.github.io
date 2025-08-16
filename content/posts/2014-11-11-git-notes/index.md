@@ -2,6 +2,8 @@
 date: '2014-11-11T23:12:34+08:00'
 draft: false
 title: 'Git相关笔记'
+categories: ["0和1"]
+tags: ["Git", "GitHub"]
 ---
 # 一、第一次使用Github的步骤：
 
