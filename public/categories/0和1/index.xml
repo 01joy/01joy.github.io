@@ -6,8 +6,71 @@
     <description>Recent content in 0和1 on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 11 Nov 2014 23:12:34 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 15 Nov 2014 00:11:32 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/0%E5%92%8C1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>从一个数字序列中取若干个数字使得和为某个数，问共有多少种取数方案？</title>
+      <link>http://localhost:1313/posts/2014-11-15-subset-sum-problem/</link>
+      <pubDate>Sat, 15 Nov 2014 00:11:32 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2014-11-15-subset-sum-problem/</guid>
+      <description>&lt;p&gt;在上一题POJ Problem 1837: Balance中，我们曾讲到，如果只有两个挂钩，问题会好办得多，就拿题目给的样例数据来说：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Sample Input
+2 4
+-2 3
+3 4 5 8
+
+Sample Output
+2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;img alt=&#34;number-balance.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2014-11-15-subset-sum-problem/number-balance.png&#34;&gt;
+如上图所示，给定重量为3,4,5,8的砝码，放在一个左右臂长分别为2和3的天平上，要使天平平衡，问有多少种方法。&lt;/p&gt;
+&lt;p&gt;这个问题可以稍加转换，假设放在左边的重量为x，右边为y，则有如下方程组成立：&lt;/p&gt;
+$$
+\begin{cases}
+x+y=3+4+5+8=20\\
+2x=3y
+\end{cases}
+$$&lt;p&gt;马上解出x=12,y=8。这样就相当于把原问题转换为：&lt;strong&gt;已知序列3,4,5,8，问从中取若干个数使和为12（或8）的方案数有多少个？&lt;/strong&gt; 因为取出数字和为8，则剩余和为12，所以和为8和12的方案数是相等的。&lt;/p&gt;
+&lt;p&gt;因为这里只有4个数字，一眼就能看出有(3,4,5)，(4,8)能使和为12，即只有两种方案。如果给的数字较多较大，该怎样写代码求出呢？可以使用动态规划求解。&lt;/p&gt;
+&lt;p&gt;设dp[i][j]表示从前i个数中选若干个数使得和为j的方案数，则我们可以得到这样的状态转换方程：&lt;/p&gt;
+$$
+\begin{cases}
+dp[i][j]=1\text{if}i=0\&amp;\&amp;j=0\\
+dp[i][j]=dp[i-1][j]\text{if}w[i]&gt;j\\
+dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\text{if}w[i]&lt;=j
+\end{cases}
+$$&lt;ol&gt;
+&lt;li&gt;当i=0&amp;amp;&amp;amp;j=0时，dp[i][j]=1表示从0个数中取若干个数使得和为0，当然只有1种方案，那就是什么都不取&lt;/li&gt;
+&lt;li&gt;当w[i]&amp;gt;j时，第i个数用不上，因为你单个数字都超过j了，怎么使和为j呢，所以直接dp[i][j]=dp[i-1][j]&lt;/li&gt;
+&lt;li&gt;当w[i]&amp;lt;=j时，第i个数可以用了，这个时候分两种情况，用或者不用第i个数，如果不用，则和w[i]&amp;gt;j时一样dp[i][j]=dp[i-1][j]，如果用的话，则要从前i-1个数中取若干个数使和为j-w[i]，也就是dp[i-1][j-w[i]]，这样总的方案数就是用和不用第i个数的方案数之和，即dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面是针对这个例子我手算的一个图：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;20141115_170507.jpg&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2014-11-15-subset-sum-problem/20141115_170507.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;以上面的内容设计一个OJ题如下：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;描述：
+给定一个正整数数字序列，从中取出若干个数字，使得这些数字之和为某一个特定的值，求所有取法的方案数。
+
+输入：
+输入包含多个测试用例，每个测试用例的第一行有两个数N,S，N表示这个数字序列共有多少个数字；S表示取出的数字之和为S。后面一行包含N个正整数。
+N,S为0程序结束
+
+输出：
+每个测试用例输出一行，表示从N个数中取若干个数使得和为S的方案总数。
+
+样例输入：
+4 8
+3 4 5 8
+4 12
+3 4 5 8
+10 10
+10 9 8 7 6 5 4 3 2 1
+0 0
+
+样例输出：
+2
+2
+10
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;知道了状态转换方程，我们可以很快的写出以上OJ的代码：&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Git相关笔记</title>
       <link>http://localhost:1313/posts/2014-11-11-git-notes/</link>
