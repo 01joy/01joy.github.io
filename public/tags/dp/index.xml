@@ -34,9 +34,9 @@ $$&lt;p&gt;马上解出x=12,y=8。这样就相当于把原问题转换为：&lt;
 &lt;p&gt;设dp[i][j]表示从前i个数中选若干个数使得和为j的方案数，则我们可以得到这样的状态转换方程：&lt;/p&gt;
 $$
 \begin{cases}
-dp[i][j]=1\text{if}i=0\&amp;\&amp;j=0\\
-dp[i][j]=dp[i-1][j]\text{if}w[i]&gt;j\\
-dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\text{if}w[i]&lt;=j
+dp[i][j]=1\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}i=0\&amp;\&amp;j=0\\
+dp[i][j]=dp[i-1][j]\qquad\qquad\qquad\qquad\qquad\qquad\text{if}w[i]&gt;j\\
+dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\qquad\quad\text{if}w[i]&lt;=j
 \end{cases}
 $$&lt;ol&gt;
 &lt;li&gt;当i=0&amp;amp;&amp;amp;j=0时，dp[i][j]=1表示从0个数中取若干个数使得和为0，当然只有1种方案，那就是什么都不取&lt;/li&gt;

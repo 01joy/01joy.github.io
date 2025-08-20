@@ -6,6 +6,8 @@ caches:
   images:
     dir: :cacheDir/images
 markup:
+  highlight:
+    lineNos: true
   goldmark:
     extensions:
       passthrough:

@@ -28,9 +28,9 @@ $$马上解出x=12,y=8。这样就相当于把原问题转换为：已知序列3
 设dp[i][j]表示从前i个数中选若干个数使得和为j的方案数，则我们可以得到这样的状态转换方程：
 $$
 \begin{cases}
-dp[i][j]=1\text{if}i=0\&\&j=0\\
-dp[i][j]=dp[i-1][j]\text{if}w[i]&gt;j\\
-dp[i][j]=dp[i-1][j]&#43;dp[i-1][j-w[i]]\text{if}w[i]&lt;=j
+dp[i][j]=1\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}i=0\&\&j=0\\
+dp[i][j]=dp[i-1][j]\qquad\qquad\qquad\qquad\qquad\qquad\text{if}w[i]&gt;j\\
+dp[i][j]=dp[i-1][j]&#43;dp[i-1][j-w[i]]\qquad\quad\text{if}w[i]&lt;=j
 \end{cases}
 $$
 当i=0&amp;&amp;j=0时，dp[i][j]=1表示从0个数中取若干个数使得和为0，当然只有1种方案，那就是什么都不取
@@ -205,7 +205,7 @@ N,S为0程序结束
     <h1 class="post-title entry-hint-parent">
       从一个数字序列中取若干个数字使得和为某个数，问共有多少种取数方案？
     </h1>
-    <div class="post-meta"><span title='2014-11-15 00:11:32 +0800 CST'>November 15, 2014</span>&nbsp;·&nbsp;1 min
+    <div class="post-meta"><span title='2014-11-15 00:11:32 +0800 CST'>November 15, 2014</span>&nbsp;·&nbsp;2 min
 
 </div>
   </header> 
@@ -231,9 +231,9 @@ $$<p>马上解出x=12,y=8。这样就相当于把原问题转换为：<strong>�
 <p>设dp[i][j]表示从前i个数中选若干个数使得和为j的方案数，则我们可以得到这样的状态转换方程：</p>
 $$
 \begin{cases}
-dp[i][j]=1\text{if}i=0\&\&j=0\\
-dp[i][j]=dp[i-1][j]\text{if}w[i]>j\\
-dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\text{if}w[i]<=j
+dp[i][j]=1\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}i=0\&\&j=0\\
+dp[i][j]=dp[i-1][j]\qquad\qquad\qquad\qquad\qquad\qquad\text{if}w[i]>j\\
+dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\qquad\quad\text{if}w[i]<=j
 \end{cases}
 $$<ol>
 <li>当i=0&amp;&amp;j=0时，dp[i][j]=1表示从0个数中取若干个数使得和为0，当然只有1种方案，那就是什么都不取</li>
@@ -267,46 +267,91 @@ N,S为0程序结束
 2
 10
 </code></pre><p>知道了状态转换方程，我们可以很快的写出以上OJ的代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include&lt;iostream&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include&lt;vector&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;algorithm&gt;</span><span style="color:#75715e">
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;algorithm&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;vector&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> n,s,sum;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span>(cin<span style="color:#f92672">&gt;&gt;</span>n<span style="color:#f92672">&gt;&gt;</span>s<span style="color:#f92672">&amp;&amp;</span>n<span style="color:#f92672">&amp;&amp;</span>s)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> w(n<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> dp(s<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> n, s, sum;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (cin <span style="color:#f92672">&gt;&gt;</span> n <span style="color:#f92672">&gt;&gt;</span> s <span style="color:#f92672">&amp;&amp;</span> n <span style="color:#f92672">&amp;&amp;</span> s) {
+</span></span><span style="display:flex;"><span>    vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> w(n <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> dp(s <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>sum<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>w[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;<span style="color:#75715e">//额外添加的第0个数字为0
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;i<span style="color:#f92672">&lt;=</span>n;i<span style="color:#f92672">++</span>) { cin<span style="color:#f92672">&gt;&gt;</span>w[i];
-</span></span><span style="display:flex;"><span>sum<span style="color:#f92672">+=</span>w[i];<span style="color:#75715e">//所有数字之和
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span><span style="display:flex;"><span>    sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    w[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">/* 额外添加的第0个数字为0 */</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(sum<span style="color:#f92672">&lt;</span>s)<span style="color:#75715e">//如果所有数字加起来都小于s，则怎么取都不存在和为s的方案
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>{
-</span></span><span style="display:flex;"><span>cout<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34;0&#34;</span><span style="color:#f92672">&lt;&lt;</span>endl;
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">continue</span>;
-</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> n; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>      cin <span style="color:#f92672">&gt;&gt;</span> w[i];
+</span></span><span style="display:flex;"><span>      sum <span style="color:#f92672">+=</span> w[i]; <span style="color:#75715e">/* 所有数字之和 */</span>
+</span></span><span style="display:flex;"><span>    }
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>sort(w.begin(),w.end());<span style="color:#75715e">//首先对这些数字从小到大排序，因为取大的数字的时候会用到取小的数字的结果
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>dp[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;<span style="color:#75715e">//相当于dp[0][0]=1;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;i<span style="color:#f92672">&lt;=</span>n;i<span style="color:#f92672">++</span>) { <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span>s;j<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">1</span>;j<span style="color:#960050;background-color:#1e0010">–</span>)<span style="color:#75715e">//从后往前测试，这样只需要一行空间
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>{
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(w[i]<span style="color:#f92672">&lt;=</span>j)
-</span></span><span style="display:flex;"><span>dp[j]<span style="color:#f92672">+=</span>dp[j<span style="color:#f92672">-</span>w[i]];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (sum <span style="color:#f92672">&lt;</span> s) <span style="color:#75715e">/* 如果所有数字加起来都小于s，则怎么取都不存在和为s的方案 */</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    sort(w.begin(), w.end()); <span style="color:#75715e">/* 首先对这些数字从小到大排序，因为取大的数字的时候会用到取小的数字的结果
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">                               */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    dp[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">/* 相当于dp[0][0]=1; */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;=</span> n; i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> s; j <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">1</span>; j <span style="color:#960050;background-color:#1e0010">–</span> ) <span style="color:#75715e">/* 从后往前测试，这样只需要一行空间 */</span>
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (w[i] <span style="color:#f92672">&lt;=</span> j) dp[j] <span style="color:#f92672">+=</span> dp[j <span style="color:#f92672">-</span> w[i]];
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    cout <span style="color:#f92672">&lt;&lt;</span> dp[s] <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> (<span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>cout<span style="color:#f92672">&lt;&lt;</span>dp[s]<span style="color:#f92672">&lt;&lt;</span>endl;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>代码中添加了几个操作，首先如果所有数字之和都小于s，则肯定无解；其次，我们先对数字序列从小到大排序，这样DP填表；最后我们填表的时候是从右往左填的，这样只需要一行空间dp[j]，而不是二维dp[i][j]。</p>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>代码中添加了几个操作，首先如果所有数字之和都小于s，则肯定无解；其次，我们先对数字序列从小到大排序，这样DP填表；最后我们填表的时候是从右往左填的，这样只需要一行空间dp[j]，而不是二维dp[i][j]。</p>
 
 
   </div>
