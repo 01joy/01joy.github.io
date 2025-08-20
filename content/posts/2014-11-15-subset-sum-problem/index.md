@@ -37,9 +37,9 @@ $$
 
 $$
 \begin{cases}
-dp[i][j]=1\text{if}i=0\&\&j=0\\
-dp[i][j]=dp[i-1][j]\text{if}w[i]>j\\
-dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\text{if}w[i]<=j
+dp[i][j]=1\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}i=0\&\&j=0\\
+dp[i][j]=dp[i-1][j]\qquad\qquad\qquad\qquad\qquad\qquad\text{if}w[i]>j\\
+dp[i][j]=dp[i-1][j]+dp[i-1][j-w[i]]\qquad\quad\text{if}w[i]<=j
 \end{cases}
 $$
 
@@ -83,44 +83,44 @@ N,S为0程序结束
 知道了状态转换方程，我们可以很快的写出以上OJ的代码：
 
 ```cpp
-#include<iostream>
-#include<vector>
 #include <algorithm>
+#include <iostream>
+#include <vector>
 using namespace std;
-int main()
-{
-int n,s,sum;
-while(cin>>n>>s&&n&&s)
-{
-vector<int> w(n+1);
-vector<int> dp(s+1,0);
+int main() {
+  int n, s, sum;
+  while (cin >> n >> s && n && s) {
+    vector<int> w(n + 1);
+    vector<int> dp(s + 1, 0);
 
-sum=0;
-w[0]=0;//额外添加的第0个数字为0
+    sum = 0;
+    w[0] = 0; /* 额外添加的第0个数字为0 */
 
-for(int i=1;i<=n;i++) { cin>>w[i];
-sum+=w[i];//所有数字之和
-}
+    for (int i = 1; i <= n; i++) {
+      cin >> w[i];
+      sum += w[i]; /* 所有数字之和 */
+    }
 
-if(sum<s)//如果所有数字加起来都小于s，则怎么取都不存在和为s的方案
-{
-cout<<"0"<<endl;
-continue;
-}
+    if (sum < s) /* 如果所有数字加起来都小于s，则怎么取都不存在和为s的方案 */
+    {
+      cout << "0" << endl;
+      continue;
+    }
 
-sort(w.begin(),w.end());//首先对这些数字从小到大排序，因为取大的数字的时候会用到取小的数字的结果
+    sort(w.begin(), w.end()); /* 首先对这些数字从小到大排序，因为取大的数字的时候会用到取小的数字的结果
+                               */
 
-dp[0]=1;//相当于dp[0][0]=1;
+    dp[0] = 1; /* 相当于dp[0][0]=1; */
 
-for(int i=1;i<=n;i++) { for(int j=s;j>=1;j–)//从后往前测试，这样只需要一行空间
-{
-if(w[i]<=j)
-dp[j]+=dp[j-w[i]];
-}
-}
-cout<<dp[s]<<endl;
-}
-return 0;
+    for (int i = 1; i <= n; i++) {
+      for (int j = s; j >= 1; j – ) /* 从后往前测试，这样只需要一行空间 */
+      {
+        if (w[i] <= j) dp[j] += dp[j - w[i]];
+      }
+    }
+    cout << dp[s] << endl;
+  }
+  return (0);
 }
 ```
 
