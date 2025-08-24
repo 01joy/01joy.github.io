@@ -14,16 +14,37 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/categories/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/ict/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2015-03-30-one-month-in-beijing/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E5%8C%97%E4%BA%AC/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E6%B8%B8%E8%AE%B0/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E9%9B%BE%E9%9C%BE/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E9%A2%90%E5%92%8C%E5%9B%AD/</loc>
+    <lastmod>2015-03-30T19:23:42+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
     <lastmod>2014-11-15T00:11:32+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2014-11-15T00:11:32+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/dp/</loc>
-    <lastmod>2014-11-15T00:11:32+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2014-11-15T00:11:32+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2014-11-15-subset-sum-problem/</loc>
