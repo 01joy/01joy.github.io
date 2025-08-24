@@ -6,8 +6,36 @@
     <description>Recent content in Tags on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 15 Nov 2014 00:11:32 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 30 Mar 2015 19:23:42 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ict</title>
+      <link>http://localhost:1313/tags/ict/</link>
+      <pubDate>Mon, 30 Mar 2015 19:23:42 +0800</pubDate>
+      <guid>http://localhost:1313/tags/ict/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>北京</title>
+      <link>http://localhost:1313/tags/%E5%8C%97%E4%BA%AC/</link>
+      <pubDate>Mon, 30 Mar 2015 19:23:42 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%8C%97%E4%BA%AC/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>雾霾</title>
+      <link>http://localhost:1313/tags/%E9%9B%BE%E9%9C%BE/</link>
+      <pubDate>Mon, 30 Mar 2015 19:23:42 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E9%9B%BE%E9%9C%BE/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>颐和园</title>
+      <link>http://localhost:1313/tags/%E9%A2%90%E5%92%8C%E5%9B%AD/</link>
+      <pubDate>Mon, 30 Mar 2015 19:23:42 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E9%A2%90%E5%92%8C%E5%9B%AD/</guid>
+      <description></description>
+    </item>
     <item>
       <title>DP</title>
       <link>http://localhost:1313/tags/dp/</link>
