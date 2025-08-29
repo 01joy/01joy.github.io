@@ -6,20 +6,20 @@
     <description>Recent content in Categories on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 12 Apr 2015 22:31:02 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 18 Apr 2015 22:58:38 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>随想录</title>
+      <link>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</link>
+      <pubDate>Sat, 18 Apr 2015 22:58:38 +0800</pubDate>
+      <guid>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</guid>
+      <description></description>
+    </item>
     <item>
       <title>回忆录</title>
       <link>http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/</link>
       <pubDate>Sun, 12 Apr 2015 22:31:02 +0800</pubDate>
       <guid>http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>随想录</title>
-      <link>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</link>
-      <pubDate>Sun, 12 Apr 2015 22:31:02 +0800</pubDate>
-      <guid>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</guid>
       <description></description>
     </item>
     <item>
