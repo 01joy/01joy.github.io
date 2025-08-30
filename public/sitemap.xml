@@ -14,13 +14,25 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/2015-05-02-hedgehogs-dilemma-and-interpersonal-distance/</loc>
-    <lastmod>2015-05-02T09:44:52+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2015-05-02T09:44:52+08:00</lastmod>
+    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/</loc>
+    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%B4%AA%E6%B0%B4/</loc>
+    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/</loc>
+    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E7%9F%B3%E5%9F%8E/</loc>
+    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2015-05-02-hedgehogs-dilemma-and-interpersonal-distance/</loc>
     <lastmod>2015-05-02T09:44:52+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E4%BA%BA%E9%99%85%E4%BA%A4%E5%BE%80/</loc>
@@ -33,9 +45,6 @@
     <lastmod>2015-05-02T09:44:52+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2015-04-21-learning-traditional-chinese-characters/</loc>
-    <lastmod>2015-04-21T09:30:34+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/</loc>
     <lastmod>2015-04-21T09:30:34+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/%E6%B8%B8%E8%AE%B0/</loc>
