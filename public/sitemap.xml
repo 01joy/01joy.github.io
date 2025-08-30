@@ -15,10 +15,19 @@
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+    <lastmod>2015-06-08T20:49:07+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2015-05-21T20:32:19+08:00</lastmod>
+    <lastmod>2015-06-08T20:49:07+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/</loc>
+    <lastmod>2015-06-08T20:49:07+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2015-06-08-my-high-school-life/</loc>
+    <lastmod>2015-06-08T20:49:07+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E9%AB%98%E4%B8%AD/</loc>
+    <lastmod>2015-06-08T20:49:07+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/</loc>
     <lastmod>2015-05-21T20:32:19+08:00</lastmod>
@@ -72,9 +81,6 @@
     <lastmod>2015-04-12T22:31:02+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%90%8E%E4%BC%9A%E6%97%A0%E6%9C%9F/</loc>
-    <lastmod>2015-04-12T22:31:02+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/</loc>
     <lastmod>2015-04-12T22:31:02+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%B9%B3%E5%87%A1/</loc>
