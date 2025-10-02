@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Pyqt | bitJoy</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/tags/pyqt/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/pyqt/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/pyqt/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    Pyqt
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>去年暑假在北大计算所实习的时候，任务之一就是批量下载百度图片。当时没学python，用c#实现了一个简易版本的批量下载器，如下图。
+C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了） 当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。
+python3版本百度图片批量下载器
+新版使用了python-3.4.3.amd64.msi &#43; PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe &#43; eric6-6.0.8.zip &#43; cx_Freeze-4.3.4-cp34-none-win_amd64.whl，完整项目在我的GitHub上。大致有如下几点工作：
+研究百度图片API，获取原始图片URL列表 使用python3进行多线程下载 利用pyqt5实现界面 利用cx_Freeze4打包整个程序 下面记录每个步骤的要点，供后人参考。
+百度图片API 正常使用百度图片搜索的时候，URL是这样的：
+http://image.baidu.com/search/index?ct=201326592&amp;z=0&amp;tn=baiduimage&amp;ipn=r&amp;word=%E6%AD%A6%E6%B1%89%E5%A4%A7%E5%AD%A6&amp;pn=0&amp;istype=2&amp;ie=utf-8&amp;oe=utf-8&amp;cl=2&amp;lm=-1&amp;st=-1&amp;fr=&amp;fmq=1439374041843_R&amp;ic=0&amp;se=&amp;sme=&amp;width=0&amp;height=0&amp;face=0
+里面有很多参数，有些我们并不需要，精简之后大概是这样的：
+http://image.baidu.com/i?tn=baiduimage&amp;ie=utf-8&amp;word=%E7%BE%8E%E5%A5%B3&amp;pn=&amp;rn=&amp;z=
+word为搜索关键词；pn为page number当前是第几页，实际含义是image id，表示第几张图片，从0开始；rn为每一页的图片数量，最大为60；z表示图片尺寸，z=9特大尺寸，z=3大尺寸，z=2中等尺寸，z=1小尺寸，z=0所有尺寸。
+但是这个URL是给”人“看的，下一页的图片是动态加载的，其html代码的图片URL数量固定。一番查询之后发现，将tn=baiduimage换成tn=resultjson_com能获取到所有图片URL的json，json当然是给”猴“看的，这样就能轻松获取到所有图片的URL。
+慢着，仔细看看json中的objURL，是一串连”猴“都看不懂的字符串，原来百度把图片真实URL加密了，好在加密方法是简单的字符映射，参考这篇博客成功解密。
+更新：tn=resultjson_com的objURL是加密了，但是tn=resultjson的objURL并没有加密，所以采用tn=resultjson最佳。
+通过控制pn和rn就能获取指定数量的图片URL，但是我发现rn最大只能为60，并且不同的pn可能会有相同的图片url（比如pn=0和pn=1都有ippr_z2C$qAzdH3FAzdH3Fooo_z&amp;e3Bd8vs7k_z&amp;e3Bv54_z&amp;e3BvgAzdH3F7rs5w1utsjAzdH3Fda8nAzdH3Fa080AzdH3Fda8na080aldm9bb8m_z&amp;e3B3r2这个objURL），所以使用python的集合（set）去重。
+更新：pn实际上指图片的id，pn=0、rn=60能获取到从0~59这60个URL列表，pn=1、rn=60能获取到从1~60这60个URL列表，所以pn=0和pn=1的列表中当然有59个是重复的。正确的做法是pn=0、rn=60获取0~59这60个URL列表，然后pn=60、rn=60获取60~119这60个列表，以此类推，这样获取到的URL就不会有重复的了。
+获取图片URL列表的简要代码如下：
+1 2 3 4 5 6 7 8 9 10 11 def ParseJSON(self, pn, rn, st): url = &#39;http://image.baidu.com/i?tn=resultjson_com&amp;amp;amp;ie=utf-8&amp;amp;amp;word=%s&amp;amp;amp;pn=%d&amp;amp;amp;rn=%d&amp;amp;amp;z=%d&#39;%(self.word, pn, rn, self.size) #print(url) request = urllib.request.Request(url = url, headers = my_header) html = urllib.request.urlopen(request).read() hjson = json.loads(html.decode(&#39;gbk&#39;)) for i in range(0, len(hjson[&#39;data&#39;])-1):#最后一个数据为空 img_url = self.DecodeURL(hjson[&#39;data&#39;][i][&#39;objURL&#39;]) if img_url not in st: st.add(img_url)#去重 self.progressBar_updated_signal.emit()#更新进度条 DecodeURL是解密函数。很奇怪，json最后一个数据是空的。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2015-08-13 17:27:15 +0800 CST'>August 13, 2015</span>&nbsp;·&nbsp;4 min</footer>
+  <a class="entry-link" aria-label="post link to 百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）" href="http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
