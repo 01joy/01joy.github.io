@@ -15,8 +15,8 @@
       <guid>http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/</guid>
       <description>&lt;p&gt;去年暑假在北大计算所实习的时候，任务之一就是批量下载百度图片。当时没学python，用c#实现了一个简易版本的批量下载器，如下图。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/BaiduImageDownloader1.png&#34;&gt;
-C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）
-当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。&lt;/p&gt;
+C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）&lt;/p&gt;
+&lt;p&gt;当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;python3版本百度图片批量下载器&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/BaiduImageDownloader2.png&#34;&gt;
 python3版本百度图片批量下载器&lt;/p&gt;
 &lt;p&gt;新版使用了&lt;a href=&#34;https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi&#34;&gt;python-3.4.3.amd64.msi&lt;/a&gt; + &lt;a href=&#34;http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5/PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe&#34;&gt;PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe&lt;/a&gt; + &lt;a href=&#34;http://downloads.sourceforge.net/project/eric-ide/eric6/stable/6.0.8/eric6-6.0.8.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Feric-ide%2Ffiles%2Feric6%2Fstable%2F&amp;amp;ts=1439435222&amp;amp;use_mirror=nchc&#34;&gt;eric6-6.0.8.zip&lt;/a&gt; + &lt;a href=&#34;http://www.lfd.uci.edu/~gohlke/pythonlibs/3i673h27/cx_Freeze-4.3.4-cp34-none-win_amd64.whl&#34;&gt;cx_Freeze-4.3.4-cp34-none-win_amd64.whl&lt;/a&gt;，完整项目在&lt;a href=&#34;https://github.com/01joy/BaiduImageDownloader&#34;&gt;我的GitHub上&lt;/a&gt;。大致有如下几点工作：&lt;/p&gt;

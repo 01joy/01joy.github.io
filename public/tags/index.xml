@@ -6,8 +6,43 @@
     <description>Recent content in Tags on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 13 Aug 2015 17:27:15 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 30 Aug 2015 20:45:36 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grisu</title>
+      <link>http://localhost:1313/tags/grisu/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/tags/grisu/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>IEEE754</title>
+      <link>http://localhost:1313/tags/ieee754/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/tags/ieee754/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Sprintf</title>
+      <link>http://localhost:1313/tags/sprintf/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/tags/sprintf/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>基数排序</title>
+      <link>http://localhost:1313/tags/%E5%9F%BA%E6%95%B0%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%9F%BA%E6%95%B0%E6%8E%92%E5%BA%8F/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>浮点数</title>
+      <link>http://localhost:1313/tags/%E6%B5%AE%E7%82%B9%E6%95%B0/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E6%B5%AE%E7%82%B9%E6%95%B0/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Cx_Freeze</title>
       <link>http://localhost:1313/tags/cx_freeze/</link>
