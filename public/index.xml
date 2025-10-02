@@ -61,14 +61,38 @@ This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
 &lt;p&gt;欢迎评论，如需私信请联系: &lt;a href=&#34;mailto:bitjoy@163.com&#34;&gt;bitjoy@163.com&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
+      <title>浮点数知识及Grisu算法介绍</title>
+      <link>http://localhost:1313/posts/2015-08-30-introduction-to-floating-point-numbers-and-grisu-algorithm/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-08-30-introduction-to-floating-point-numbers-and-grisu-algorithm/</guid>
+      <description>&lt;p&gt;进入研究生生涯完成的第一个新生培训作业是“2.5亿个浮点数的外部排序算法”，前后折腾了将近一个月，结果是在i7处理器上，限制512MB内存，排序用时250秒左右。&lt;/p&gt;
+&lt;p&gt;这个作业的常规思路大部分人都能想到，按块读取文件-&amp;gt;atof转换为double-&amp;gt;内部快速排序或基数排序-&amp;gt;dtoa转换为char*-&amp;gt;按块写入文件。这里面中间的三个过程都很耗时，特别是atof和dtoa，因为精度只要求保留9位小数，所以可以自己实现atof和dtoa来加速，也可以使用多线程加速。&lt;/p&gt;
+&lt;p&gt;整个作业都是基于对IEEE754浮点数的深刻理解展开的，所以下面详细讲解浮点数的一些知识。&lt;/p&gt;
+&lt;h1 id=&#34;ieee754双精度浮点数&#34;&gt;IEEE754双精度浮点数&lt;/h1&gt;
+&lt;p&gt;目前大多数CPU内浮点数的表示都遵循IEEE754标准，IEEE754双精度浮点数（double）表示如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;IEEE754 double在内存中的形式[1]&#34; loading=&#34;lazy&#34; src=&#34;https://upload.wikimedia.org/wikipedia/commons/a/a9/IEEE_754_Double_Floating_Point_Format.svg&#34;&gt;
+IEEE754 double在内存中的形式[1]&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;sign bit：符号位，1位，用来表示正负号，0表示非负；1表示负&lt;/li&gt;
+&lt;li&gt;exponent：指数位，11位，用来表示次方数，是一个无符号数&lt;/li&gt;
+&lt;li&gt;fraction：尾数位，52位，用来表示精确度，也是一个无符号数，有些资料也叫做mantissa或significand&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这种表示形式有两点需要注意。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第一，既然exponent是无符号的，那么怎样表示负指数呢？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;IEEE754规定，二进制串中算得的e需要减去一个偏移量bias，对于double，bias=1023，即e’=e-bias。因为\(e\in[0,2^{11}-1]\)，所以最终\(e’\in[-2^{10}+1,2^{10}]\)。但是如果把e本身看作有符号数e”，则\(e”\in[-2^{10},2^{10}-1]\)，既然e”和e’相差微小，为什么不直接把e看成有符号数，而非要把它看成无符号数，再减去一个偏移量bias呢？&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://stackoverflow.com/questions/2612775/why-ieee-floating-point-number-calculate-exponent-using-a-biased-form&#34;&gt;这是因为如果把e看成无符号数再减偏移量，浮点数大小比较速度更快。&lt;/a&gt;引用&lt;a href=&#34;https://en.wikipedia.org/wiki/Exponent_bias&#34;&gt;维基百科&lt;/a&gt;的一段话：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;By arranging the fields so that the sign bit is in the most significant bit position, the biased exponent in the middle, then the mantissa in the least significant bits, the resulting value will be ordered properly, whether it’s interpreted as a floating point or integer value. This allows high speed comparisons of floating point numbers using fixed point hardware.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）</title>
       <link>http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/</link>
       <pubDate>Thu, 13 Aug 2015 17:27:15 +0800</pubDate>
       <guid>http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/</guid>
       <description>&lt;p&gt;去年暑假在北大计算所实习的时候，任务之一就是批量下载百度图片。当时没学python，用c#实现了一个简易版本的批量下载器，如下图。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/BaiduImageDownloader1.png&#34;&gt;
-C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）
-当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。&lt;/p&gt;
+C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）&lt;/p&gt;
+&lt;p&gt;当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;python3版本百度图片批量下载器&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/BaiduImageDownloader2.png&#34;&gt;
 python3版本百度图片批量下载器&lt;/p&gt;
 &lt;p&gt;新版使用了&lt;a href=&#34;https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi&#34;&gt;python-3.4.3.amd64.msi&lt;/a&gt; + &lt;a href=&#34;http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5/PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe&#34;&gt;PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe&lt;/a&gt; + &lt;a href=&#34;http://downloads.sourceforge.net/project/eric-ide/eric6/stable/6.0.8/eric6-6.0.8.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Feric-ide%2Ffiles%2Feric6%2Fstable%2F&amp;amp;ts=1439435222&amp;amp;use_mirror=nchc&#34;&gt;eric6-6.0.8.zip&lt;/a&gt; + &lt;a href=&#34;http://www.lfd.uci.edu/~gohlke/pythonlibs/3i673h27/cx_Freeze-4.3.4-cp34-none-win_amd64.whl&#34;&gt;cx_Freeze-4.3.4-cp34-none-win_amd64.whl&lt;/a&gt;，完整项目在&lt;a href=&#34;https://github.com/01joy/BaiduImageDownloader&#34;&gt;我的GitHub上&lt;/a&gt;。大致有如下几点工作：&lt;/p&gt;

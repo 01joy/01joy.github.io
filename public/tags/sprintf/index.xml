@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Sprintf on bitJoy</title>
+    <link>http://localhost:1313/tags/sprintf/</link>
+    <description>Recent content in Sprintf on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 30 Aug 2015 20:45:36 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/sprintf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>浮点数知识及Grisu算法介绍</title>
+      <link>http://localhost:1313/posts/2015-08-30-introduction-to-floating-point-numbers-and-grisu-algorithm/</link>
+      <pubDate>Sun, 30 Aug 2015 20:45:36 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-08-30-introduction-to-floating-point-numbers-and-grisu-algorithm/</guid>
+      <description>&lt;p&gt;进入研究生生涯完成的第一个新生培训作业是“2.5亿个浮点数的外部排序算法”，前后折腾了将近一个月，结果是在i7处理器上，限制512MB内存，排序用时250秒左右。&lt;/p&gt;
+&lt;p&gt;这个作业的常规思路大部分人都能想到，按块读取文件-&amp;gt;atof转换为double-&amp;gt;内部快速排序或基数排序-&amp;gt;dtoa转换为char*-&amp;gt;按块写入文件。这里面中间的三个过程都很耗时，特别是atof和dtoa，因为精度只要求保留9位小数，所以可以自己实现atof和dtoa来加速，也可以使用多线程加速。&lt;/p&gt;
+&lt;p&gt;整个作业都是基于对IEEE754浮点数的深刻理解展开的，所以下面详细讲解浮点数的一些知识。&lt;/p&gt;
+&lt;p&gt;IEEE754双精度浮点数&lt;/p&gt;
+&lt;p&gt;目前大多数CPU内浮点数的表示都遵循IEEE754标准，IEEE754双精度浮点数（double）表示如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;IEEE754 double在内存中的形式[1]&#34; loading=&#34;lazy&#34; src=&#34;https://upload.wikimedia.org/wikipedia/commons/a/a9/IEEE_754_Double_Floating_Point_Format.svg&#34;&gt;
+IEEE754 double在内存中的形式[1]
+sign bit：符号位，1位，用来表示正负号，0表示非负；1表示负&lt;/p&gt;
+&lt;p&gt;exponent：指数位，11位，用来表示次方数，是一个无符号数&lt;/p&gt;
+&lt;p&gt;fraction：尾数位，52位，用来表示精确度，也是一个无符号数，有些资料也叫做mantissa或significand&lt;/p&gt;
+&lt;p&gt;这种表示形式有两点需要注意。&lt;/p&gt;
+&lt;p&gt;第一，既然exponent是无符号的，那么怎样表示负指数呢？&lt;/p&gt;
+&lt;p&gt;IEEE754规定，二进制串中算得的e需要减去一个偏移量bias，对于double，bias=1023，即e’=e-bias。因为$e\in[0,2^{11}-1]$，所以最终$e’\in[-2^{10}+1,2^{10}]$。但是如果把e本身看作有符号数e”，则$e”\in[-2^{10},2^{10}-1]$，既然e”和e’相差微小，为什么不直接把e看成有符号数，而非要把它看成无符号数，再减去一个偏移量bias呢？&lt;/p&gt;
+&lt;p&gt;这是因为如果把e看成无符号数再减偏移量，浮点数大小比较速度更快。引用维基百科的一段话：&lt;/p&gt;
+&lt;p&gt;By arranging the fields so that the sign bit is in the most significant bit position, the biased exponent in the middle, then the mantissa in the least significant bits, the resulting value will be ordered properly, whether it’s interpreted as a floating point or integer value. This allows high speed comparisons of floating point numbers using fixed point hardware.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
