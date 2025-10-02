@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>图片 on bitJoy</title>
+    <link>http://localhost:1313/tags/%E5%9B%BE%E7%89%87/</link>
+    <description>Recent content in 图片 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 13 Aug 2015 17:27:15 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E5%9B%BE%E7%89%87/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）</title>
+      <link>http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/</link>
+      <pubDate>Thu, 13 Aug 2015 17:27:15 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/</guid>
+      <description>&lt;p&gt;去年暑假在北大计算所实习的时候，任务之一就是批量下载百度图片。当时没学python，用c#实现了一个简易版本的批量下载器，如下图。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/BaiduImageDownloader1.png&#34;&gt;
+C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）
+当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;python3版本百度图片批量下载器&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/BaiduImageDownloader2.png&#34;&gt;
+python3版本百度图片批量下载器&lt;/p&gt;
+&lt;p&gt;新版使用了&lt;a href=&#34;https://www.python.org/ftp/python/3.4.3/python-3.4.3.amd64.msi&#34;&gt;python-3.4.3.amd64.msi&lt;/a&gt; + &lt;a href=&#34;http://sourceforge.net/projects/pyqt/files/PyQt5/PyQt-5.5/PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe&#34;&gt;PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe&lt;/a&gt; + &lt;a href=&#34;http://downloads.sourceforge.net/project/eric-ide/eric6/stable/6.0.8/eric6-6.0.8.zip?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Feric-ide%2Ffiles%2Feric6%2Fstable%2F&amp;amp;ts=1439435222&amp;amp;use_mirror=nchc&#34;&gt;eric6-6.0.8.zip&lt;/a&gt; + &lt;a href=&#34;http://www.lfd.uci.edu/~gohlke/pythonlibs/3i673h27/cx_Freeze-4.3.4-cp34-none-win_amd64.whl&#34;&gt;cx_Freeze-4.3.4-cp34-none-win_amd64.whl&lt;/a&gt;，完整项目在&lt;a href=&#34;https://github.com/01joy/BaiduImageDownloader&#34;&gt;我的GitHub上&lt;/a&gt;。大致有如下几点工作：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;研究百度图片API，获取原始图片URL列表&lt;/li&gt;
+&lt;li&gt;使用python3进行多线程下载&lt;/li&gt;
+&lt;li&gt;利用pyqt5实现界面&lt;/li&gt;
+&lt;li&gt;利用cx_Freeze4打包整个程序&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面记录每个步骤的要点，供后人参考。&lt;/p&gt;
+&lt;h1 id=&#34;百度图片api&#34;&gt;百度图片API&lt;/h1&gt;
+&lt;p&gt;正常使用百度图片搜索的时候，URL是这样的：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://image.baidu.com/search/index?ct=201326592&amp;amp;z=0&amp;amp;tn=baiduimage&amp;amp;ipn=r&amp;amp;word=%E6%AD%A6%E6%B1%89%E5%A4%A7%E5%AD%A6&amp;amp;pn=0&amp;amp;istype=2&amp;amp;ie=utf-8&amp;amp;oe=utf-8&amp;amp;cl=2&amp;amp;lm=-1&amp;amp;st=-1&amp;amp;fr=&amp;amp;fmq=1439374041843_R&amp;amp;ic=0&amp;amp;se=&amp;amp;sme=&amp;amp;width=0&amp;amp;height=0&amp;amp;face=0&#34;&gt;http://image.baidu.com/search/index?ct=201326592&amp;z=0&amp;tn=baiduimage&amp;ipn=r&amp;word=%E6%AD%A6%E6%B1%89%E5%A4%A7%E5%AD%A6&amp;pn=0&amp;istype=2&amp;ie=utf-8&amp;oe=utf-8&amp;cl=2&amp;lm=-1&amp;st=-1&amp;fr=&amp;fmq=1439374041843_R&amp;ic=0&amp;se=&amp;sme=&amp;width=0&amp;height=0&amp;face=0&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;里面有很多参数，有些我们并不需要，精简之后大概是这样的：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://image.baidu.com/i?tn=baiduimage&amp;amp;ie=utf-8&amp;amp;word=%E7%BE%8E%E5%A5%B3&amp;amp;pn=&amp;amp;rn=&amp;amp;z=&#34;&gt;http://image.baidu.com/i?tn=baiduimage&amp;ie=utf-8&amp;word=%E7%BE%8E%E5%A5%B3&amp;pn=&amp;rn=&amp;z=&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;word为搜索关键词；pn为page number&lt;del&gt;当前是第几页，&lt;/del&gt;&lt;strong&gt;实际含义是image id&lt;/strong&gt;，表示第几张图片，从0开始；rn为每一页的图片数量，最大为60；z表示图片尺寸，z=9特大尺寸，z=3大尺寸，z=2中等尺寸，z=1小尺寸，z=0所有尺寸。&lt;/p&gt;
+&lt;p&gt;但是这个URL是给”人“看的，下一页的图片是动态加载的，其html代码的图片URL数量固定。一番查询之后发现，将tn=baiduimage换成tn=resultjson_com能获取到所有图片URL的json，json当然是给”猴“看的，这样就能轻松获取到所有图片的URL。&lt;/p&gt;
+&lt;p&gt;慢着，仔细看看json中的objURL，是一串连”猴“都看不懂的字符串，原来百度把图片真实URL加密了，好在加密方法是简单的字符映射，参考&lt;a href=&#34;http://blog.csdn.net/hbuxiaoshe/article/details/44780653&#34;&gt;这篇博客&lt;/a&gt;成功解密。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;更新：tn=resultjson_com的objURL是加密了，但是tn=resultjson的objURL并没有加密，所以采用tn=resultjson最佳。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;通过控制pn和rn就能获取指定数量的图片URL，但是我发现rn最大只能为60，并且不同的pn可能会有相同的图片url（比如&lt;a href=&#34;http://image.baidu.com/i?tn=resultjson_com&amp;amp;ie=utf-8&amp;amp;word=mit&amp;amp;pn=0&amp;amp;rn=60&amp;amp;z=9&#34;&gt;pn=0&lt;/a&gt;和&lt;a href=&#34;http://image.baidu.com/i?tn=resultjson_com&amp;amp;ie=utf-8&amp;amp;word=mit&amp;amp;pn=1&amp;amp;rn=60&amp;amp;z=9&#34;&gt;pn=1&lt;/a&gt;都有ippr_z2C$qAzdH3FAzdH3Fooo_z&amp;amp;e3Bd8vs7k_z&amp;amp;e3Bv54_z&amp;amp;e3BvgAzdH3F7rs5w1utsjAzdH3Fda8nAzdH3Fa080AzdH3Fda8na080aldm9bb8m_z&amp;amp;e3B3r2这个objURL），所以使用python的集合（set）去重。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;更新：pn实际上指图片的id，pn=0、rn=60能获取到从0~59这60个URL列表，pn=1、rn=60能获取到从1~60这60个URL列表，所以pn=0和pn=1的列表中当然有59个是重复的。正确的做法是pn=0、rn=60获取0~59这60个URL列表，然后pn=60、rn=60获取60~119这60个列表，以此类推，这样获取到的URL就不会有重复的了。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;获取图片URL列表的简要代码如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;ParseJSON&lt;/span&gt;(self, pn, rn, st):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    url &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;http://image.baidu.com/i?tn=resultjson_com&amp;amp;amp;amp;ie=utf-8&amp;amp;amp;amp;word=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%s&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;amp;amp;amp;pn=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;amp;amp;amp;rn=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;amp;amp;amp;z=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;(self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;word, pn, rn, self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;size)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#75715e&#34;&gt;#print(url)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    request &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; urllib&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;request&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Request(url &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; url, headers &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; my_header)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    html &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; urllib&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;request&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;urlopen(request)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;read()
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    hjson &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; json&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;loads(html&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;decode(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;gbk&amp;#39;&lt;/span&gt;))
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, len(hjson[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;])&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;):&lt;span style=&#34;color:#75715e&#34;&gt;#最后一个数据为空&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        img_url &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DecodeURL(hjson[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data&amp;#39;&lt;/span&gt;][i][&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;objURL&amp;#39;&lt;/span&gt;])
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; img_url &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; st:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            st&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;add(img_url)&lt;span style=&#34;color:#75715e&#34;&gt;#去重&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            self&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;progressBar_updated_signal&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;emit()&lt;span style=&#34;color:#75715e&#34;&gt;#更新进度条&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;DecodeURL是解密函数。很奇怪，json最后一个数据是空的。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
