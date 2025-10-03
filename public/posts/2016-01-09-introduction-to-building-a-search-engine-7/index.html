@@ -5,48 +5,30 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>公告 | bitJoy</title>
-<meta name="keywords" content="">
-<meta name="description" content="博客数据恢复中，敬请期待！
-测试图片：
+<title>和我一起构建搜索引擎（七）总结展望 | bitJoy</title>
+<meta name="keywords" content="搜索引擎">
+<meta name="description" content="至此，整个新闻搜索引擎构建完毕，总体效果令人满意，不过还是有很多可以改进的地方。下面总结一下本系统的优点和不足。
+优点
+倒排索引存储方式。因为不同词项的倒排记录表长度一般不同，所以没办法以常规的方式存入关系型数据库。通过将一个词项的倒排记录表序列化成一个字符串再存入数据库，读取的时候通过反序列化获得相关数据，整个结构类似于邻接表的形式。
+推荐阅读实现方式。利用特征提取的方法，用25个关键词表示一篇新闻，大大减小了文档词项矩阵规模，提高计算效率的同时不影响推荐新闻相关性。
+借用了Reddit的热度公式，融合了时间因素。
+不足
+构建索引时，为了降低索引规模，提高算法速度，我们将纯数字词项过滤了，同时忽略了词项大小写。虽然索引规模下降了，但是牺牲了搜索引擎的正确率。
+构建索引时，采用了jieba的精确分词模式，比如句子“我来到北京清华大学”的分词结果为“我/ 来到/ 北京/ 清华大学”，“清华大学”作为一个整体被当作一个词项，如果搜索关键词是“清华”，则该句子不能匹配，但显然这个句子和“清华”相关。所以后续可以采用结巴的搜索引擎分词模式，虽然索引规模增加了，但能提升搜索引擎的召回率。
+在推荐阅读模块，虽然进行了维度约减，但是当数据量较大时（数十万条新闻），得到的文档词项矩阵也是巨大的，会远远超过现有PC的内存大小。所以可以先对新闻进行粗略的聚类，再在类内计算两两cosine相似度，得到值得推荐的新闻。
+在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数\(k_1\)和\(k_2\)，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。
 
-测试代码：
-
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-
-
-// Necessary header files for input output functions
-#include &lt;iostream&gt;
-using namespace std;
-
-// main() function: where the execution of
-// C&#43;&#43; program begins
-int main() {
-  
-    // This statement prints &#34;Hello World&#34;
-    cout &lt;&lt; &#34;Hello World&#34;;
-
-    return 0;
-}
-
-
-测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.">
+完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
+以下是系列博客：
+和我一起构建搜索引擎（一）简介
+和我一起构建搜索引擎（二）网络爬虫
+和我一起构建搜索引擎（三）构建索引
+和我一起构建搜索引擎（四）检索模型
+和我一起构建搜索引擎（五）推荐阅读
+和我一起构建搜索引擎（六）系统展示
+和我一起构建搜索引擎（七）总结展望">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="canonical" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -55,7 +37,7 @@ This is an inline \(a^*=x-b^*\) equation.">
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/">
 <noscript>
     <style>
         #theme-toggle,
@@ -184,69 +166,51 @@ This is an inline \(a^*=x-b^*\) equation.">
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      公告
+      和我一起构建搜索引擎（七）总结展望
     </h1>
-    <div class="post-meta"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span>&nbsp;·&nbsp;1 min
+    <div class="post-meta"><span title='2016-01-09 23:52:13 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min
 
 </div>
   </header> 
 
-  <div class="post-content"><p>博客数据恢复中，敬请期待！</p>
-<p>测试图片：
-<img alt="这是图片" loading="lazy" src="/posts/2025-08-15-announcement/myimg.png"></p>
-<p>测试代码：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Necessary header files for input output functions
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// main() function: where the execution of
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// C++ program begins
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This statement prints &#34;Hello World&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.</p>
-<p>These are block equations:</p>
-\[a^*=x-b^*\]\[ a^*=x-b^* \]\[
-a^*=x-b^*
-\]<p>These are also block equations:</p>
-$$a^*=x-b^*$$$$ a^*=x-b^* $$$$
-a^*=x-b^*
-$$
+  <div class="post-content"><p>至此，整个新闻搜索引擎构建完毕，总体效果令人满意，不过还是有很多可以改进的地方。下面总结一下本系统的优点和不足。</p>
+<p><strong>优点</strong></p>
+<p>倒排索引存储方式。因为不同词项的倒排记录表长度一般不同，所以没办法以常规的方式存入关系型数据库。通过将一个词项的倒排记录表序列化成一个字符串再存入数据库，读取的时候通过反序列化获得相关数据，整个结构类似于邻接表的形式。</p>
+<p>推荐阅读实现方式。利用特征提取的方法，用25个关键词表示一篇新闻，大大减小了文档词项矩阵规模，提高计算效率的同时不影响推荐新闻相关性。</p>
+<p>借用了Reddit的热度公式，融合了时间因素。</p>
+<p><strong>不足</strong></p>
+<p>构建索引时，为了降低索引规模，提高算法速度，我们将纯数字词项过滤了，同时忽略了词项大小写。虽然索引规模下降了，但是牺牲了搜索引擎的正确率。</p>
+<p>构建索引时，采用了jieba的精确分词模式，比如句子“我来到北京清华大学”的分词结果为“我/ 来到/ 北京/ 清华大学”，“清华大学”作为一个整体被当作一个词项，如果搜索关键词是“清华”，则该句子不能匹配，但显然这个句子和“清华”相关。所以后续可以采用结巴的搜索引擎分词模式，虽然索引规模增加了，但能提升搜索引擎的召回率。</p>
+<p>在推荐阅读模块，虽然进行了维度约减，但是当数据量较大时（数十万条新闻），得到的文档词项矩阵也是巨大的，会远远超过现有PC的内存大小。所以可以先对新闻进行粗略的聚类，再在类内计算两两cosine相似度，得到值得推荐的新闻。</p>
+<p>在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数\(k_1\)和\(k_2\)，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。</p>
+<hr>
+<p>完整可运行的新闻搜索引擎Demo请看我的Github项目<a href="https://github.com/01joy/news_search_engine">news_search_engine</a>。</p>
+<p>以下是系列博客：</p>
+<p>和我一起构建搜索引擎（一）简介</p>
+<p>和我一起构建搜索引擎（二）网络爬虫</p>
+<p>和我一起构建搜索引擎（三）构建索引</p>
+<p>和我一起构建搜索引擎（四）检索模型</p>
+<p>和我一起构建搜索引擎（五）推荐阅读</p>
+<p>和我一起构建搜索引擎（六）系统展示</p>
+<p>和我一起构建搜索引擎（七）总结展望</p>
+
 
   </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">搜索引擎</a></li>
     </ul>
 <nav class="paginav">
-  <a class="next" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>公告</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/">
     <span class="title">Next »</span>
     <br>
-    <span>和我一起构建搜索引擎（七）总结展望</span>
+    <span>和我一起构建搜索引擎（六）系统展示</span>
   </a>
 </nav>
 

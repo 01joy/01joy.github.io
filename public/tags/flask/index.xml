@@ -6,22 +6,23 @@
     <description>Recent content in Flask on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 09 Jan 2016 00:32:10 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 09 Jan 2016 23:32:10 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/flask/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>和我一起构建搜索引擎（六）系统展示</title>
       <link>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/</link>
-      <pubDate>Sat, 09 Jan 2016 00:32:10 +0800</pubDate>
+      <pubDate>Sat, 09 Jan 2016 23:32:10 +0800</pubDate>
       <guid>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/</guid>
       <description>&lt;p&gt;前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。&lt;/p&gt;
-&lt;p&gt;我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。&lt;/p&gt;
+&lt;p&gt;我们利用开源的&lt;a href=&#34;http://flask.pocoo.org/&#34;&gt;Flask Web框架&lt;/a&gt;搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。&lt;/p&gt;
 &lt;p&gt;这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;图1. 搜索页面&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine1.webp&#34;&gt;
 图1. 搜索页面&lt;/p&gt;
 &lt;p&gt;&lt;img alt=&#34;图2. 新闻详情页面&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine2.webp&#34;&gt;
 图2. 新闻详情页面&lt;/p&gt;
 &lt;p&gt;由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。&lt;/p&gt;
-&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目&lt;a href=&#34;https://github.com/01joy/news_search_engine&#34;&gt;news_search_engine&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;以下是系列博客：&lt;/p&gt;
 &lt;p&gt;和我一起构建搜索引擎（一）简介&lt;/p&gt;
 &lt;p&gt;和我一起构建搜索引擎（二）网络爬虫&lt;/p&gt;
