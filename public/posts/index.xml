@@ -53,6 +53,55 @@
 This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
     </item>
     <item>
+      <title>和我一起构建搜索引擎（七）总结展望</title>
+      <link>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/</link>
+      <pubDate>Sat, 09 Jan 2016 23:52:13 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/</guid>
+      <description>&lt;p&gt;至此，整个新闻搜索引擎构建完毕，总体效果令人满意，不过还是有很多可以改进的地方。下面总结一下本系统的优点和不足。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;倒排索引存储方式。因为不同词项的倒排记录表长度一般不同，所以没办法以常规的方式存入关系型数据库。通过将一个词项的倒排记录表序列化成一个字符串再存入数据库，读取的时候通过反序列化获得相关数据，整个结构类似于邻接表的形式。&lt;/p&gt;
+&lt;p&gt;推荐阅读实现方式。利用特征提取的方法，用25个关键词表示一篇新闻，大大减小了文档词项矩阵规模，提高计算效率的同时不影响推荐新闻相关性。&lt;/p&gt;
+&lt;p&gt;借用了Reddit的热度公式，融合了时间因素。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;不足&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;构建索引时，为了降低索引规模，提高算法速度，我们将纯数字词项过滤了，同时忽略了词项大小写。虽然索引规模下降了，但是牺牲了搜索引擎的正确率。&lt;/p&gt;
+&lt;p&gt;构建索引时，采用了jieba的精确分词模式，比如句子“我来到北京清华大学”的分词结果为“我/ 来到/ 北京/ 清华大学”，“清华大学”作为一个整体被当作一个词项，如果搜索关键词是“清华”，则该句子不能匹配，但显然这个句子和“清华”相关。所以后续可以采用结巴的搜索引擎分词模式，虽然索引规模增加了，但能提升搜索引擎的召回率。&lt;/p&gt;
+&lt;p&gt;在推荐阅读模块，虽然进行了维度约减，但是当数据量较大时（数十万条新闻），得到的文档词项矩阵也是巨大的，会远远超过现有PC的内存大小。所以可以先对新闻进行粗略的聚类，再在类内计算两两cosine相似度，得到值得推荐的新闻。&lt;/p&gt;
+&lt;p&gt;在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数$k_1$和$k_2$，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。&lt;/p&gt;
+&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。&lt;/p&gt;
+&lt;p&gt;以下是系列博客：&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（一）简介&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（二）网络爬虫&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（三）构建索引&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（四）检索模型&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（五）推荐阅读&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（六）系统展示&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（七）总结展望&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>和我一起构建搜索引擎（六）系统展示</title>
+      <link>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/</link>
+      <pubDate>Sat, 09 Jan 2016 23:32:10 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/</guid>
+      <description>&lt;p&gt;前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。&lt;/p&gt;
+&lt;p&gt;我们利用开源的&lt;a href=&#34;http://flask.pocoo.org/&#34;&gt;Flask Web框架&lt;/a&gt;搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。&lt;/p&gt;
+&lt;p&gt;这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;图1. 搜索页面&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine1.webp&#34;&gt;
+图1. 搜索页面&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;图2. 新闻详情页面&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine2.webp&#34;&gt;
+图2. 新闻详情页面&lt;/p&gt;
+&lt;p&gt;由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目&lt;a href=&#34;https://github.com/01joy/news_search_engine&#34;&gt;news_search_engine&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;以下是系列博客：&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（一）简介&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（二）网络爬虫&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（三）构建索引&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（四）检索模型&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（五）推荐阅读&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（六）系统展示&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（七）总结展望&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>和我一起构建搜索引擎（五）推荐阅读</title>
       <link>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-5/</link>
       <pubDate>Sat, 09 Jan 2016 22:34:56 +0800</pubDate>
@@ -388,29 +437,6 @@ This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;这个模块的代码量最多，主要原因是需要构建文档词项矩阵，并且计算k邻居矩阵。矩阵数据结构的设计需要特别注意，否则会严重影响系统的效率。我刚开始把任务都扔给了pandas.DataFrame，后来发现当两个文档向量合并时，需要join连接操作，当数据量很大时，非常耗时，所以改成了先用python原始的list存储，最后一次性构造一个完整的pandas.DataFrame，速度比之前快了不少。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>和我一起构建搜索引擎（六）系统展示</title>
-      <link>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/</link>
-      <pubDate>Sat, 09 Jan 2016 00:32:10 +0800</pubDate>
-      <guid>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/</guid>
-      <description>&lt;p&gt;前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。&lt;/p&gt;
-&lt;p&gt;我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。&lt;/p&gt;
-&lt;p&gt;这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。&lt;/p&gt;
-&lt;p&gt;&lt;img alt=&#34;图1. 搜索页面&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine1.webp&#34;&gt;
-图1. 搜索页面&lt;/p&gt;
-&lt;p&gt;&lt;img alt=&#34;图2. 新闻详情页面&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine2.webp&#34;&gt;
-图2. 新闻详情页面&lt;/p&gt;
-&lt;p&gt;由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。&lt;/p&gt;
-&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。&lt;/p&gt;
-&lt;p&gt;以下是系列博客：&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（一）简介&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（二）网络爬虫&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（三）构建索引&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（四）检索模型&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（五）推荐阅读&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（六）系统展示&lt;/p&gt;
-&lt;p&gt;和我一起构建搜索引擎（七）总结展望&lt;/p&gt;</description>
     </item>
     <item>
       <title>和我一起构建搜索引擎（四）检索模型</title>
