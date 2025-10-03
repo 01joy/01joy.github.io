@@ -14,10 +14,31 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2015-08-30T20:45:36+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/categories/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E5%9D%9A%E6%8C%81/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%83%85%E6%80%80/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%96%BD%E4%B8%80%E5%85%AC/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E7%8E%AF%E5%A2%83/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2015-10-31-review-about-shiyigongs-blogs/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</loc>
+    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
     <lastmod>2015-08-30T20:45:36+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/grisu/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2015-08-30T20:45:36+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/sprintf/</loc>
-    <lastmod>2015-08-30T20:45:36+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2015-08-30T20:45:36+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%9F%BA%E6%95%B0%E6%8E%92%E5%BA%8F/</loc>
@@ -93,9 +111,6 @@
     <lastmod>2015-06-12T11:07:04+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E9%82%A3%E4%B8%80%E5%A4%A9/</loc>
-    <lastmod>2015-06-12T11:07:04+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</loc>
     <lastmod>2015-06-12T11:07:04+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/</loc>
