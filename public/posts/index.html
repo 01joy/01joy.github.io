@@ -166,6 +166,44 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">和我一起构建搜索引擎（二）网络爬虫
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>网络爬虫又称网络蜘蛛、Web采集器等，它是一种按照一定的规则，自动地抓取万维网信息的程序或者脚本。
+我们在设计网络爬虫的时候需要注意两点：
+鲁棒性。Web中有些服务器会制造采集器陷阱（spider traps），这些陷阱服务器实际上是Web页面的生成器，它能在某个域下生成无数网页，从而使采集器陷入到一个无限的采集循环中去。采集器必须能从这些陷阱中跳出来。当然，这些陷阱倒不一定都是恶意的，有时可能是网站设计疏忽所导致的结果。
+礼貌性。Web服务器具有一些隐式或显式的政策来控制采集器访问它们的频率。设计采集器时必须要遵守这些代表礼貌性的访问政策。
+采集器的基本架构如下图所示。
+the basic crawler architecture
+基本上是“抓取→分析→得到新的URL→再抓取→再分析”这样一个死循环过程。
+以上内容摘自王斌老师翻译的《信息检索导论》课本。
+由于我们要做的是一个新闻搜索引擎，所以抓取的是新闻数据，对于爬虫，网上也有很多的开源程序，如nutch等，Github上还有人专门开发了抓取新闻的组件newspaper，可以很方便的提取新闻标题、正文、时间等信息。不过用python写爬虫也是分分钟的事情，下面我们一起来试一试。
+首先找一个新闻网站，为简单起见，要找那种结构清晰、html代码便于解析的门户网站，比如搜狐新闻、参考消息等。
+搜狐新闻的国内要闻列表如下：
+sohu news1
+结构非常清楚，左边是带URL的标题，右边括号里有新闻时间。这一页列表就有200条新闻，如果我们要获取1000条，只要不断模拟点击下一页即可。下一页的URL也只是在首页的基础上加上_xxx.shtml，xxx就是不同的页码。
+查看列表的html源码，得知列表都在类名为newsblue1的td中，所以只需要解析html源码就可以得到新闻标题、URL和时间，python解析html可以用BeautifulSoup包，非常方便。
+进入到新闻详细页面，正文部分如下：
+sohu news2
+查看html源码，正文位于类名为text clear的div中，据此可以很方便的提取新闻正文。
+得到一条新闻的所有数据之后，我们需要将之结构化成xml文件，借助相应的xml包可以很方便的完成这项工作。xml格式定义如下：
+xml format
+注意爬虫需要访问网络，难免会出现一些异常，所以捕获异常是非常有必要的。另外，搜狐每篇新闻正文后面都会有一段’//’开始的注释，这个需要过滤掉，短于140个字的新闻我也过滤掉了。整个搜索系统的配置参数都存储在config.ini文件中。
+下面是完整的python 3.4&#43;代码。
+[python]
+-- coding: utf-8 -- &#34;&#34;&#34; Created on Sat Dec 19 11:57:01 2015
+@author: bitjoy.net &#34;&#34;&#34;
+from bs4 import BeautifulSoup import urllib.request import xml.etree.ElementTree as ET import configparser
+def get_news_pool(root, start, end): news_pool = [] for i in range(start,end,-1): page_url = ” if i != start: page_url = root &#43;’%d.shtml’%(i) else: page_url = root &#43; ‘.shtml’ try: response = urllib.request.urlopen(page_url) except Exception as e: print(&#34;—–%s: %s—–&#34;%(type(e), page_url)) continue html = response.read() soup = BeautifulSoup(html) td = soup.find(‘td’, class = “newsblue1”) a = td.find_all(‘a’) span = td.find_all(‘span’) for i in range(len(a)): date_time = span[i].string url = a[i].get(‘href’) title = a[i].string news_info = [‘2016-‘&#43;date_time[1:3]&#43;’-‘&#43;date_time[4:-1]&#43;’:00′,url,title] news_pool.append(news_info) return(news_pool)
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-01-04 16:23:19 +0800 CST'>January 4, 2016</span>&nbsp;·&nbsp;2 min</footer>
+  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（二）网络爬虫" href="http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-2/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">和我一起构建搜索引擎（一）简介
     </h2>
   </header>
@@ -176,7 +214,6 @@
 截止日期12月31日，我们已经在规定时间完成了该系统，自认为检索效果不错，所以在此把过程记录如下，欢迎讨论。
 网上有很多开源的全文搜索引擎，比如Lucene、Sphinx、Whoosh等，都提供了很好的API，开发者只需要调用相关接口就可以实现一个全功能的搜索引擎。不过既然学习了IR这门课，自然要把相关技术实践一下，所以我们打算自己实现一个搜索引擎。
 这是简介部分，主要介绍整个搜索引擎的思路和框架。
-search engine outline
 上图为本搜索引擎的框架图。首先爬虫程序从特定的几个新闻网站抓取新闻数据，然后过滤网页中的图片、视频、广告等无关元素，抽取新闻的主体内容，得到结构化的xml数据。然后一方面使用内存式单遍扫描索引构建方法（SPIMI）构建倒排索引，供检索模型使用；另一方面根据向量空间模型计算两两新闻之间的余弦相似度，供推荐模块使用。最后利用概率检索模型中的BM25公式计算给定关键词下的文档相关性评分，BM25打分结合时间因素得到热度评分，根据评分给出排序结果。
 在后续博文中，我会详细介绍每个部分的实现。
 完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
@@ -350,39 +387,9 @@ word为搜索关键词；pn为page number当前是第几页，实际含义是ima
   <footer class="entry-footer"><span title='2015-08-13 17:27:15 +0800 CST'>August 13, 2015</span>&nbsp;·&nbsp;4 min</footer>
   <a class="entry-link" aria-label="post link to 百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）" href="http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">再见武大
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>2015年6月27日，武汉大学在梅园操场举办了2015年毕业典礼。
-武汉大学2015年毕业典礼，正在发言的是雷军学长[1]
-武汉大学2015年毕业典礼[2]
-坐在台下，顿感恍惚，四年前同样在梅操，同样是这些人，我们举办开学典礼。
-武汉大学2011年开学典礼[3]
-原来梅操到梅操的距离只有四年。
-毕业典礼结束，下午集体收拾行李，大家都默默无语。晚上去红牛—-大一第一次聚餐的地方—-吃最后的晚餐，这次聚餐喝了两箱啤酒，6瓶白酒！白酒下肚，前一口酒落地又向上翻滚，和后一口酒相互撞击，四年的往事喷涌而出。离别之际，每个人都把自己的心声说出来了，说出了自己的家境、对某某的感情、一个宿舍的兄弟情，说出了自己的抱负、未来的理想，再互相拥抱、道一声珍重。
-山水一程，三生有幸[4]
-回到宿舍，所有人吐得一塌糊涂，昏睡过去。也许这就是离别的滋味，折磨着你，让你难受，只有把它吐出来，离开了，平静了，一切就好了。
-第二天醒来，发现隔壁宿舍的几个哥们已经走了，宿舍冷清了许多。去小卖部买了一些非必需品，只为把卡里的几十块钱用掉。打包行李，准备出发。
-毕业了，离开了，那些大一的迷茫、兼职，大二的信息安全竞赛，大三繁重的课业、为保研奋斗的数学建模竞赛，大四悠闲的生活也将躲藏在记忆的某个角落，不再被轻易的发现。武大的樱花、牌坊、樱顶、新图、青楼、梅操电影、珞珈之声、每天晚上在奥场穿着17号球衣跑步的女生、一起练笛的同学、在梅园食堂吃饭的一对情侣、幽默装逼的室友，这一幅幅画面，也将随着时间的车轮，慢慢消散。
-天下没有不散的筵席，我们来到这个世上，就注定要历经悲欢离合。在中国最美丽的大学，度过了我人生中最美好的年华，山水一程，三生有幸，感谢有你。
-别怕，梦的方向叫做闯，青春还没散场！
-参考：
-[1]. 武汉大学官方微博
-[2]. 武大新闻网：http://news.whu.edu.cn/info/1002/43788.htm
-[3]. 守望珞珈的新浪博客：http://blog.sina.com.cn/s/blog_4da93d1f0100t6v9.html
-[4]. 珞珈山水bbs毕业封面：http://bbs.whu.edu.cn/
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2015-06-28 11:32:18 +0800 CST'>June 28, 2015</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 再见武大" href="http://localhost:1313/posts/2015-06-28-farewell-to-whu/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="next" href="http://localhost:1313/posts/page/2/">Next&nbsp;2/2&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/2/">Next&nbsp;2/3&nbsp;»
     </a>
   </nav>
 </footer>

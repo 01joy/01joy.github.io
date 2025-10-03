@@ -53,20 +53,83 @@
 This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
     </item>
     <item>
+      <title>和我一起构建搜索引擎（二）网络爬虫</title>
+      <link>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-2/</link>
+      <pubDate>Mon, 04 Jan 2016 16:23:19 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-2/</guid>
+      <description>&lt;p&gt;网络爬虫又称网络蜘蛛、Web采集器等，它是一种按照一定的规则，自动地抓取万维网信息的程序或者脚本。&lt;/p&gt;
+&lt;p&gt;我们在设计网络爬虫的时候需要注意两点：&lt;/p&gt;
+&lt;p&gt;鲁棒性。Web中有些服务器会制造采集器陷阱（spider traps），这些陷阱服务器实际上是Web页面的生成器，它能在某个域下生成无数网页，从而使采集器陷入到一个无限的采集循环中去。采集器必须能从这些陷阱中跳出来。当然，这些陷阱倒不一定都是恶意的，有时可能是网站设计疏忽所导致的结果。&lt;/p&gt;
+&lt;p&gt;礼貌性。Web服务器具有一些隐式或显式的政策来控制采集器访问它们的频率。设计采集器时必须要遵守这些代表礼貌性的访问政策。&lt;/p&gt;
+&lt;p&gt;采集器的基本架构如下图所示。&lt;/p&gt;
+&lt;p&gt;the basic crawler architecture&lt;/p&gt;
+&lt;p&gt;基本上是“抓取→分析→得到新的URL→再抓取→再分析”这样一个死循环过程。&lt;/p&gt;
+&lt;p&gt;以上内容摘自王斌老师翻译的《信息检索导论》课本。&lt;/p&gt;
+&lt;p&gt;由于我们要做的是一个新闻搜索引擎，所以抓取的是新闻数据，对于爬虫，网上也有很多的开源程序，如nutch等，Github上还有人专门开发了抓取新闻的组件newspaper，可以很方便的提取新闻标题、正文、时间等信息。不过用python写爬虫也是分分钟的事情，下面我们一起来试一试。&lt;/p&gt;
+&lt;p&gt;首先找一个新闻网站，为简单起见，要找那种结构清晰、html代码便于解析的门户网站，比如搜狐新闻、参考消息等。&lt;/p&gt;
+&lt;p&gt;搜狐新闻的国内要闻列表如下：&lt;/p&gt;
+&lt;p&gt;sohu news1&lt;/p&gt;
+&lt;p&gt;结构非常清楚，左边是带URL的标题，右边括号里有新闻时间。这一页列表就有200条新闻，如果我们要获取1000条，只要不断模拟点击下一页即可。下一页的URL也只是在首页的基础上加上_xxx.shtml，xxx就是不同的页码。&lt;/p&gt;
+&lt;p&gt;查看列表的html源码，得知列表都在类名为newsblue1的td中，所以只需要解析html源码就可以得到新闻标题、URL和时间，python解析html可以用BeautifulSoup包，非常方便。&lt;/p&gt;
+&lt;p&gt;进入到新闻详细页面，正文部分如下：&lt;/p&gt;
+&lt;p&gt;sohu news2&lt;/p&gt;
+&lt;p&gt;查看html源码，正文位于类名为text clear的div中，据此可以很方便的提取新闻正文。&lt;/p&gt;
+&lt;p&gt;得到一条新闻的所有数据之后，我们需要将之结构化成xml文件，借助相应的xml包可以很方便的完成这项工作。xml格式定义如下：&lt;/p&gt;
+&lt;p&gt;xml format&lt;/p&gt;
+&lt;p&gt;注意爬虫需要访问网络，难免会出现一些异常，所以捕获异常是非常有必要的。另外，搜狐每篇新闻正文后面都会有一段’//’开始的注释，这个需要过滤掉，短于140个字的新闻我也过滤掉了。整个搜索系统的配置参数都存储在config.ini文件中。&lt;/p&gt;
+&lt;p&gt;下面是完整的python 3.4+代码。&lt;/p&gt;
+&lt;p&gt;[python]&lt;/p&gt;
+&lt;h1 id=&#34;---coding-utf-8---&#34;&gt;-&lt;em&gt;- coding: utf-8 -&lt;/em&gt;-&lt;/h1&gt;
+&lt;p&gt;&amp;quot;&amp;quot;&amp;quot;
+Created on Sat Dec 19 11:57:01 2015&lt;/p&gt;
+&lt;p&gt;@author: bitjoy.net
+&amp;quot;&amp;quot;&amp;quot;&lt;/p&gt;
+&lt;p&gt;from bs4 import BeautifulSoup
+import urllib.request
+import xml.etree.ElementTree as ET
+import configparser&lt;/p&gt;
+&lt;p&gt;def get_news_pool(root, start, end):
+news_pool = []
+for i in range(start,end,-1):
+page_url = ”
+if i != start:
+page_url = root +’&lt;em&gt;%d.shtml’%(i)
+else:
+page_url = root + ‘.shtml’
+try:
+response = urllib.request.urlopen(page_url)
+except Exception as e:
+print(&amp;quot;—–%s: %s—–&amp;quot;%(type(e), page_url))
+continue
+html = response.read()
+soup = BeautifulSoup(html)
+td = soup.find(‘td’, class&lt;/em&gt; = &amp;ldquo;newsblue1&amp;rdquo;)
+a = td.find_all(‘a’)
+span = td.find_all(‘span’)
+for i in range(len(a)):
+date_time = span[i].string
+url = a[i].get(‘href’)
+title = a[i].string
+news_info = [‘2016-‘+date_time[1:3]+’-‘+date_time[4:-1]+’:00′,url,title]
+news_pool.append(news_info)
+return(news_pool)&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>和我一起构建搜索引擎（一）简介</title>
       <link>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/</link>
       <pubDate>Mon, 04 Jan 2016 13:56:23 +0800</pubDate>
       <guid>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/</guid>
       <description>&lt;p&gt;我们上网用得最多的一项服务应该是搜索，不管大事小情，都喜欢百度一下或谷歌一下，那么百度和谷歌是怎样从浩瀚的网络世界中快速找到你想要的信息呢，这就是搜索引擎的艺术，属于信息检索的范畴。&lt;/p&gt;
-&lt;p&gt;这学期学习了《现代信息检索》课程，使用的是Stanford的教材Introduction to Information Retrieval，网上有电子版，大家可以参考。&lt;/p&gt;
+&lt;p&gt;这学期学习了《现代信息检索》课程，使用的是Stanford的教材&lt;a href=&#34;http://nlp.stanford.edu/IR-book/&#34;&gt;Introduction to Information Retrieval&lt;/a&gt;，网上有电子版，大家可以参考。&lt;/p&gt;
 &lt;p&gt;本课程的大作业是完成一个新闻搜索引擎，要求是这样的：定向采集3-4个新闻网站，实现这些网站信息的抽取、索引和检索。网页数目不少于10万条。能按相关度、时间和热度（需要自己定义）进行排序，能实现相似新闻的自动聚类。&lt;/p&gt;
 &lt;p&gt;截止日期12月31日，我们已经在规定时间完成了该系统，自认为检索效果不错，所以在此把过程记录如下，欢迎讨论。&lt;/p&gt;
 &lt;p&gt;网上有很多开源的全文搜索引擎，比如Lucene、Sphinx、Whoosh等，都提供了很好的API，开发者只需要调用相关接口就可以实现一个全功能的搜索引擎。不过既然学习了IR这门课，自然要把相关技术实践一下，所以我们打算自己实现一个搜索引擎。&lt;/p&gt;
 &lt;p&gt;这是简介部分，主要介绍整个搜索引擎的思路和框架。&lt;/p&gt;
-&lt;p&gt;search engine outline&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;search engine outline&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/search-engine-architecture.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上图为本搜索引擎的框架图。首先爬虫程序从特定的几个新闻网站抓取新闻数据，然后过滤网页中的图片、视频、广告等无关元素，抽取新闻的主体内容，得到结构化的xml数据。然后一方面使用内存式单遍扫描索引构建方法（SPIMI）构建倒排索引，供检索模型使用；另一方面根据向量空间模型计算两两新闻之间的余弦相似度，供推荐模块使用。最后利用概率检索模型中的BM25公式计算给定关键词下的文档相关性评分，BM25打分结合时间因素得到热度评分，根据评分给出排序结果。&lt;/p&gt;
 &lt;p&gt;在后续博文中，我会详细介绍每个部分的实现。&lt;/p&gt;
-&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目&lt;a href=&#34;https://github.com/01joy/news_search_engine&#34;&gt;news_search_engine&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;以下是系列博客：&lt;/p&gt;
 &lt;p&gt;和我一起构建搜索引擎（一）简介&lt;/p&gt;
 &lt;p&gt;和我一起构建搜索引擎（二）网络爬虫&lt;/p&gt;
