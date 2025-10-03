@@ -14,16 +14,46 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
+    <lastmod>2016-01-04T13:56:23+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%80%81%E5%BA%A6/</loc>
+    <lastmod>2016-01-04T12:42:21+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E8%80%81%E7%BD%97/</loc>
+    <lastmod>2016-01-04T12:42:21+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E8%AE%A4%E7%9C%9F/</loc>
+    <lastmod>2016-01-04T12:42:21+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/posts/2016-01-04-attitude-is-everything/</loc>
     <lastmod>2016-01-04T12:42:21+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/tags/%E8%AE%BE%E8%AE%A1/</loc>
+    <lastmod>2016-01-04T12:42:21+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</loc>
+    <lastmod>2016-01-04T12:42:21+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/posts/2016-01-03-2016-happy-new-year/</loc>
-    <lastmod>2016-01-03T12:25:50+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2016-01-03T12:25:50+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2016-01-03T12:25:50+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E6%80%BB%E7%BB%93/</loc>
@@ -50,9 +80,6 @@
     <loc>http://localhost:1313/tags/%E6%9A%96%E6%B0%94/</loc>
     <lastmod>2015-11-22T12:16:00+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/win10/</loc>
     <lastmod>2015-11-13T10:55:51+08:00</lastmod>
   </url><url>
@@ -75,9 +102,6 @@
     <lastmod>2015-10-31T10:23:57+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2015-10-31-review-about-shiyigongs-blogs/</loc>
-    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</loc>
     <lastmod>2015-10-31T10:23:57+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/grisu/</loc>

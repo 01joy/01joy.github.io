@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>和我一起构建搜索引擎 on bitJoy</title>
+    <link>http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</link>
+    <description>Recent content in 和我一起构建搜索引擎 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 04 Jan 2016 13:56:23 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>和我一起构建搜索引擎（一）简介</title>
+      <link>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/</link>
+      <pubDate>Mon, 04 Jan 2016 13:56:23 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/</guid>
+      <description>&lt;p&gt;我们上网用得最多的一项服务应该是搜索，不管大事小情，都喜欢百度一下或谷歌一下，那么百度和谷歌是怎样从浩瀚的网络世界中快速找到你想要的信息呢，这就是搜索引擎的艺术，属于信息检索的范畴。&lt;/p&gt;
+&lt;p&gt;这学期学习了《现代信息检索》课程，使用的是Stanford的教材Introduction to Information Retrieval，网上有电子版，大家可以参考。&lt;/p&gt;
+&lt;p&gt;本课程的大作业是完成一个新闻搜索引擎，要求是这样的：定向采集3-4个新闻网站，实现这些网站信息的抽取、索引和检索。网页数目不少于10万条。能按相关度、时间和热度（需要自己定义）进行排序，能实现相似新闻的自动聚类。&lt;/p&gt;
+&lt;p&gt;截止日期12月31日，我们已经在规定时间完成了该系统，自认为检索效果不错，所以在此把过程记录如下，欢迎讨论。&lt;/p&gt;
+&lt;p&gt;网上有很多开源的全文搜索引擎，比如Lucene、Sphinx、Whoosh等，都提供了很好的API，开发者只需要调用相关接口就可以实现一个全功能的搜索引擎。不过既然学习了IR这门课，自然要把相关技术实践一下，所以我们打算自己实现一个搜索引擎。&lt;/p&gt;
+&lt;p&gt;这是简介部分，主要介绍整个搜索引擎的思路和框架。&lt;/p&gt;
+&lt;p&gt;search engine outline&lt;/p&gt;
+&lt;p&gt;上图为本搜索引擎的框架图。首先爬虫程序从特定的几个新闻网站抓取新闻数据，然后过滤网页中的图片、视频、广告等无关元素，抽取新闻的主体内容，得到结构化的xml数据。然后一方面使用内存式单遍扫描索引构建方法（SPIMI）构建倒排索引，供检索模型使用；另一方面根据向量空间模型计算两两新闻之间的余弦相似度，供推荐模块使用。最后利用概率检索模型中的BM25公式计算给定关键词下的文档相关性评分，BM25打分结合时间因素得到热度评分，根据评分给出排序结果。&lt;/p&gt;
+&lt;p&gt;在后续博文中，我会详细介绍每个部分的实现。&lt;/p&gt;
+&lt;p&gt;完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。&lt;/p&gt;
+&lt;p&gt;以下是系列博客：&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（一）简介&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（二）网络爬虫&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（三）构建索引&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（四）检索模型&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（五）推荐阅读&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（六）系统展示&lt;/p&gt;
+&lt;p&gt;和我一起构建搜索引擎（七）总结展望&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
