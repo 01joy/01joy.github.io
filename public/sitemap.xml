@@ -14,11 +14,23 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
+    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2015-10-31T10:23:57+08:00</lastmod>
+    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/win10/</loc>
+    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/</loc>
+    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E9%A9%B1%E5%8A%A8/</loc>
+    <lastmod>2015-11-13T10:55:51+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%9D%9A%E6%8C%81/</loc>
     <lastmod>2015-10-31T10:23:57+08:00</lastmod>
@@ -37,9 +49,6 @@
   </url><url>
     <loc>http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/</loc>
     <lastmod>2015-10-31T10:23:57+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2015-08-30T20:45:36+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/grisu/</loc>
     <lastmod>2015-08-30T20:45:36+08:00</lastmod>

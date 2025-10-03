@@ -151,6 +151,30 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">解决Win10间歇性断网的问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>安装WIN10一个月以来，校园有线网经常间歇性断网，通常是20分钟不到就断了，需要重启或者把有线连接关闭再打开才可以。在微博上问过微软客服也无果，后来Google到某国外的解决办法，现记录如下。
+说到底WIN10断网的问题还是和驱动有关，先看一下我的有线网卡Broadcom NetLink (TM) Gigabit Ethernet，驱动信息是这样的：
+还是13年的驱动，版本号是15.6.0.14，于是第一想到的是更新驱动。点击驱动右键选更新-&gt;自动搜索更新的驱动程序软件-&gt;提示“已安装适合设备的最佳驱动程序软件”，但这明明不是最新的驱动啊！
+于是在Broadcom的官网上找到了最新驱动win_b57_x64-17.2.0.2，版本号是17.2.0.2，更新日期2015-10-27，原来这才是最新的驱动。
+（2018.1.25更新：上面的地址已失效，最新地址请点击此处，并选择DOWNLOADS→Software→NetLink®/NetXtreme® I Desktop/Mobile/Server (x64)，也可以从本站下载。）
+在安装最新驱动之前，我们需要关闭WIN10的自动更新驱动功能，因为WIN10会认为它的15.6.0.14版本是最新的，在windows update时把实际最新的17.2.0.2版本替换掉。具体做法是在Cortana中搜索“更改设备安装设置”并打开，选择否，从不安装来自Windows更新的驱动程序软件，如下。
+change-device-installation
+然后重启进入安全模式，再次在设备管理器中右键点击网卡驱动，选择更新-&gt;浏览计算机以查找驱动程序软件-&gt;从计算机的设备驱动程序列表中选取-&gt;点击从磁盘安装按钮-&gt;浏览找到你之前在网上下载的最新驱动（*.inf格式）-&gt;选中-&gt;依次确定。刷新之后再次查看驱动信息如下：
+bcm-driver-after
+可以看到驱动已经更新到最新的版本了。再次重启进入正常模式，目前用了两天了也没有再断过网。
+其他WIN10驱动问题应该也可以用类似的方法解决。
+（话说我的WIN10偶尔会死机，就是用着用着突然鼠标和键盘完全动不了了，只能强制重启，有谁知道这是怎么回事吗？）
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2015-11-13 10:55:51 +0800 CST'>November 13, 2015</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 解决Win10间歇性断网的问题" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">浮点数知识及Grisu算法介绍
     </h2>
   </header>
