@@ -151,6 +151,36 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>去年暑假在北大计算所实习的时候，任务之一就是批量下载百度图片。当时没学python，用c#实现了一个简易版本的批量下载器，如下图。
+C#版本百度图片批量下载器（抓的是百度的wap站点，现在好像不能用了）
+当时“时间紧，任务重“，既没仔细研究百度图片API，也没处理好界面线程阻塞的问题。这个问题其实很有意思，趁着暑假在家，实现了一个比较完美的python版本，先上效果图。
+python3版本百度图片批量下载器
+新版使用了python-3.4.3.amd64.msi &#43; PyQt5-5.5-gpl-Py3.4-Qt5.5.0-x64.exe &#43; eric6-6.0.8.zip &#43; cx_Freeze-4.3.4-cp34-none-win_amd64.whl，完整项目在我的GitHub上。大致有如下几点工作：
+研究百度图片API，获取原始图片URL列表 使用python3进行多线程下载 利用pyqt5实现界面 利用cx_Freeze4打包整个程序 下面记录每个步骤的要点，供后人参考。
+百度图片API 正常使用百度图片搜索的时候，URL是这样的：
+http://image.baidu.com/search/index?ct=201326592&amp;z=0&amp;tn=baiduimage&amp;ipn=r&amp;word=%E6%AD%A6%E6%B1%89%E5%A4%A7%E5%AD%A6&amp;pn=0&amp;istype=2&amp;ie=utf-8&amp;oe=utf-8&amp;cl=2&amp;lm=-1&amp;st=-1&amp;fr=&amp;fmq=1439374041843_R&amp;ic=0&amp;se=&amp;sme=&amp;width=0&amp;height=0&amp;face=0
+里面有很多参数，有些我们并不需要，精简之后大概是这样的：
+http://image.baidu.com/i?tn=baiduimage&amp;ie=utf-8&amp;word=%E7%BE%8E%E5%A5%B3&amp;pn=&amp;rn=&amp;z=
+word为搜索关键词；pn为page number当前是第几页，实际含义是image id，表示第几张图片，从0开始；rn为每一页的图片数量，最大为60；z表示图片尺寸，z=9特大尺寸，z=3大尺寸，z=2中等尺寸，z=1小尺寸，z=0所有尺寸。
+但是这个URL是给”人“看的，下一页的图片是动态加载的，其html代码的图片URL数量固定。一番查询之后发现，将tn=baiduimage换成tn=resultjson_com能获取到所有图片URL的json，json当然是给”猴“看的，这样就能轻松获取到所有图片的URL。
+慢着，仔细看看json中的objURL，是一串连”猴“都看不懂的字符串，原来百度把图片真实URL加密了，好在加密方法是简单的字符映射，参考这篇博客成功解密。
+更新：tn=resultjson_com的objURL是加密了，但是tn=resultjson的objURL并没有加密，所以采用tn=resultjson最佳。
+通过控制pn和rn就能获取指定数量的图片URL，但是我发现rn最大只能为60，并且不同的pn可能会有相同的图片url（比如pn=0和pn=1都有ippr_z2C$qAzdH3FAzdH3Fooo_z&amp;e3Bd8vs7k_z&amp;e3Bv54_z&amp;e3BvgAzdH3F7rs5w1utsjAzdH3Fda8nAzdH3Fa080AzdH3Fda8na080aldm9bb8m_z&amp;e3B3r2这个objURL），所以使用python的集合（set）去重。
+更新：pn实际上指图片的id，pn=0、rn=60能获取到从0~59这60个URL列表，pn=1、rn=60能获取到从1~60这60个URL列表，所以pn=0和pn=1的列表中当然有59个是重复的。正确的做法是pn=0、rn=60获取0~59这60个URL列表，然后pn=60、rn=60获取60~119这60个列表，以此类推，这样获取到的URL就不会有重复的了。
+获取图片URL列表的简要代码如下：
+1 2 3 4 5 6 7 8 9 10 11 def ParseJSON(self, pn, rn, st): url = &#39;http://image.baidu.com/i?tn=resultjson_com&amp;amp;amp;ie=utf-8&amp;amp;amp;word=%s&amp;amp;amp;pn=%d&amp;amp;amp;rn=%d&amp;amp;amp;z=%d&#39;%(self.word, pn, rn, self.size) #print(url) request = urllib.request.Request(url = url, headers = my_header) html = urllib.request.urlopen(request).read() hjson = json.loads(html.decode(&#39;gbk&#39;)) for i in range(0, len(hjson[&#39;data&#39;])-1):#最后一个数据为空 img_url = self.DecodeURL(hjson[&#39;data&#39;][i][&#39;objURL&#39;]) if img_url not in st: st.add(img_url)#去重 self.progressBar_updated_signal.emit()#更新进度条 DecodeURL是解密函数。很奇怪，json最后一个数据是空的。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2015-08-13 17:27:15 +0800 CST'>August 13, 2015</span>&nbsp;·&nbsp;4 min</footer>
+  <a class="entry-link" aria-label="post link to 百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）" href="http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">再见武大
     </h2>
   </header>
@@ -421,27 +451,6 @@ P.S.希望能够找到那个和我共享亲密距离的人-:)
   </div>
   <footer class="entry-footer"><span title='2015-03-30 19:23:42 +0800 CST'>March 30, 2015</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to One month in Beijing" href="http://localhost:1313/posts/2015-03-30-one-month-in-beijing/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">从一个数字序列中取若干个数字使得和为某个数，问共有多少种取数方案？
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>在上一题POJ Problem 1837: Balance中，我们曾讲到，如果只有两个挂钩，问题会好办得多，就拿题目给的样例数据来说：
-Sample Input 2 4 -2 3 3 4 5 8 Sample Output 2 如上图所示，给定重量为3,4,5,8的砝码，放在一个左右臂长分别为2和3的天平上，要使天平平衡，问有多少种方法。
-这个问题可以稍加转换，假设放在左边的重量为x，右边为y，则有如下方程组成立：
-$$ \begin{cases} x&#43;y=3&#43;4&#43;5&#43;8=20\\ 2x=3y \end{cases} $$马上解出x=12,y=8。这样就相当于把原问题转换为：已知序列3,4,5,8，问从中取若干个数使和为12（或8）的方案数有多少个？ 因为取出数字和为8，则剩余和为12，所以和为8和12的方案数是相等的。
-因为这里只有4个数字，一眼就能看出有(3,4,5)，(4,8)能使和为12，即只有两种方案。如果给的数字较多较大，该怎样写代码求出呢？可以使用动态规划求解。
-设dp[i][j]表示从前i个数中选若干个数使得和为j的方案数，则我们可以得到这样的状态转换方程：
-$$ \begin{cases} dp[i][j]=1\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text{if}i=0\&amp;\&amp;j=0\\ dp[i][j]=dp[i-1][j]\qquad\qquad\qquad\qquad\qquad\qquad\text{if}w[i]&gt;j\\ dp[i][j]=dp[i-1][j]&#43;dp[i-1][j-w[i]]\qquad\quad\text{if}w[i]&lt;=j \end{cases} $$ 当i=0&amp;&amp;j=0时，dp[i][j]=1表示从0个数中取若干个数使得和为0，当然只有1种方案，那就是什么都不取 当w[i]&gt;j时，第i个数用不上，因为你单个数字都超过j了，怎么使和为j呢，所以直接dp[i][j]=dp[i-1][j] 当w[i]&lt;=j时，第i个数可以用了，这个时候分两种情况，用或者不用第i个数，如果不用，则和w[i]&gt;j时一样dp[i][j]=dp[i-1][j]，如果用的话，则要从前i-1个数中取若干个数使和为j-w[i]，也就是dp[i-1][j-w[i]]，这样总的方案数就是用和不用第i个数的方案数之和，即dp[i][j]=dp[i-1][j]&#43;dp[i-1][j-w[i]] 下面是针对这个例子我手算的一个图：
-以上面的内容设计一个OJ题如下：
-描述： 给定一个正整数数字序列，从中取出若干个数字，使得这些数字之和为某一个特定的值，求所有取法的方案数。 输入： 输入包含多个测试用例，每个测试用例的第一行有两个数N,S，N表示这个数字序列共有多少个数字；S表示取出的数字之和为S。后面一行包含N个正整数。 N,S为0程序结束 输出： 每个测试用例输出一行，表示从N个数中取若干个数使得和为S的方案总数。 样例输入： 4 8 3 4 5 8 4 12 3 4 5 8 10 10 10 9 8 7 6 5 4 3 2 1 0 0 样例输出： 2 2 10 知道了状态转换方程，我们可以很快的写出以上OJ的代码：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2014-11-15 00:11:32 +0800 CST'>November 15, 2014</span>&nbsp;·&nbsp;2 min</footer>
-  <a class="entry-link" aria-label="post link to 从一个数字序列中取若干个数字使得和为某个数，问共有多少种取数方案？" href="http://localhost:1313/posts/2014-11-15-subset-sum-problem/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
