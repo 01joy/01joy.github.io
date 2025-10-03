@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Categories | bitJoy</title>
+<title>Hacker News | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/categories/">
+<link rel="canonical" href="http://localhost:1313/tags/hacker-news/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/hacker-news/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/hacker-news/">
 <noscript>
     <style>
         #theme-toggle,
@@ -116,7 +116,7 @@
         <ul id="menu">
             <li>
                 <a href="http://localhost:1313/categories" title="Categories">
-                    <span class="active">Categories</span>
+                    <span>Categories</span>
                 </a>
             </li>
             <li>
@@ -142,31 +142,35 @@
         </ul>
     </nav>
 </header>
-<main class="main">
+<main class="main"> 
 <header class="page-header">
-    <h1>Categories</h1>
+  <h1>
+    Hacker News
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="http://localhost:1313/categories/0%E5%92%8C1/">0和1 <sup><strong><sup>9</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">和我一起构建搜索引擎 <sup><strong><sup>4</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/">回忆录 <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/">流水账 <sup><strong><sup>6</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B8%B8%E8%AE%B0/">游记 <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/">随想录 <sup><strong><sup>6</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">和我一起构建搜索引擎（四）检索模型
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>构建好倒排索引之后，就可以开始检索了。
+检索模型有很多，比如向量空间模型、概率模型、语言模型等。其中最有名的、检索效果最好的是基于概率的BM25模型。
+给定一个查询Q和一篇文档d，d对Q的BM25得分公式为
+$$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times \frac{k_1\times tf}{tf&#43;k_1(1-b&#43;b\times l_d/avg\_l)}\times log_2\frac{N-df&#43;0.5}{df&#43;0.5}$$公式中变量含义如下：
+$qtf$：查询中的词频 $tf$：文档中的词频 $l_d$：文档长度 $avg_l$：平均文档长度 $N$：文档数量 $df$：文档频率 $b,k_1,k_3$：可调参数 这个公式看起来很复杂，我们把它分解一下，其实很容易理解。第一个公式是外部公式，一个查询Q可能包含多个词项，比如“苹果手机”就包含“苹果”和“手机”两个词项，我们需要分别计算“苹果”和“手机”对某个文档d的贡献分数w(t,d)，然后将他们加起来就是整个文档d相对于查询Q的得分。
+第二个公式就是计算某个词项t在文档d中的得分，它包括三个部分。第一个部分是词项t在查询Q中的得分，比如查询“中国人说中国话”中“中国”出现了两次，此时qtf=2，说明这个查询希望找到的文档和“中国”更相关，“中国”的权重应该更大，但是通常情况下，查询Q都很短，而且不太可能包含相同的词项，所以这个因子是一个常数，我们在实现的时候可以忽略。
+第二部分类似于TFIDF模型中的TF项。也就是说某个词项t在文档d中出现次数越多，则t越重要，但是文档长度越长，tf也倾向于变大，所以使用文档长度除以平均长度$l_d/avg_l$起到某种归一化的效果，$k_1$和$b$是可调参数。
+第三部分类似于TFIDF模型中的IDF项。也就是说虽然“的”、“地”、“得”等停用词在某文档d中出现的次数很多，但是他们在很多文档中都出现过，所以这些词对d的贡献分并不高，接近于0；反而那些很稀有的词如”糖尿病“能够很好的区分不同文档，这些词对文档的贡献分应该较高。
+所以根据BM25公式，我们可以很快计算出不同文档t对查询Q的得分情况，然后按得分高低排序给出结果。
+下面是给定一个查询句子sentence，根据BM25公式给出文档排名的函数
+[python] def result_by_BM25(self, sentence): seg_list = jieba.lcut(sentence, cut_all=False) n, cleaned_dict = self.clean_list(seg_list) BM25_scores = {} for term in cleaned_dict.keys(): r = self.fetch_from_db(term) if r is None: continue df = r[1] w = math.log2((self.N - df &#43; 0.5) / (df &#43; 0.5)) docs = r[2].split(’\n’) for doc in docs: docid, date_time, tf, ld = doc.split(’\t’) docid = int(docid) tf = int(tf) ld = int(ld) s = (self.K1 * tf * w) / (tf &#43; self.K1 * (1 - self.B &#43; self.B * ld / self.AVG_L)) if docid in BM25_scores: BM25_scores[docid] = BM25_scores[docid] &#43; s else: BM25_scores[docid] = s BM25_scores = sorted(BM25_scores.items(), key = operator.itemgetter(1)) BM25_scores.reverse() if len(BM25_scores) == 0: return 0, [] else: return 1, BM25_scores [/python] 首先将句子分词得到所有查询词项，然后从数据库中取出词项对应的倒排记录表，对记录表中的所有文档，计算其BM25得分，最后按得分高低排序作为查询结果。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-01-07 19:31:25 +0800 CST'>January 7, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（四）检索模型" href="http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-4/"></a>
+</article>
     </main>
     
 <footer class="footer">

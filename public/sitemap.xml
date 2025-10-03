@@ -15,10 +15,34 @@
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2016-01-07T19:07:17+08:00</lastmod>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/bm25/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2016-01-07T19:07:17+08:00</lastmod>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/hacker-news/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/reddit/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/tfidf/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-4/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
+    <lastmod>2016-01-07T19:31:25+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/jieba/</loc>
     <lastmod>2016-01-07T19:07:17+08:00</lastmod>
@@ -26,22 +50,13 @@
     <loc>http://localhost:1313/tags/spimi/</loc>
     <lastmod>2016-01-07T19:07:17+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
-    <lastmod>2016-01-07T19:07:17+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95/</loc>
-    <lastmod>2016-01-07T19:07:17+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
     <lastmod>2016-01-07T19:07:17+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-3/</loc>
     <lastmod>2016-01-07T19:07:17+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%B8%83%E5%B0%94%E6%A3%80%E7%B4%A2/</loc>
-    <lastmod>2016-01-07T19:07:17+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
     <lastmod>2016-01-07T19:07:17+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-2/</loc>
