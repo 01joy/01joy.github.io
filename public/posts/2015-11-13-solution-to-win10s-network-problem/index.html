@@ -5,48 +5,23 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>公告 | bitJoy</title>
-<meta name="keywords" content="">
-<meta name="description" content="博客数据恢复中，敬请期待！
-测试图片：
+<title>解决Win10间歇性断网的问题 | bitJoy</title>
+<meta name="keywords" content="驱动, Win10">
+<meta name="description" content="安装WIN10一个月以来，校园有线网经常间歇性断网，通常是20分钟不到就断了，需要重启或者把有线连接关闭再打开才可以。在微博上问过微软客服也无果，后来Google到某国外的解决办法，现记录如下。
+说到底WIN10断网的问题还是和驱动有关，先看一下我的有线网卡Broadcom NetLink (TM) Gigabit Ethernet，驱动信息是这样的：
 
-测试代码：
+还是13年的驱动，版本号是15.6.0.14，于是第一想到的是更新驱动。点击驱动右键选更新-&gt;自动搜索更新的驱动程序软件-&gt;提示“已安装适合设备的最佳驱动程序软件”，但这明明不是最新的驱动啊！
+于是在Broadcom的官网上找到了最新驱动win_b57_x64-17.2.0.2，版本号是17.2.0.2，更新日期2015-10-27，原来这才是最新的驱动。
+（2018.1.25更新：上面的地址已失效，最新地址请点击此处，并选择DOWNLOADS→Software→NetLink®/NetXtreme® I Desktop/Mobile/Server (x64)，也可以从本站下载。）
+在安装最新驱动之前，我们需要关闭WIN10的自动更新驱动功能，因为WIN10会认为它的15.6.0.14版本是最新的，在windows update时把实际最新的17.2.0.2版本替换掉。具体做法是在Cortana中搜索“更改设备安装设置”并打开，选择否，从不安装来自Windows更新的驱动程序软件，如下。
 
+然后重启进入安全模式，再次在设备管理器中右键点击网卡驱动，选择更新-&gt;浏览计算机以查找驱动程序软件-&gt;从计算机的设备驱动程序列表中选取-&gt;点击从磁盘安装按钮-&gt;浏览找到你之前在网上下载的最新驱动（*.inf格式）-&gt;选中-&gt;依次确定。刷新之后再次查看驱动信息如下：
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
-
-
-// Necessary header files for input output functions
-#include &lt;iostream&gt;
-using namespace std;
-
-// main() function: where the execution of
-// C&#43;&#43; program begins
-int main() {
-  
-    // This statement prints &#34;Hello World&#34;
-    cout &lt;&lt; &#34;Hello World&#34;;
-
-    return 0;
-}
-
-
-测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.">
+可以看到驱动已经更新到最新的版本了。再次重启进入正常模式，目前用了两天了也没有再断过网。
+其他WIN10驱动问题应该也可以用类似的方法解决。
+（话说我的WIN10偶尔会死机，就是用着用着突然鼠标和键盘完全动不了了，只能强制重启，有谁知道这是怎么回事吗？）">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="canonical" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -55,7 +30,7 @@ This is an inline \(a^*=x-b^*\) equation.">
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/">
 <noscript>
     <style>
         #theme-toggle,
@@ -184,69 +159,45 @@ This is an inline \(a^*=x-b^*\) equation.">
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      公告
+      解决Win10间歇性断网的问题
     </h1>
-    <div class="post-meta"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span>&nbsp;·&nbsp;1 min
+    <div class="post-meta"><span title='2015-11-13 10:55:51 +0800 CST'>November 13, 2015</span>&nbsp;·&nbsp;1 min
 
 </div>
   </header> 
 
-  <div class="post-content"><p>博客数据恢复中，敬请期待！</p>
-<p>测试图片：
-<img alt="这是图片" loading="lazy" src="/posts/2025-08-15-announcement/myimg.png"></p>
-<p>测试代码：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Necessary header files for input output functions
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// main() function: where the execution of
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// C++ program begins
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This statement prints &#34;Hello World&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.</p>
-<p>These are block equations:</p>
-\[a^*=x-b^*\]\[ a^*=x-b^* \]\[
-a^*=x-b^*
-\]<p>These are also block equations:</p>
-$$a^*=x-b^*$$$$ a^*=x-b^* $$$$
-a^*=x-b^*
-$$
+  <div class="post-content"><p>安装WIN10一个月以来，校园有线网经常间歇性断网，通常是20分钟不到就断了，需要重启或者把有线连接关闭再打开才可以。在微博上问过微软客服也无果，<a href="http://www.pcadvisor.co.uk/forum/windows-29/windows-10-no-internet-trough-ethernet-4540238/">后来Google到某国外的解决办法</a>，现记录如下。</p>
+<p>说到底WIN10断网的问题还是和驱动有关，先看一下我的有线网卡Broadcom NetLink (TM) Gigabit Ethernet，驱动信息是这样的：</p>
+<p><img alt="bcm-driver-before" loading="lazy" src="/posts/2015-11-13-solution-to-win10s-network-problem/bcm-driver-before.png"></p>
+<p>还是13年的驱动，版本号是15.6.0.14，于是第一想到的是更新驱动。点击驱动右键选更新-&gt;自动搜索更新的驱动程序软件-&gt;提示“已安装适合设备的最佳驱动程序软件”，但这明明不是最新的驱动啊！</p>
+<p><a href="https://www.broadcom.com/support/ethernet-nic-netxtreme-i-desktop-mobile">于是在Broadcom的官网上找到了最新驱动win_b57_x64-17.2.0.2</a>，版本号是17.2.0.2，更新日期2015-10-27，原来这才是最新的驱动。</p>
+<p>（<strong>2018.1.25</strong>更新：上面的地址已失效，<a href="https://www.broadcom.cn/products/ethernet-connectivity/controllers/bcm5720#downloads">最新地址请点击此处</a>，并选择DOWNLOADS→Software→NetLink®/NetXtreme® I Desktop/Mobile/Server (x64)，<a href="/posts/2015-11-13-solution-to-win10s-network-problem/win_b57_x64-17.2.0.2.zip">也可以从本站下载</a>。）</p>
+<p>在安装最新驱动之前，我们需要关闭WIN10的自动更新驱动功能，因为WIN10会认为它的15.6.0.14版本是最新的，在windows update时把实际最新的17.2.0.2版本替换掉。具体做法是在Cortana中搜索“<strong>更改设备安装设置</strong>”并打开，选择否，从不安装来自Windows更新的驱动程序软件，如下。</p>
+<p><img alt="change-device-installation" loading="lazy" src="/posts/2015-11-13-solution-to-win10s-network-problem/change-device-installation.png"></p>
+<p>然后<a href="http://jingyan.baidu.com/article/fea4511a72cb38f7ba912543.html">重启进入安全模式</a>，再次在设备管理器中右键点击网卡驱动，选择更新-&gt;浏览计算机以查找驱动程序软件-&gt;从计算机的设备驱动程序列表中选取-&gt;点击从磁盘安装按钮-&gt;浏览找到你之前在网上下载的最新驱动（*.inf格式）-&gt;选中-&gt;依次确定。刷新之后再次查看驱动信息如下：</p>
+<p><img alt="bcm-driver-after" loading="lazy" src="/posts/2015-11-13-solution-to-win10s-network-problem/bcm-driver-after.png"></p>
+<p>可以看到驱动已经更新到最新的版本了。再次重启进入正常模式，目前用了两天了也没有再断过网。</p>
+<p>其他WIN10驱动问题应该也可以用类似的方法解决。</p>
+<p>（话说我的WIN10偶尔会死机，就是用着用着突然鼠标和键盘完全动不了了，只能强制重启，有谁知道这是怎么回事吗？）</p>
+
 
   </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E9%A9%B1%E5%8A%A8/">驱动</a></li>
+      <li><a href="http://localhost:1313/tags/win10/">Win10</a></li>
     </ul>
 <nav class="paginav">
-  <a class="next" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>公告</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2015-10-31-review-about-shiyigongs-blogs/">
     <span class="title">Next »</span>
     <br>
-    <span>解决Win10间歇性断网的问题</span>
+    <span>读施一公博客有感</span>
   </a>
 </nav>
 
