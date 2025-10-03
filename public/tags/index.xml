@@ -6,8 +6,22 @@
     <description>Recent content in Tags on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 04 Jan 2016 13:56:23 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 04 Jan 2016 16:23:19 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>搜狐</title>
+      <link>http://localhost:1313/tags/%E6%90%9C%E7%8B%90/</link>
+      <pubDate>Mon, 04 Jan 2016 16:23:19 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E6%90%9C%E7%8B%90/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>爬虫</title>
+      <link>http://localhost:1313/tags/%E7%88%AC%E8%99%AB/</link>
+      <pubDate>Mon, 04 Jan 2016 16:23:19 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E7%88%AC%E8%99%AB/</guid>
+      <description></description>
+    </item>
     <item>
       <title>信息检索</title>
       <link>http://localhost:1313/tags/%E4%BF%A1%E6%81%AF%E6%A3%80%E7%B4%A2/</link>
