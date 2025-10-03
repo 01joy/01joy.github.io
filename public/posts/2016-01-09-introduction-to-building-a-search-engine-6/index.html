@@ -5,11 +5,28 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Categories | bitJoy</title>
-<meta name="keywords" content="">
-<meta name="description" content="">
+<title>和我一起构建搜索引擎（六）系统展示 | bitJoy</title>
+<meta name="keywords" content="Flask">
+<meta name="description" content="前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。
+我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。
+这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。
+
+图1. 搜索页面
+
+图2. 新闻详情页面
+由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。
+
+完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
+以下是系列博客：
+和我一起构建搜索引擎（一）简介
+和我一起构建搜索引擎（二）网络爬虫
+和我一起构建搜索引擎（三）构建索引
+和我一起构建搜索引擎（四）检索模型
+和我一起构建搜索引擎（五）推荐阅读
+和我一起构建搜索引擎（六）系统展示
+和我一起构建搜索引擎（七）总结展望">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/categories/">
+<link rel="canonical" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +35,7 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/">
 <noscript>
     <style>
         #theme-toggle,
@@ -74,7 +90,7 @@
     
 </head>
 
-<body class="list" id="top">
+<body class="" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
         document.body.classList.add('dark');
@@ -116,7 +132,7 @@
         <ul id="menu">
             <li>
                 <a href="http://localhost:1313/categories" title="Categories">
-                    <span class="active">Categories</span>
+                    <span>Categories</span>
                 </a>
             </li>
             <li>
@@ -143,30 +159,74 @@
     </nav>
 </header>
 <main class="main">
-<header class="page-header">
-    <h1>Categories</h1>
-</header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="http://localhost:1313/categories/0%E5%92%8C1/">0和1 <sup><strong><sup>11</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">和我一起构建搜索引擎 <sup><strong><sup>6</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/">回忆录 <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/">流水账 <sup><strong><sup>6</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B8%B8%E8%AE%B0/">游记 <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/">随想录 <sup><strong><sup>6</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      和我一起构建搜索引擎（六）系统展示
+    </h1>
+    <div class="post-meta"><span title='2016-01-09 23:32:10 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。</p>
+<p>我们利用开源的<a href="http://flask.pocoo.org/">Flask Web框架</a>搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。</p>
+<p>这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。</p>
+<p><img alt="图1. 搜索页面" loading="lazy" src="/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine1.webp">
+图1. 搜索页面</p>
+<p><img alt="图2. 新闻详情页面" loading="lazy" src="/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine2.webp">
+图2. 新闻详情页面</p>
+<p>由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。</p>
+<hr>
+<p>完整可运行的新闻搜索引擎Demo请看我的Github项目<a href="https://github.com/01joy/news_search_engine">news_search_engine</a>。</p>
+<p>以下是系列博客：</p>
+<p>和我一起构建搜索引擎（一）简介</p>
+<p>和我一起构建搜索引擎（二）网络爬虫</p>
+<p>和我一起构建搜索引擎（三）构建索引</p>
+<p>和我一起构建搜索引擎（四）检索模型</p>
+<p>和我一起构建搜索引擎（五）推荐阅读</p>
+<p>和我一起构建搜索引擎（六）系统展示</p>
+<p>和我一起构建搜索引擎（七）总结展望</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/flask/">Flask</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>公告</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-5/">
+    <span class="title">Next »</span>
+    <br>
+    <span>和我一起构建搜索引擎（五）推荐阅读</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
     </main>
     
 <footer class="footer">
@@ -237,6 +297,53 @@
         }
     })
 
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
 </script>
 </body>
 
