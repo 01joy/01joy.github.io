@@ -151,6 +151,19 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>论文
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-04 11:10:11 +0800 CST'>October 4, 2025</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">公告
     </h2>
   </header>
@@ -179,7 +192,7 @@
 构建索引时，为了降低索引规模，提高算法速度，我们将纯数字词项过滤了，同时忽略了词项大小写。虽然索引规模下降了，但是牺牲了搜索引擎的正确率。
 构建索引时，采用了jieba的精确分词模式，比如句子“我来到北京清华大学”的分词结果为“我/ 来到/ 北京/ 清华大学”，“清华大学”作为一个整体被当作一个词项，如果搜索关键词是“清华”，则该句子不能匹配，但显然这个句子和“清华”相关。所以后续可以采用结巴的搜索引擎分词模式，虽然索引规模增加了，但能提升搜索引擎的召回率。
 在推荐阅读模块，虽然进行了维度约减，但是当数据量较大时（数十万条新闻），得到的文档词项矩阵也是巨大的，会远远超过现有PC的内存大小。所以可以先对新闻进行粗略的聚类，再在类内计算两两cosine相似度，得到值得推荐的新闻。
-在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数$k_1$和$k_2$，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。
+在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数\(k_1\)和\(k_2\)，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。
 完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
 以下是系列博客：
 和我一起构建搜索引擎（一）简介
@@ -367,25 +380,6 @@ $$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times 
   </div>
   <footer class="entry-footer"><span title='2016-01-04 12:42:21 +0800 CST'>January 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 认真你就赢了" href="http://localhost:1313/posts/2016-01-04-attitude-is-everything/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">2016新年快乐
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>2015年过得好快，梳理一下，2015年的时间线大概是这样的：
-3月来北京计算所做毕设→5月返回武大修改论文→5月30公开答辩→6月毕业季→7月回北京计算所→8月回家陪父母→9月国科大开学→持续高强度的学习→2016元旦还在图书馆研究NPC问题。
-2015年给我的总体感受是很忙，但忙的事情都很琐碎，并没有什么大的里程碑事件，不过以下三件事情我认为值得一提。
-本科四年修成正果，研究生三年新的起航 买了一辆属于自己的山地车，1k2，虽然是二手的，但足够我骑着它去看世界了:-) 也许是在城市里待久了，我特别享受这种亲近大自然的感觉，蓝天、白云、草原、大海这些美景永远也看不够。
-在国科大认识了两个好基友，虽然都是单身汪，但至少想看电影吃火锅的时候还可以有个伴。（此处居然少了三人合照） 2015年共写了14篇博客，包含3篇技术博客，bitjoy.net 历史累计PV1039，UV520，IP502。
-展望2016年，大的方向基本都确定了，目标如下：
-完成国科大下学期的课程任务 接手pLink软件 刷完LeetCode所有题目 读10本书 去电影院看10场电影（2015下半年在怀柔村里没看一部电影/(ㄒoㄒ)/~~） 改正坐姿 大家一起见证！
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-03 12:25:50 +0800 CST'>January 3, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 2016新年快乐" href="http://localhost:1313/posts/2016-01-03-2016-happy-new-year/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
