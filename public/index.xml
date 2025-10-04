@@ -6,8 +6,51 @@
     <description>Recent content on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 15 Aug 2025 22:03:06 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 04 Oct 2025 11:10:11 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</title>
+      <link>http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/</link>
+      <pubDate>Sat, 04 Oct 2025 11:10:11 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/mme-sid-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs&lt;/li&gt;
+&lt;li&gt;作者单位：香港城市大学&amp;amp;腾讯&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2509.02017&#34;&gt;https://arxiv.org/pdf/2509.02017&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：CIKM 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;LLM4SR的基本范式如下，即用LLM直接来做搜推的范式（这种方式在学术界常见，但在工业界不常见）。由于LLM的输入词表范围是有限的（通常比较小），因此其token emb dim通常比较大，比如2048或者4096；而搜推场景的item量级很大，而且在不断更新，因此工业界经典的id-based的搜推模型的item emb dim通常比较小，比如64或128。经典的id-based的搜推模型能比较好地学习到搜推场景的协同信号，为了让LLM模型也能感知这种信息，LLM4SR范式通常会先预训练一个id-based的经典搜推模型，然后将其中的item id emb通过下图的Linear Projection的映射层，映射到LLM token emb的空间，让LLM也能感知搜推的协同信号。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/E4SRec.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上述LLM4SR范式存在两个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;维度坍缩&lt;/strong&gt;：id-based训出来的id emb dim比较小（如64），LLM token emb dim比较大（如4096），在由id emb通过Linear Projection映射到toen emb的过程中，虽然64映射到4096空间了，但扩维后的矩阵存在低秩问题，即还是只利用了4096中的64维的空间。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;论文中，作者分两种情况进行了分析，如果Linear Projection只是一个线性层的话，通过公式推导能得出上述结论；如果Linear Projection包含非线性变换，作者通过实验分析也发现了维度坍缩的现象。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;灾难遗忘&lt;/strong&gt;：除了使用id-based模型产出的id emb，LLM4SR也常用多模态模型产出item emb表征，然后转换成semantic id输入到LLM4SR中。在这种情况下，产出的semantic id通过会遗忘多模态item emb的信息，导致下游LLM4SR的效果不佳。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;论文中，作者用公式9来衡量semantic id保留pretrain多模态emb的信息量。具体来说，如果行为流中的商品序列是{A,B,C,D}，target item是E。使用pretrain多模态emb能计算出E和A~D的相似度，例如相似度&amp;lt;E,A&amp;gt; &amp;gt; &amp;lt;E,B&amp;gt;。如果将pretrain多模态emb转换成semantic id，然后由semantic id恢复出新的A~E的emb之后，再计算E和A~D的相似度，如果仍然有&amp;lt;E,A&amp;gt; &amp;gt; &amp;lt;E,B&amp;gt;，则认为一致（concordant），否则不一致（disconcordant）。这个分析方法挺好的，通过这个指标能估算出转换成semantic id之后，仍然保留原有pretrain多模态emb对搜推场景的&lt;strong&gt;序&lt;/strong&gt;关系的保留程度。&lt;/li&gt;
+&lt;li&gt;作者发现，转换成semantic id之后，信息只保留了37.14%；进一步，如果semantic id是在下游任务中端到端训练的，则信息只保留了5.5%，也就是说94.5%的pretrain emb的序的信息都丢掉了，也就是灾难遗忘。
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/mme-sid-formula9.png&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;semantic-id构建方法&#34;&gt;Semantic id构建方法&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;3套emb来源，一套id-based经典搜推模型产出的包含协同信号的emb，另外两套是LLM2CLIP产出的多模态文本和图片emb。作者提到传统CLIP对长文本处理能力较弱，所以升级到LLM2CLIP，能更好地处理长文本。&lt;/li&gt;
+&lt;li&gt;Semantic id构建方法是经典的RQ-VAE的方法，但有如下两个改进点：&lt;/li&gt;
+&lt;li&gt;将emb的重构loss由MSE升级成MMD (maximum mean discrepancy)，MSE是计算原始emb和重构emb的欧式距离的误差，而MMD是计算两个分布的diff，实验表明能MMD比MSE能保留更多的pretrain多模态emb信息（即上述公式9），保留44.36%&lt;/li&gt;
+&lt;li&gt;对量化后的emb做了对齐，因为LLM2CLIP本身进行了图文模态的对齐，所以文中只新增了id emb分别和文本、图片模态的对齐&lt;/li&gt;
+&lt;li&gt;此外，还有一点论文没提但可能和常规RQ-VAE不同之处，就是原始emb在进行RQ-VAE之前，有一个Encoder升维的操作，在重构loss前对应有一个Decoder降维的操作，而semantic id量化恢复emb是Decoder之前的那个。这一升一降，估计也有助于缓解维度坍缩。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/mme-sid-fig2.png&#34;&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>公告</title>
       <link>http://localhost:1313/posts/2025-08-15-announcement/</link>
