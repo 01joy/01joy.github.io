@@ -189,16 +189,16 @@ if __name__ == "__main__":
 
 以下是系列博客：
 
-和我一起构建搜索引擎（一）简介
+[和我一起构建搜索引擎（一）简介](https://bitjoy.net/posts/2016-01-04-introduction-to-building-a-search-engine-1/)
 
-和我一起构建搜索引擎（二）网络爬虫
+[和我一起构建搜索引擎（二）网络爬虫](https://bitjoy.net/posts/2016-01-04-introduction-to-building-a-search-engine-2/)
 
-和我一起构建搜索引擎（三）构建索引
+[和我一起构建搜索引擎（三）构建索引](https://bitjoy.net/posts/2016-01-07-introduction-to-building-a-search-engine-3/)
 
-和我一起构建搜索引擎（四）检索模型
+[和我一起构建搜索引擎（四）检索模型](https://bitjoy.net/posts/2016-01-07-introduction-to-building-a-search-engine-4/)
 
-和我一起构建搜索引擎（五）推荐阅读
+[和我一起构建搜索引擎（五）推荐阅读](https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-5/)
 
-和我一起构建搜索引擎（六）系统展示
+[和我一起构建搜索引擎（六）系统展示](https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-6/)
 
-和我一起构建搜索引擎（七）总结展望
+[和我一起构建搜索引擎（七）总结展望](https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-7/)

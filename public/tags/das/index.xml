@@ -13,7 +13,62 @@
       <link>http://localhost:1313/posts/2025-10-05-das-paper-reading/</link>
       <pubDate>Sun, 05 Oct 2025 20:26:43 +0800</pubDate>
       <guid>http://localhost:1313/posts/2025-10-05-das-paper-reading/</guid>
-      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-paper-cover.png&#34;&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System&lt;/li&gt;
+&lt;li&gt;作者单位：快手&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2508.10584&#34;&gt;https://arxiv.org/pdf/2508.10584&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：CIKM 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;Semantic id生产时，要么没有和协同信号对齐（fig2(1)），要么是两阶段对齐方式（fig2(2)）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;例如&lt;a href=&#34;https://arxiv.org/abs/2405.07314&#34;&gt;LETTER&lt;/a&gt;先生成协同emb，然后和semantic id对齐&lt;/li&gt;
+&lt;li&gt;或者例如&lt;a href=&#34;https://arxiv.org/pdf/2411.11739&#34;&gt;QARM&lt;/a&gt;，先协同对齐emb，再生产semantic id&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;把协同对齐和生产semantic id分成两个阶段，天然有信息损失，不是最优的。本文的目的就是把生产协同emb，以及semantic id的协同对齐放到一个模型中联合训练完成，尽量减少信息损失（fig2(3)）。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-fig2.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;主模型&#34;&gt;主模型&lt;/h1&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-fig3.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;主模型如上图所示，中间的ICDM是user和item的双塔模型，用于学习user和item的协同id-based emb；两边分别是生产user和item的semantic id的量化模型。&lt;/p&gt;
+&lt;p&gt;中间的ICDM就是经典的召回双塔模型，使用点击样本进行训练，唯一不同的是，在user和item塔都有流行度去偏模块，用于学习user和item的无偏emb，后续user和item的semantic id协同对齐用的也是无偏的emb。&lt;/p&gt;
+&lt;p&gt;两边分别是user和item的semantic id量化模型，两者比较类似，以item为例：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先把item的各种信息，如title、desc、ocr等信息用文本构造成prompt，输入到LLM，借助LLM的summary和reasoning能力，产出item的详细描述&lt;/li&gt;
+&lt;li&gt;然后把LLM产出的描述再输入到一个预训练的embedding模型PLM，文中用的是bge m3模型，得到item emb&lt;/li&gt;
+&lt;li&gt;后续就是标准的RQ-VAE过程了&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;需要注意的是，上述前两步，分别用到了LLM和PLM两个大模型，而且看图上这两个模型都是freeze的，也就是说并不微调这两个大模型。后续协同对齐用的emb是RQ-VAE重构emb的中间层结果，即图中的item quantized emb。&lt;/p&gt;
+&lt;p&gt;semantic id的协同对齐方面，有三大类对齐任务：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;U2I对齐：量化user emb和协同item emb对齐、量化item emb和协同user emb对齐&lt;/li&gt;
+&lt;li&gt;U2U和I2I对齐：量化user emb和协同user emb对齐、量化item emb和协同item emb对齐&lt;/li&gt;
+&lt;li&gt;U2U和I2I的共现对齐：点击相同item的两个量化user emb对齐、同一个user点击的两个item的量化item emb对齐&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;由于fig3中的协同模型和semantic id模型是联合训练的，总共有3大类loss：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;中间的ICDM的双塔召回模型的loss&lt;/li&gt;
+&lt;li&gt;两边的产semantic id的loss&lt;/li&gt;
+&lt;li&gt;三个模块的对齐loss&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;评论&#34;&gt;评论&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;可借鉴
+&lt;ul&gt;
+&lt;li&gt;把semantic id的生产和协同信号对齐统一成一阶段的模式，信息损失更少&lt;/li&gt;
+&lt;li&gt;中间的ICDM模型生产协同emb时进行了去偏，协同对齐的时候用的是去偏的emb，这是其他论文很少提到的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可改进
+&lt;ul&gt;
+&lt;li&gt;太复杂了！3个模块，3大类loss，每类loss又有很多个小loss，总loss数量加起来有十多个。。。&lt;/li&gt;
+&lt;li&gt;任务太多，各种去偏、对齐loss，真的不会互相影响吗？&lt;/li&gt;
+&lt;li&gt;中间的ICDM模块有必要吗？我理解ICDM本质是为了训练产出协同emb，但是因为训练样本本身是点击样本，样本本身已经包含了搜推场景的协同信号，也就是ICDM本身没必要存在了，直接用相同的样本训练两边的semantic id量化模型就行了，也能实现在训练semantic id的过程中，完成协同信号的对齐&lt;/li&gt;
+&lt;li&gt;生产semantic id的emb来自LLM和PLM，但是这两个大模型都是freeze的，如果把这两个模型也sft，效果会不会更好？其实我原本以为的一阶段就是这样的，这也是我在&lt;a href=&#34;https://bitjoy.net/posts/2025-10-04-mme-sid-paper-reading/&#34;&gt;【论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs】&lt;/a&gt;中提到的一阶段方法。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
     </item>
   </channel>
 </rss>
