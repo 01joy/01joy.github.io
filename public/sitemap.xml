@@ -3,27 +3,45 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2025-10-04T11:10:11+08:00</lastmod>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/</loc>
-    <lastmod>2025-10-04T11:10:11+08:00</lastmod>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/</loc>
+    <loc>http://localhost:1313/categories/paper-reading/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/qarm/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/semantic-id/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E5%BF%AB%E6%89%8B/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2025-10-04-qarm-paper-reading/</loc>
+    <lastmod>2025-10-04T18:24:40+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/llm/</loc>
     <lastmod>2025-10-04T11:10:11+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/mme-sid/</loc>
     <lastmod>2025-10-04T11:10:11+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/paper-reading/</loc>
-    <lastmod>2025-10-04T11:10:11+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2025-10-04T11:10:11+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/semantic-id/</loc>
-    <lastmod>2025-10-04T11:10:11+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/</loc>
     <lastmod>2025-10-04T11:10:11+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2025-08-15-announcement/</loc>
@@ -60,9 +78,6 @@
     <lastmod>2016-01-09T22:34:56+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-5/</loc>
-    <lastmod>2016-01-09T22:34:56+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/</loc>
     <lastmod>2016-01-09T22:34:56+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/bm25/</loc>

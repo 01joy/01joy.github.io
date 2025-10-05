@@ -3,7 +3,7 @@ date: '2025-10-04T11:10:11+08:00'
 draft: false
 title: '论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs'
 categories: ["Paper Reading"]
-tags: ["Semantic ID","MME-SID","LLM","推荐系统","多模态"]
+tags: ["Semantic ID","MME-SID","LLM","推荐系统","多模态","CIKM"]
 ---
 ![](mme-sid-paper-cover.png)
 
