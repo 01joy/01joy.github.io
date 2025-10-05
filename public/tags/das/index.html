@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>CIKM | bitJoy</title>
+<title>DAS | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/tags/cikm/">
+<link rel="canonical" href="http://localhost:1313/tags/das/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/cikm/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/cikm/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/das/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/das/">
 <noscript>
     <style>
         #theme-toggle,
@@ -145,7 +145,7 @@
 <main class="main"> 
 <header class="page-header">
   <h1>
-    CIKM
+    DAS
   </h1>
 </header>
 
@@ -160,43 +160,6 @@
   </div>
   <footer class="entry-footer"><span title='2025-10-05 20:26:43 +0800 CST'>October 5, 2025</span>&nbsp;·&nbsp;0 min</footer>
   <a class="entry-link" aria-label="post link to 论文阅读：DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System" href="http://localhost:1313/posts/2025-10-05-das-paper-reading/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">论文阅读：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>
-基本信息 论文标题：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou 作者单位：快手 论文链接：https://arxiv.org/pdf/2411.11739 来源：CIKM 2025 Motivation：论文要解决的问题是什么 多模态emb在搜推场景应用时通常采用如下图的两阶段方式，先预训练多模态emb，然后作为一个冻结特征放到搜推模型中。这种方式存在2个问题：
-表征不对齐：多模态emb预训练的任务通常是图片分类或者文本的MLM，和下游搜推任务不对齐 表征不更新：多模态emb在搜推任务中作为冻结特征，没有更新 本文的方法就是想要解决上述2个问题。 对齐搜推任务的多模态emb预训练 为了解决多模态emb表征不对齐的问题，本文提出的多模态emb预训练任务直接对齐搜推场景，使用U2I和I2I召回模型，挖掘出相似item pair，然后通过对比学习微调多模态大模型。
-具体来说，通过U2I和I2I模型，能够拿到item emb；然后用每一个target item emb去行为流中检索出最相似的商品，作为trigger item emb。&lt;trigger, target&gt;构成一对正样本，然后进行对比学习训练。
-通过召回模型构造的训练样本，和搜推场景的协同信号对齐了，解决了开头提到的第一个问题，即表征不对齐的问题。
-Semantic id生产方法 Semantic id的生产方法如上图右半部分所示，有两种方式：
-VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然后任意来一个item emb，通过对底池emb进行KNN搜索，找出top-k相似商品，假设是(a,b,…,k)，则VQ编码的semantic id就是(a,b,…,k)。文中取k=25，感觉挺大的。。。 RQ-Kmeans：对圈定的N个item emb不断进行Kmeans聚类、求残差、残差继续Kmeans聚类的过程。文中取迭代次数为L=6，但是没说每次聚到多少个类。 注意：文中的RQ-Kmeans方法和RQ-VAE还不一样，RQ-Kmeans没有训练过程，也没有重构loss，纯粹是每次进行聚类，然后选聚类中心作为码本的过程。文中也没有对比过为啥不用RQ-VAE。
-产出两套semantic id之后，直接在下游排序任务中进行端到端更新，解决开头提到的表征不更新的问题。具体建模方法比较常规，不是本文的重点，略讲。
-评论 可借鉴 多模态emb预训练任务是i2i的，直接和下游搜推任务对齐 semantic id有两种产出方式，VQ和RQ-Kmeans，尽可能多地保留原始多模态emb的信息 可改进 多模态emb预训练和下游任务对齐，在2025年不算新鲜事了，常规操作。而且文中i2i的构造过程依赖U2I和I2I召回模型，有外部依赖，不够漂亮 VQ的方法，k=25这也太长了吧，相当于一个小型行为流了，会导致下游任务的特征处理更复杂 为什么用RQ-Kmeans而不是RQ-VAE，没有任何说明与对比 从pretrain emb量化成semantic id的过程中，存在严重的信息丢失，这在Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs论文中有讨论 </p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-04 18:24:40 +0800 CST'>October 4, 2025</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 论文阅读：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou" href="http://localhost:1313/posts/2025-10-04-qarm-paper-reading/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>
-基本信息 论文标题：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs 作者单位：香港城市大学&amp;腾讯 论文链接：https://arxiv.org/pdf/2509.02017 来源：CIKM 2025 Motivation：论文要解决的问题是什么 LLM4SR的基本范式如下，即用LLM直接来做搜推的范式（这种方式在学术界常见，但在工业界不常见）。由于LLM的输入词表范围是有限的（通常比较小），因此其token emb dim通常比较大，比如2048或者4096；而搜推场景的item量级很大，而且在不断更新，因此工业界经典的id-based的搜推模型的item emb dim通常比较小，比如64或128。经典的id-based的搜推模型能比较好地学习到搜推场景的协同信号，为了让LLM模型也能感知这种信息，LLM4SR范式通常会先预训练一个id-based的经典搜推模型，然后将其中的item id emb通过下图的Linear Projection的映射层，映射到LLM token emb的空间，让LLM也能感知搜推的协同信号。
-上述LLM4SR范式存在两个问题：
-维度坍缩：id-based训出来的id emb dim比较小（如64），LLM token emb dim比较大（如4096），在由id emb通过Linear Projection映射到toen emb的过程中，虽然64映射到4096空间了，但扩维后的矩阵存在低秩问题，即还是只利用了4096中的64维的空间。
-论文中，作者分两种情况进行了分析，如果Linear Projection只是一个线性层的话，通过公式推导能得出上述结论；如果Linear Projection包含非线性变换，作者通过实验分析也发现了维度坍缩的现象。 灾难遗忘：除了使用id-based模型产出的id emb，LLM4SR也常用多模态模型产出item emb表征，然后转换成semantic id输入到LLM4SR中。在这种情况下，产出的semantic id通过会遗忘多模态item emb的信息，导致下游LLM4SR的效果不佳。
-论文中，作者用公式9来衡量semantic id保留pretrain多模态emb的信息量。具体来说，如果行为流中的商品序列是{A,B,C,D}，target item是E。使用pretrain多模态emb能计算出E和A~D的相似度，例如相似度&lt;E,A&gt; &gt; &lt;E,B&gt;。如果将pretrain多模态emb转换成semantic id，然后由semantic id恢复出新的A~E的emb之后，再计算E和A~D的相似度，如果仍然有&lt;E,A&gt; &gt; &lt;E,B&gt;，则认为一致（concordant），否则不一致（disconcordant）。这个分析方法挺好的，通过这个指标能估算出转换成semantic id之后，仍然保留原有pretrain多模态emb对搜推场景的序关系的保留程度。 作者发现，转换成semantic id之后，信息只保留了37.14%；进一步，如果semantic id是在下游任务中端到端训练的，则信息只保留了5.5%，也就是说94.5%的pretrain emb的序的信息都丢掉了，也就是灾难遗忘。 Semantic id构建方法 3套emb来源，一套id-based经典搜推模型产出的包含协同信号的emb，另外两套是LLM2CLIP产出的多模态文本和图片emb。作者提到传统CLIP对长文本处理能力较弱，所以升级到LLM2CLIP，能更好地处理长文本。 Semantic id构建方法是经典的RQ-VAE的方法，但有如下两个改进点： 将emb的重构loss由MSE升级成MMD (maximum mean discrepancy)，MSE是计算原始emb和重构emb的欧式距离的误差，而MMD是计算两个分布的diff，实验表明能MMD比MSE能保留更多的pretrain多模态emb信息（即上述公式9），保留44.36% 对量化后的emb做了对齐，因为LLM2CLIP本身进行了图文模态的对齐，所以文中只新增了id emb分别和文本、图片模态的对齐 此外，还有一点论文没提但可能和常规RQ-VAE不同之处，就是原始emb在进行RQ-VAE之前，有一个Encoder升维的操作，在重构loss前对应有一个Decoder降维的操作，而semantic id量化恢复emb是Decoder之前的那个。这一升一降，估计也有助于缓解维度坍缩。 ...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-04 11:10:11 +0800 CST'>October 4, 2025</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/"></a>
 </article>
     </main>
     
