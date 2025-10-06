@@ -52,6 +52,7 @@ LLM4SR的基本范式如下，即用LLM直接来做搜推的范式（这种方�
 # 评论
 
 * 可借鉴
+    * 论文的分析方法值得借鉴，例如对维度坍缩的推理分析、灾难遗忘的量化分析等
     * semantic id训练时的MMD loss缓解灾难遗忘
     * semantic id emb在下游应用时，使用训练的codebook emb进行初始化，而不是随机初始化，能缓解灾难遗忘
     * 使用多套emb及semantic id，缓解维度坍缩
