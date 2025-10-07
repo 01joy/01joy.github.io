@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>GRID on bitJoy</title>
+    <link>http://localhost:1313/tags/grid/</link>
+    <description>Recent content in GRID on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 07 Oct 2025 12:09:43 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/grid/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>论文阅读：Generative Recommendation with Semantic IDs: A Practitioner’s Handbook</title>
+      <link>http://localhost:1313/posts/2025-10-07-grid-paper-reading/</link>
+      <pubDate>Tue, 07 Oct 2025 12:09:43 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-07-grid-paper-reading/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
