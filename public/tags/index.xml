@@ -6,8 +6,36 @@
     <description>Recent content in Tags on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 07 Oct 2025 12:09:43 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 08 Oct 2025 23:31:54 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CLIP</title>
+      <link>http://localhost:1313/tags/clip/</link>
+      <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
+      <guid>http://localhost:1313/tags/clip/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>RecSys</title>
+      <link>http://localhost:1313/tags/recsys/</link>
+      <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
+      <guid>http://localhost:1313/tags/recsys/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>VL-CLIP</title>
+      <link>http://localhost:1313/tags/vl-clip/</link>
+      <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
+      <guid>http://localhost:1313/tags/vl-clip/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>多模态</title>
+      <link>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</link>
+      <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</guid>
+      <description></description>
+    </item>
     <item>
       <title>CIKM</title>
       <link>http://localhost:1313/tags/cikm/</link>
@@ -55,13 +83,6 @@
       <link>http://localhost:1313/tags/psrq/</link>
       <pubDate>Mon, 06 Oct 2025 21:01:25 +0800</pubDate>
       <guid>http://localhost:1313/tags/psrq/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>多模态</title>
-      <link>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</link>
-      <pubDate>Mon, 06 Oct 2025 21:01:25 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</guid>
       <description></description>
     </item>
     <item>
