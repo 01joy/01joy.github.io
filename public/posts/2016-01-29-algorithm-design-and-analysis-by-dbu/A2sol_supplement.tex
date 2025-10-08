@@ -1,0 +1,166 @@
+% !Mode:: "TeX:UTF-8"
+\documentclass[a4paper,12pt]{article}
+
+%插入超链接，并且去除超链接的颜色下划线等特性
+\usepackage[hidelinks]{hyperref}
+
+%该宏包可以添加伪代码CLRS《算法导论》**第三版**模式
+%clrscode3e.sty放在项目根目录下即可
+\usepackage{clrscode3e}
+
+%插入数学公式
+\usepackage{amsmath}
+
+%中文包
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}
+
+%设置页边距
+\usepackage[top=1in,bottom=0.8in,left=1.1in,right=1in]{geometry}
+
+\usepackage{xcolor}
+
+%为了插入代码
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\itshape\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4
+}
+
+\lstdefinestyle{default}{
+    commentstyle=\itshape,
+    numberstyle=\tiny,
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4
+}
+
+\lstset{style=default}
+
+%首段缩进
+\usepackage{indentfirst}
+
+
+\title{Assignment 2 Supplement\\Algorithm Design and Analysis}
+
+\author{\href{http://bitjoy.net}{bitjoy.net}}
+\date{January 21, 2016}
+
+\begin{document}
+
+\maketitle
+
+\section*{3\quad Partition}
+
+设$dp[i][j]$表示$s[i,...,j]$是否为回文串，$cut[j]$表示$s[1,...,j]$需要多少刀才能切成回文串，则我们需要求$cut[n]$。
+
+对于$cut[j]$，切第一刀的时候，我们尝试前面$j$个切割位点，比如我们尝试切第$i$点，则$s[1,...,j]$被分成了$s[1,...,i-1]$和$s[i,...,j]$，如果$s[i,...,j]$为回文串，则$s[i,...,j]$不需要再切了，又因为$cut[i-1]$我们之前已经算过了，所以在$i$处切一刀，有$cut[j]=cut[i-1]+1$。尝试所有的切割位点$i$，找最小的$cut[j]$。
+
+如果发现$i=1$的时候$s[i,...,j]$为回文串，则$s[1,...,j]$不需要再切了，所以$cut[j]=0$。
+
+$DP$转移公式如下：
+\[
+cut[j]=\min_{i\in \{i~|~s[i,...,j]~is~palindromic\}}\{cut[j],cut[i-1]+1\}
+\]
+
+因为当$i==j$时，只有一个字母，$s[j]$一定为回文，所以至少有一个$i$可满足上式。
+
+\begin{codebox}
+\Procname{$\proc{PARTITION}(s)$}
+\li n = length(s)
+\li dp[n][n] = false
+\li \For i = 1 \To n
+    \Do
+\li dp[i][i] = true
+    \End
+\li \For j = 1 \To n
+    \Do
+\li cut[j] = j // set maximum \# of cut
+\li \For i = 1 \To j
+    \Do
+\li \If (s[i] == s[j]) \&\& (j - i <= 1 || dp[i + 1][j - 1])
+    \Then
+\li dp[i][j] = true
+\li \If i > 1
+    \Then
+\li cut[j] = min(cut[j],cut[i - 1] + 1)
+\li \ElseIf i == 1
+    \Then
+\li cut[j] = 0
+    \End
+    \End
+    \End
+    \End
+\li \Return cut[n]
+\end{codebox}
+
+时间复杂度为$O(n^2)$。
+
+\section*{4\quad Subsequence Counting}
+
+设$dp[i][j]$表示由$S[1,...,i]$变到$T[1,...,j]$有多少种subsequence方法。此时我们有两种选择，如果$S[i]\neq T[j]$，则等价于由$S[1,...,i-1]$变到$T[1,...,j]$，所以$dp[i][j]=dp[i-1][j]$；如果$S[i]=T[j]$，则还可以由$S[1,...,i-1]$变到$T[1,...,j-1]$，所以$dp[i][j]+=dp[i-1][j-1]$。
+
+DP转移公式如下：
+
+\[
+dp[i][j]=
+\begin{cases}
+dp[i-1][j] & \text{if $S[i]\neq T[j]$}\\
+dp[i-1][j]+dp[i-1][j-1] & \text{if $S[i]=T[j]$}\\
+\end{cases}
+\]
+
+初始值$dp[i][0]=1$，因为由任意字符串转换为空字符串只有一种方法，就是把$S$中的字符全删了；$dp[0][j]=0$，因为空字符串的subsequence不可能是是某个非空字符串。
+
+\begin{codebox}
+\Procname{$\proc{SUBSEQ-COUNTING}(S,T)$}
+\li n = length(S); m = length(T)
+\li dp[n][m] = 0
+\li \For i = 0 \To n
+    \Do
+\li dp[i][0]=1
+    \End
+\li \For i = 1 \To n
+    \Do
+\li \For j = 1 \To m
+    \Do
+\li dp[i][j] = dp[i-1][j]
+\li \If S[i] == T[j]
+    \Then
+\li dp[i][j] += dp[i-1][j-1]
+    \End
+    \End
+    \End
+\li \Return dp[n][m]
+\end{codebox}
+
+时间复杂度为$O(nm)$。
+\end{document} 
