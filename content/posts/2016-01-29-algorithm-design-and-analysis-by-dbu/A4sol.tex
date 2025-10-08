@@ -1,0 +1,329 @@
+% !Mode:: "TeX:UTF-8"
+% 请注意，此文件的编码方式一定要设置为UTF-8 无DOM模式
+% 否则中文显示乱码！
+% 可以用notepad++ 或ultraedit查看/更改文件编码方式
+
+\documentclass[a4paper,12pt]{article}
+
+%插入超链接，并且去除超链接的颜色下划线等特性
+\usepackage[hidelinks]{hyperref}
+
+%该宏包可以添加伪代码CLRS《算法导论》**第三版**模式
+%clrscode3e.sty放在项目根目录下即可
+\usepackage{clrscode3e}
+
+%插入数学公式
+\usepackage{amsmath}
+
+%中文包
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}
+
+%设置页边距
+\usepackage[top=1in,bottom=0.8in,left=1.1in,right=1in]{geometry}
+
+\usepackage{xcolor}
+
+%为了插入代码
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\itshape\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4
+}
+
+\lstdefinestyle{default}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\itshape,
+    numberstyle=\tiny,
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4
+}
+
+\lstset{style=mystyle}
+
+%为了插入图片
+%\usepackage{graphicx}
+
+%首段缩进
+\usepackage{indentfirst}
+
+\title{Assignment 4\\Algorithm Design and Analysis}
+
+\author{\href{http://bitjoy.net}{bitjoy.net}}
+\date{November 27, 2015}
+
+\begin{document}
+
+\maketitle
+
+I choose problem 1,2,4,7.
+
+\section*{1\quad Linear-inequality feasibility}
+\subsection*{\textnormal{1.1\quad Linear programming => linear-inequality feasibility problem}}
+
+Suppose we have an algorithm for linear programming:
+
+\[
+\begin{array}{rrrrrrrrl}
+ \min & \mathbf{c^T x }&   \\
+ s.t. & \mathbf{A x \leq  b} &  \\ \tag{1}
+      & \mathbf{x \geq 0} & \\
+\end{array} \nonumber
+\]
+
+We just change the objective in (1) like this:
+
+\[
+\begin{array}{rrrrrrrrl}
+ \min & \mathbf{0}&   \\
+ s.t. & \mathbf{A x \leq  b} &  \\ \tag{2}
+      & \mathbf{x \geq 0} & \\
+\end{array} \nonumber
+\]
+
+and run linear programming again. If (2) has optimal solution, then linear-inequality
+
+\[
+\begin{array}{rrrrrrrrl}
+& \mathbf{A x \leq  b} &  \\ \tag{3}
+& \mathbf{x \geq 0} & \\
+\end{array} \nonumber
+\]
+
+is feasible, otherwise infeasible. (1) only costs polynomial time.
+
+\subsection*{\textnormal{1.2\quad Linear-inequality feasibility => linear programming}}
+
+Suppose we can get the feasible solution of primal problem and its dual problem, say a and b, but neither is optimal(c). As we know, the optimal solution of primal problem must be between these two values, say a>c>b. Then we get the median(m) of a and b, and add an inequality obj>m. If new inequality is feasible, then optimal should be [m,a], otherwise [b,m]. We check feasibility of new inequality recursively until the interval is small enough.
+
+\section*{2\quad Airplane Landing Problem}
+Let $x_1,x_2,...,x_n$ be the exact landing time of each airplane, the LP formulation of this problem should be:
+\[
+\begin{array}{rcl}
+\max & \min_{i=2...n} (x_i-x_{i-1}) &   \\ \tag{4}
+s.t. & s_i \leq x_i \leq t_i & $for $i$ in 1...n$\\
+\end{array} \nonumber
+\]
+
+According to Robert Fourer's book \emph{Optimization Models}\footnote{\url{http://www.4er.org/CourseNotes/Book\%20A/A-III.pdf}}, (4) is equivalent to
+
+\[
+\begin{array}{rcl}
+\max & z\\
+s.t. & z \leq x_i-x_{i-1} &   $for $i$ in 2...n$\\ \tag{5}
+     & s_i \leq x_i \leq t_i & $for $i$ in 1...n$\\
+\end{array} \nonumber
+\]
+
+For the example in problem description, if the time window of landing three airplanes are [1,60], [80,100] and [120,140], use GLPK to solve it:
+
+\begin{lstlisting}
+var x1 >= 1, <=60;
+var x2 >= 80, <= 100;
+var x3 >=120, <=140;
+var z;
+maximize gap: z;
+s.t. gap1: z<=x2-x1;
+s.t. gap2: z<=x3-x2;
+end;
+\end{lstlisting}
+
+The optimal result is $z=60$ and $x_1=1, x_2=80, x_3=140$. Thus, they land at 10:00, 11:20, 12:20 respectively.
+
+\section*{4\quad Gas Station Placement}
+
+Let $x_1,x_2,...,x_n$ be the place of each gas station, as $d_1,d_2,...,d_n$ and $r$ have been given, we can get the LP formulation like this:
+
+\[
+\begin{array}{rcl}
+\min & \max_{i=2...n} (x_i-x_{i-1}) &   \\ \tag{6}
+s.t. & |x_i-d_i|\leq r & $for $i$ in 1...n$\\
+\end{array} \nonumber
+\]
+
+Similarly, (6) is equivalent to
+
+\[
+\begin{array}{rcl}
+\min & z\\
+s.t. & z\geq x_i-x_{i-1} & $for $i$ in 2...n$  \\ \tag{7}
+     & |x_i-d_i|\leq r & $for $i$ in 1...n$\\
+\end{array} \nonumber
+\]
+
+\section*{7\quad Simplex Algorithm}
+
+Consider the following linear program in standard form:
+
+\[
+\begin{array}{rrrrrrrrl}
+ \max & \mathbf{c^T x }&   \\
+ s.t. & \mathbf{A x \leq  b} &  \\ \tag{8}
+      & \mathbf{x \geq 0} & \\
+\end{array} \nonumber
+\]
+
+I have implemented the Simplex Algorithm in Python 3 according to Chapter 29 of \emph{Introduction to Algorithms}:
+
+\begin{lstlisting}[language=python]
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov 26 18:44:28 2015
+
+@author: czl
+"""
+
+import numpy as np
+
+class SIMPLEX:
+    m = 0
+    n = 0
+
+    def __init__(self):
+        pass
+
+    def INITIALIZE(self, A, b, c):
+        k = b.argmin()
+        if b[k] >= 0: # Note, I only implemented the easy case.
+            AA = np.zeros((self.m + self.n + 1, self.m + self.n + 1))
+            bb = np.array([0.0] * (self.m + self.n + 1)) # 0.0 for float64
+            cc = np.array([0.0] * (self.m + self.n + 1)) # 0.0 for float64
+            AA[self.n + 1 : self.n + self.m + 1, 1 : self.n + 1] = A
+            bb[self.n + 1 : self.n + self.m + 1] = b
+            cc[1 : self.n + 1] = c
+            return(np.arange(1, self.n + 1, 1), np.arange(self.n + 1, self.n + self.m + 1, 1), AA, bb, cc, 0)
+
+    def PIVOT(self, N, B, A, b, c, v, l, e):
+        AA = np.zeros((self.m + self.n + 1, self.m + self.n + 1))
+        b[e] = b[l] / A[l][e]
+        for j in N:
+            if j != e:
+                AA[e][j] = A[l][j] / A[l][e]
+        AA[e][l] = 1 / A[l][e]
+        for i in B:
+            if i != l:
+                b[i] = b[i] - A[i][e] * b[e]
+                for j in N:
+                    if j != e:
+                        AA[i][j] = A[i][j] - A[i][e] * AA[e][j]
+                AA[i][l] = - A[i][e] * AA[e][l]
+        v = v + c[e] * b[e]
+        for j in N:
+            if j != e:
+                c[j] = c[j] - c[e] * AA[e][j]
+        c[l] = - c[e] * AA[e][l]
+        c[e] = 0 # clear c of enter
+        b[l] = 0 # clear b of leave
+        NN = np.delete(N, np.where( N == e)[0][0])
+        NN = np.append(NN,l)
+        BB = np.delete(B, np.where( B == l)[0][0])
+        BB = np.append(BB,e)
+        return(NN, BB, AA, b, c, v)
+
+
+    def SOLVE(self, A, b, c):
+        self.m, self.n = A.shape
+        N, B, A, b, c, v = self.INITIALIZE(A, b, c)
+        while c.max() > 0:
+            d = np.array([float('inf')] * (self.m + self.n + 1))
+            e = c.argmax() # choose index of max c
+            for i in B:
+                if A[i][e] > 0:
+                    d[i] = b[i] / A[i][e]
+            l = d.argmin()
+            if d[l] == float('inf'):
+                return -2 # unbounded
+            else:
+                N, B, A, b, c, v = self.PIVOT(N, B, A, b, c, v, l, e)
+        x = np.array([0] * self.n)
+        for i in range(self.n):
+            if i + 1 in B:
+                x[i] = b[i + 1]
+        return x
+
+
+if __name__ == "__main__":
+    A = np.array([[1,1,3],
+                  [2,2,5],
+                  [4,1,2]])
+    b = np.array([30,24,36])
+    c = np.array([3,1,2])
+    s = SIMPLEX()
+    x = s.SOLVE(A, b, c)
+
+\end{lstlisting}
+
+As I was fully occupied with lots of things, I only implemented the easy case in finding an initial solution, see function \textbf{INITIALIZE}. But I will finish another case in the future.
+
+Here is a test example:
+
+\[
+\begin{array}{rrrrrrrrl}
+ \max & 3x_1 + x_2 + 2x_3&   \\
+ s.t. & x_1 + x_2 + 3x_3 \leq 30 &  \\ \tag{9}
+      & 2x_1 + 2x_2 + 5x_3 \leq 24 & \\
+      & 4x_1 + x_2 + 2x_3 \leq 36 & \\
+      & x_1, x_2, x_3 \geq 0
+\end{array} \nonumber
+\]
+
+We have:
+
+\begin{gather*}
+A=\begin{bmatrix}
+1 & 1 & 3\\
+2 & 2 & 5\\
+4 & 1 & 2
+\end{bmatrix}~~~~
+b=\begin{bmatrix}
+30\\
+24\\
+36
+\end{bmatrix}~~~~
+c=\begin{bmatrix}
+3\\
+1\\
+2
+\end{bmatrix}
+\end{gather*}
+
+After running my implementation, we get:
+\begin{gather*}
+x=\begin{bmatrix}
+8\\
+4\\
+0
+\end{bmatrix}
+\end{gather*}
+The optimal solution is $z=3x_1+x_2+2x_3=28$, the result is the same as GLPK's.
+
+\end{document}
