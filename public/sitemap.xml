@@ -29,7 +29,7 @@
     <loc>http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/</loc>
     <lastmod>2025-10-09T18:17:16+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/2025-10-09-meta-ngram-sid-paper-reading/</loc>
+    <loc>http://localhost:1313/posts/2025-10-09-meta-prefix-ngram-sid-paper-reading/</loc>
     <lastmod>2025-10-09T18:17:16+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/clip/</loc>
@@ -100,6 +100,9 @@
   </url><url>
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/</loc>
+    <lastmod>2016-02-04T00:42:30+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E5%8D%9C%E7%A5%9E/</loc>
     <lastmod>2016-01-29T17:07:11+08:00</lastmod>
