@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Meta | bitJoy</title>
+<title>UCAS | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/tags/meta/">
+<link rel="canonical" href="http://localhost:1313/tags/ucas/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/meta/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/meta/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/ucas/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/ucas/">
 <noscript>
     <style>
         #theme-toggle,
@@ -145,26 +145,39 @@
 <main class="main"> 
 <header class="page-header">
   <h1>
-    Meta
+    UCAS
   </h1>
 </header>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">论文阅读：Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID
+    <h2 class="entry-hint-parent">国科大半年体验报告
     </h2>
   </header>
   <div class="entry-content">
-    <p>
-基本信息 论文标题：Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID 作者单位：Meta 论文链接：https://arxiv.org/pdf/2504.02137 来源：RecSys 2025 Motivation：论文要解决的问题是什么 搜推广的模型严重依赖于item id embedding的表征质量，但在工业场景下，搜推广的id表征存在如下挑战：
-id量级非常大，常常是数十亿甚至是百亿的规模。因此，通常不可能给每个id一个单独的embedding（即文中的individual embedding, IE），IE的成本太高 id分布非常不均匀，马太效应严重。文中统计：0.1%的头部item占据了25%的曝光量；5.5%的腰部item占据了50%的曝光量；94.4%的尾部item只占据了25%的曝光量 id分布漂移严重：搜推广场景中item的变化非常频繁，无时无刻不在发生着新id的产生和旧id的退出，而且不同id存活的时间周期也不尽相同，所以id的准入准出策略很难完美适配所有item 针对上述问题，常见的做法是对item id采用hash然后查emb的方式（即文中的random hash，RH），将所有id hash到一个固定大小的空间，然后查emb。但是RH方式有如下缺点：
-存在hash冲突，把不相关的id hash到一个桶里，导致语义混乱，学习效果不佳 无法解决id分布漂移的问题，比如hash到同一个桶的A、B两个id，如果B出现频率变高，则会带偏A的分布，影响了A的效果 无法进行知识共享，例如新出了商品iphone15，iphone15无法共享到老的iphone14的emb知识，iphone15的id emb必须完全重新学习。针对这种情况，作者做了一个更加极端的AA实验，就是copy一个完全相同的商品，只换item id，如果是IE或者RH策略，则新商品由于id emb是随机初始化的，效果不佳，这是id-based的通病 基于前缀n-gram的semantic id表征方法 针对上述问题，作者沿用了semantic id的思路，首先使用内容理解团队产出的文本、图片等多模态emb，然后基于过去3个月的item多模态emb，训练RQ-VAE模型，并产出所有item的semantic id。
-上述过程都是常规操作，重点在于如何基于semantic id得到item emb表征。假设semantic id是L层，每层的codebook size是K：
-最常规的做法：每层都初始化一个K*d的emb table，每层sid查各自的emb table，然后把L层的sid emb加起来。但是本文完全没有提这种方法，也没有和这种方法比较，非常奇怪。 为了比较，我个人再详细描述下这种常规做法。比如老item A的sid是(c1,c2,c3)；新来一个item B，它的sid是(c1,c2,c4)。用常规方法，A的emb是c1&#43;c2&#43;c3，B的emb是c1&#43;c2&#43;c4。两者c1、c2是可以共享的，所以常规方法也能起到一定的知识共享的效果，共享项有2项：c1、c2。但是因为RQ-VAE的沙漏问题，c2很有可能是沙漏瓶颈，信息量不足。 作者对比了Table 1中的几种方法： Trigram和Fourgram差不多，如果L=3用Trigram、L=4用Fourgram的话，本质上是把L个sid映射成了一个无冲突的int。但是这种方法映射出来的int数量太多了，是\(K^L\)。如果K=1024、L=3，则\(K^L\)就已经超过10亿了，这和直接无冲突的IE方法一样了，而且存在新id无法共享老id学到的知识的问题 All bigrams，就是所有的sid的2-gram。还是上面的例子，A的emb相当于\(c_1c_2&#43;c_2c_3\)，B的emb相当于\(c_1c_2&#43;c_2c_4\)，两者可共享\(c_1c_2\)项，相比于常规方法，虽然共享项数变少了，但粒度更精细了，孰好孰坏未可知。由Table 2可知，All bigrams的效果至少比Trigram和Fourgram好很多了，而且如果层数L越大，可共享项越多 Prefix-ngram（简称Prefix-SID方法），本文提出的新方法，把所有前缀组合成新id查emb，然后所有emb再求和。还是上面的例子，A的emb相当于\(c_1&#43;c_1c_2&#43;c_1c_2c_3&#43;c_2&#43;c_2c_3&#43;c_3\)，B的emb相当于\(c_1&#43;c_1c_2&#43;c_1c_2c_4&#43;c_2&#43;c_2c_4&#43;c_4\)，两者可共享\(c_1, c_1c_2, c_2\)三项，比之前的所有方法可共享的信息都多，而且如果层数L越大，可共享项越多，因此这种方法的效果最好，训练也最稳定 实验结果很丰富，做了很多分析，Prefix-SID方法有如下优势：
-相比于IE和RH方法，Prefix-SID方法对中长尾item的提升尤其显著，因为新id和老id的表征有了知识共享 对id分布漂移问题更不敏感：由于电商模型训练时消费数据的顺序是和数据的时间一致的，比如一个月的数据，按照1号、2号、…31号这样的时间先后顺序依次训练，理论上4号的模型在4号的测试集上的效果是最好的。作者做了一个实验，分别用20号和4号的模型都在4号的测试集上进行评测，看看20号的模型指标相比4号降低了多少。作者发现，使用Prefix-SID方法和IE方法，两者的指标降低幅度都差不多，都比较小。首先IE方法由于不存在hash冲突，所以20号的模型仍然能比较好地预测4号的数据；其次，Prefix-SID方法虽然有hash冲突，但是因为冲突的item都是语义相似的，可以进行新老item的知识共享，所以这个冲突反而是好事，对模型效果无影响。但是作者发现RH方法的20号的模型在4号数据上评测指标下降比较多，因为有hash冲突，而且冲突是随机的，20号的分布已经变化很大了，导致在4号数据上效果不佳。Table 4的指标越小越好。 基于Prefix-SID方法虽然也有hash冲突，但是冲突到同一个semantic id的item表征更相似，而RH冲突到同一个桶里的item是完全随机的，相似度差。作者以IE为base，把Prefix-SID和RH都各自都冲突到同一个桶的IE emb提取出来，计算类内相似度和类间相似度，发现基于Prefix-SID的类内相似度方差小，类间距离大，说明Prefix-SID确实能把相似item聚到一起。 评论 可借鉴 基于Prefix-SID方法确实能提高新item和老item的信息共享数量，方法值得借鉴 论文实验分析很丰富 可改进 基于Prefix-SID方法居然没有和最常规的加和方法比较，是本文最大的不足 </p>
+    <p>现在是2016年2月4日，距离农历新年不到4天，结束了半年的国科大研一生活，躺在被窝里，松了一口气……
+ucas-2015-1
+来国科大之前，在贴吧上了解到国科大雁栖湖校区地处偏远农村，周边几乎没有娱乐场所；但同时学校的软硬件设施非常的棒：豪华单人间，研究员甚至院士亲自授课等等。所以对国科大雁栖湖校区满是憧憬。至今还清楚的记得坐校车从玉泉路过来时，沿途看到APEC主会场的鸟蛋、国科大桥、钟楼以及国科大正门几个大字时的激动心情~
+ucas-2015-7 ucas-2015-3
+入住国科大，着实被UCAS的蓝天白云、青山绿水给迷住了。
+ucas-2015-2 ucas-2015-4 ucas-2015-5 ucas-2015-6
+当然，凡事有利必有弊，因为这里远离市区，环境好，但正因为远离市区，几乎没有年轻人的娱乐活动，想要看个电影唱个歌少说也得跑城里，再要想感受下帝都奢靡的生活，必须各种倒车近2个小时到市里。
+研一这上学期，半年只进市里两次，一次是买山地车，一次是回所里开会。购物主要靠天猫超市。
+九十月份，大家都和大一新生似的，各种疯玩，野长城、雁栖湖、慕田峪、青龙峡、密云水库。进入十一月，新鲜劲过去了，又开始各种赶大小作业，复习考试。
+ucas-schedule-2015-fall
+这是我这学期的课表，看着课好像不多，每天都有半天休息，但是真的感觉回到了大三呀！尤其数据挖掘、信息检索、矩阵论一周上两次课，当天上完的课如果没有及时复习，隔一天再学新内容完全跟不上啊，而且矩阵论每次课都有好多作业啊，这数学课不做练习完全消化不了呀。更神的课还要数周五的卜神算法，君不见，每到周四晚上，西A、西B两栋宿舍，灯火通明，大家都在熬夜赶算法作业啊，不熬个两三点都不好意思和别人说你熬夜了呀。大家可以感受一下我整理的卜神算法作业~~
+正是因为这奇葩的课程安排，这半年几乎没有12点前睡过觉，估计平均是1:30才睡觉，早上8点多才起，中午也没午休。想想大学的时候按时作息，真是惭愧。期间有一次听说搜狐一同届华科毕业生猝死，朋友圈传得沸沸扬扬，大伙都吓得要命，纷纷表示绝不熬夜，早睡早起，我那天也是吓坏了，决定早睡，11:30就爬床上了，但是不知道是因为紧张还是熬夜习惯了，辗转反侧，到12点多才睡着的。
+我们研一在国科大上课是有补助的，但是在帝都完全不够用啊，而且CS相关的几个所补助都比ICT高，so当时还公车上书，各种写联名信、起义，经过半年之久的持久战，所里终于答应从2016年开始给我们涨500块钱的工资。涨了之后差不多够吃饭了。
+虽然这半年课业繁重，但是也抽空锻炼了身体，天气不是很冷的时候，隔一天就会去夜跑；而且选了乒乓球课，从直拍转为了横拍，并且在课上结识了路路，打球好厉害的一个女生，每次老师来指导的时候，都叫路路温柔点 O__O “…
+另外花了一千多块钱买了一辆二手山地车，骑着到处转悠了一下。很有缘的是，认识了一位才女。本来我们骑行社一块去美利达准备买车，但是由于种种原因我和小欣都没买，然后我们一块坐小黑车回村，在车上聊着聊着就认识，没想到后来还成为了好朋友，小欣的台球和乒乓球都打得不错，琴棋书画样样精通。突然发现身边的学霸才子佳人好多，更加深刻感受到有些东西不是你努力就能够弥补的，天赋、眼界、才艺、品味、性格……
+来国科大的这半年，自我感觉变化最大的是自己变得爱说话了，而且带着一种zhuang bi气息，不知道是不是受某几个我一直崇拜的人的影响。有时候静下心来想想都不敢相信之前的话是我说的，和大学时的我完全判若两人。当然这种事情有利也有弊，还在慢慢找平衡点，可能正如CL说的“话怎么说是一回事，内心要知道自己想要的”。
+这半年突然害怕一个人上学，一个人吃饭，一个人自习了，更喜欢face-to-face的交谈，少了对网络的依赖，不知道是不是因为性格的变化、环境的变化、抑或是认识的人多了，有了念想。
+半年时光，认识了不多不少几个好朋友：良辰、发文章、牛牛、欣儿、路路，有你们真好，谢谢你们~
+2016猴赛雷，即将从研一的上课转入课题组工作，很关键的一年，加油！
+</p>
   </div>
-  <footer class="entry-footer"><span title='2025-10-09 18:17:16 +0800 CST'>October 9, 2025</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 论文阅读：Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID" href="http://localhost:1313/posts/2025-10-09-meta-prefix-ngram-sid-paper-reading/"></a>
+  <footer class="entry-footer"><span title='2016-02-04 00:42:30 +0800 CST'>February 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 国科大半年体验报告" href="http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/"></a>
 </article>
     </main>
     
