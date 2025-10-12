@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>SMO | bitJoy</title>
+<title>0和1、流水账 | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/tags/smo/">
+<link rel="canonical" href="http://localhost:1313/categories/0%E5%92%8C1%E6%B5%81%E6%B0%B4%E8%B4%A6/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/smo/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/smo/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/0%E5%92%8C1%E6%B5%81%E6%B0%B4%E8%B4%A6/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/0%E5%92%8C1%E6%B5%81%E6%B0%B4%E8%B4%A6/">
 <noscript>
     <style>
         #theme-toggle,
@@ -145,30 +145,20 @@
 <main class="main"> 
 <header class="page-header">
   <h1>
-    SMO
+    0和1、流水账
   </h1>
 </header>
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">SVM之序列最小最优化算法（SMO算法）
+    <h2 class="entry-hint-parent">$$\LaTeX$$写作完美解决方案
     </h2>
   </header>
   <div class="entry-content">
-    <p>SVM回顾 支持向量机（SVM）的一大特点是最大化间距（max margin）。对于如上图的二分类问题，虽然有很多线可以将左右两部分分开，但是只有中间的红线效果是最好的，因为它的可活动范围（margin）是最大的，从直观上来说很好理解。
-对于线性二分类问题，假设分类面为
-$$\begin{equation} u=\vec w \cdot \vec x-b \end{equation}$$则margin为
-$$\begin{equation} m=\frac{1}{||w||_2} \end{equation}$$根据max margin规则和约束条件，得到如下优化问题，我们要求的就是参数\(\vec w\)和\(b\)：
-$$\begin{equation} \min\limits_{\vec w,b}\frac{1}{2}||\vec w||^2 \quad\text{subject to}\quad y_i(\vec w\cdot \vec x_i-b) \geq 1, \forall i,\end{equation}$$对于正样本，类标号\(y_i\)为&#43;1，反之则为-1。根据拉格朗日对偶，(3)可以转换为如下的二次规划（QP）问题，其中\(\alpha_i\)为拉格朗日乘子。
-$$\begin{equation} \min\limits_{\vec \alpha}\Psi(\vec\alpha)=\min\limits_{\vec \alpha}\frac{1}{2}\sum_{i=1}^N\sum_{j=1}^Ny_iy_j(\vec x_i\cdot\vec x_j)\alpha_i\alpha_j-\sum_{i=1}^N\alpha_i,\end{equation}$$其中N为样本数量。上式还需满足如下两个约束条件：
-$$\begin{equation} \alpha_i\geq 0, \forall i,\end{equation}$$$$\begin{equation} \sum_{i=1}^Ny_i\alpha_i=0.\end{equation}$$一旦求解出所有的拉格朗日乘子，则我们可以通过如下的公式得到分类面参数\(\vec w\)和\(b\)。
-$$\begin{equation}\vec w=\sum_{i=1}^Ny_i\alpha_i\vec x_i,\quad b=\vec w\cdot\vec x_k-y_k\quad\text{for some}\quad\alpha_k&gt;0.\end{equation}$$当然并不是所有的数据都可以完美的线性划分，可能有少量数据就是混在对方阵营，这时可以通过引入松弛变量\(\xi_i\)得到软间隔形式的SVM：
-$$\begin{equation} \min\limits_{\vec w,b,\vec\xi}\frac{1}{2}||\vec w||^2&#43;C\sum_{i=1}^N\xi_i \quad\text{subject to}\quad y_i(\vec w\cdot \vec x_i-b) \geq 1-\xi_i, \forall i,\end{equation}$$其中的\(\xi_i\)为松弛变量，能假装把错的样本分对，\(C\)对max margin和margin failures的trades off。对于这个新的优化问题，约束变成了一个box constraint：
-$$\begin{equation}0\leq\alpha_i \leq C,\forall i.\end{equation}$$而松弛变量\(\xi_i\)不再出现在对偶公式中了。
-...</p>
+    <p></p>
   </div>
-  <footer class="entry-footer"><span title='2016-05-02 15:12:39 +0800 CST'>May 2, 2016</span>&nbsp;·&nbsp;5 min</footer>
-  <a class="entry-link" aria-label="post link to SVM之序列最小最优化算法（SMO算法）" href="http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/"></a>
+  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;0 min</footer>
+  <a class="entry-link" aria-label="post link to $$\LaTeX$$写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
 </article>
     </main>
     

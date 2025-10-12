@@ -5,48 +5,30 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>公告 | bitJoy</title>
-<meta name="keywords" content="">
-<meta name="description" content="博客数据恢复中，敬请期待！
-测试图片：
+<title>LaTeX写作完美解决方案 | bitJoy</title>
+<meta name="keywords" content="LaTeX, 开源">
+<meta name="description" content="
+\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
+我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
+目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
+MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
+MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
+如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
 
-测试代码：
+构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
 
+Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
+Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
+正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
+另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
+OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
 
-
-// Necessary header files for input output functions
-#include &lt;iostream&gt;
-using namespace std;
-
-// main() function: where the execution of
-// C&#43;&#43; program begins
-int main() {
-  
-    // This statement prints &#34;Hello World&#34;
-    cout &lt;&lt; &#34;Hello World&#34;;
-
-    return 0;
-}
-
-
-测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.">
+下面是我常用的\(\LaTeX\)中文模板：
+LaTeXDemo.pdf
+LaTeXDemo.tex">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="canonical" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -55,7 +37,7 @@ This is an inline \(a^*=x-b^*\) equation.">
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/">
 <noscript>
     <style>
         #theme-toggle,
@@ -184,74 +166,52 @@ This is an inline \(a^*=x-b^*\) equation.">
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      公告
+      LaTeX写作完美解决方案
     </h1>
-    <div class="post-meta"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span>&nbsp;·&nbsp;1 min
+    <div class="post-meta"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min
 
 </div>
   </header> 
 
-  <div class="post-content"><p>博客数据恢复中，敬请期待！</p>
-<p>测试图片：
-<img alt="这是图片" loading="lazy" src="/posts/2025-08-15-announcement/myimg.png"></p>
-<p>测试代码：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Necessary header files for input output functions
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// main() function: where the execution of
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// C++ program begins
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This statement prints &#34;Hello World&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.</p>
-<p>These are block equations:</p>
-\[a^*=x-b^*\]\[ a^*=x-b^* \]\[
-a^*=x-b^*
-\]<p>These are also block equations:</p>
-$$a^*=x-b^*$$$$ a^*=x-b^* $$$$
-a^*=x-b^*
-$$
+  <div class="post-content"><p><img loading="lazy" src="https://www.ctan.org/lion/ctan_lion_350x350.png"></p>
+<p>\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。</p>
+<p>我大学刚接触\(\LaTeX\)的时候，使用的是<a href="http://www.ctex.org/HomePage">CTeX</a>，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。</p>
+<p>目前使用的是<a href="http://miktex.org/">MiKTeX</a>+<a href="http://www.xm1math.net/texmaker/">Texmaker</a>的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。</p>
+<p>MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。</p>
+<p>MiKTeX自带了一个<a href="https://www.tug.org/texworks/">TeXworks</a>编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。</p>
+<p>如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX + View PDF”。</p>
+<p><img alt="Texmaker-1" loading="lazy" src="/posts/2016-05-16-an-easy-to-use-latex-toolkit/Texmaker-1.png"></p>
+<p>构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：</p>
+<p><img alt="Texmaker-2" loading="lazy" src="/posts/2016-05-16-an-easy-to-use-latex-toolkit/Texmaker-2.png"></p>
+<p>Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的<a href="http://www.sumatrapdfreader.org/free-pdf-reader.html">Sumatra PDF</a>，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。</p>
+<p>Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl+click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl+space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl+1，我当时是打开下图的快捷方式窗口才发现这个问题的。</p>
+<p><img alt="Texmaker-3" loading="lazy" src="/posts/2016-05-16-an-easy-to-use-latex-toolkit/Texmaker-3.png"></p>
+<p>正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。</p>
+<p>另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。</p>
+<p>OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~</p>
+<p><img loading="lazy" src="https://i0.wp.com/www.xm1math.net/texmaker/texmakertop_big.png"></p>
+<p>下面是我常用的\(\LaTeX\)中文模板：</p>
+<p><a href="/posts/2016-05-16-an-easy-to-use-latex-toolkit/LaTeXDemo.pdf">LaTeXDemo.pdf</a></p>
+<p><a href="/posts/2016-05-16-an-easy-to-use-latex-toolkit/LaTeXDemo.tex">LaTeXDemo.tex</a></p>
+
 
   </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/latex/">LaTeX</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%BC%80%E6%BA%90/">开源</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
     <span class="title">« Prev</span>
     <br>
-    <span>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</span>
+    <span>公告</span>
   </a>
-  <a class="next" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/">
+  <a class="next" href="http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/">
     <span class="title">Next »</span>
     <br>
-    <span>\(\LaTeX\)写作完美解决方案</span>
+    <span>SVM之序列最小最优化算法（SMO算法）</span>
   </a>
 </nav>
 
