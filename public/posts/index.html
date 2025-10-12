@@ -295,36 +295,68 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">\(\LaTeX\)写作完美解决方案
+    <h2 class="entry-hint-parent">有趣的交互式证明
     </h2>
   </header>
   <div class="entry-content">
-    <p></p>
+    <p>你是否想过如下问题：怎样向色盲证明两只袜子的颜色是不一样的？怎样证明两个图是不同构的？怎样证明一个数是二次非剩余的？
+咋听起来觉得很有意思吧，色盲是区分不了颜色的，怎么能让他相信两只袜子的颜色不一样呢。图同构问题目前既没有被证明属于P，也没有被证明属于NP-Complete。二次非剩余问题也没有被证明属于NP。
+这些听起来很“难”的问题，却可以通过交互式证明进行证明，下面先通过“向色盲证明两只袜子的颜色不同”这个有趣的例子一窥交互式证明的强大。
+向色盲证明两只袜子的颜色不同 P有一只红袜子和黄袜子，她的一个色盲朋友V不相信P的袜子颜色不同，P如何才能让V相信这是真的呢？一个简单的办法如下：
+P把两只袜子给V，V每只手拿了一只袜子 P转过身背对V V抛一枚硬币，如果头面朝上，则保持两只袜子不动，否则交换左右手的袜子 P转过身，V问P是否交换过袜子 如果P回答错误，则V不相信；否则，重复100次实验，如果P都回答正确，则V相信这两只袜子是不同颜色的 如果两只袜子的颜色确实不一样，则P通过区分两只袜子的颜色能正确回答V有没有交换过袜子。但是如果两只袜子颜色一样，则不管V有没有交换过，P都无法分辨这两只袜子，所以只好猜V有没有交换，而猜对的概率只有1/2，重复100次，都猜对的概率只有\((1/2)^{100}\)，这是一个非常小的数，可以认为几乎不会发生，即出错的概率极低。
+这就是交互式证明的一个例子，上述证明有三个特点：1）交互过程，整个证明需要P和V进行交互才能完成；2）具有随机性，即V需要抛一枚硬币，来决定是否交换袜子；3）零知识，虽然V最终相信了这两只袜子是不同颜色的，但V还是不知道这两只袜子是什么颜色的。
+下面我们给出交互式证明的形式化定义。
+交互式证明（Interactive Proofs, IP） 令\(k\)是\(N\rightarrow N\)的一个函数，我们称语言\(L\)属于\(IP[k]\)，如果存在一个\(k(|x|)\)多项式时间概率图灵机TM \(V\)，使得：
+$$ \begin{equation} x\in L \Longrightarrow\exists P\quad Pr[V \text{ accepts }x, V(x)=1]\geq 2/3 \\ x\notin L \Longrightarrow\forall P\quad Pr[V \text{ accepts }x, V(x)=1]\leq 1/3 \end{equation} $$定义
+$$IP=\underset{c}{\bigcup} IP[n^c]$$上述定义的第一条称为“完备性”（Completeness）：如果\(x\in L\)，则存在一个证明者P（prover），使得验证者V（verfier）能以多项式时间接受\(x\)，且接受的概率大于2/3；第二条称为“可靠性”（Soundness），如果\(x\notin L\)，则对于所有证明者P，V接受\(x\)的概率都不会超过1/3。
+对应到上面的例子，完备性：当两只袜子的颜色确实不同时，V接受的概率为1&gt;2/3；可靠性：当两只袜子的颜色相同时，重复100次实验，V接受的概率只有\((1/2)^{100}&lt;1/3\)。
+IP这个复杂性类就是所有IP[k]的并集。在IP中，P的能力是无穷的，但它不一定是诚实的；V能力较弱，只能进行多项式时间的计算。
+下面我们给出另外两个交互式证明的协议。
+图不同构（Graph Non-isomorphism, GNI）的交互式证明
+如果图
+$$G_1$$和
+$$G_2$$可以通过对顶点进行恰当标记来将它们转换为同一个图，则称
+$$G_1$$和
+$$G_2$$同构，记为
+$$G_1\cong G_2$$。换句话说，如果
+$$G_1$$和
+$$G_2$$同构，则在
+$$G_1$$的所有顶点标签上存在一个置换
+$$\pi$$使得
+$$\pi (G_1)=G_2$$，其中
+$$\pi (G_1)$$是将
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;0 min</footer>
-  <a class="entry-link" aria-label="post link to \(\LaTeX\)写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
+  <footer class="entry-footer"><span title='2016-07-14 20:56:37 +0800 CST'>July 14, 2016</span>&nbsp;·&nbsp;2 min</footer>
+  <a class="entry-link" aria-label="post link to 有趣的交互式证明" href="http://localhost:1313/posts/2016-07-14-the-interesting-interactive-proofs/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">SVM之序列最小最优化算法（SMO算法）
+    <h2 class="entry-hint-parent">LaTeX写作完美解决方案
     </h2>
   </header>
   <div class="entry-content">
-    <p>SVM回顾 支持向量机（SVM）的一大特点是最大化间距（max margin）。对于如上图的二分类问题，虽然有很多线可以将左右两部分分开，但是只有中间的红线效果是最好的，因为它的可活动范围（margin）是最大的，从直观上来说很好理解。
-对于线性二分类问题，假设分类面为
-$$\begin{equation} u=\vec w \cdot \vec x-b \end{equation}$$则margin为
-$$\begin{equation} m=\frac{1}{||w||_2} \end{equation}$$根据max margin规则和约束条件，得到如下优化问题，我们要求的就是参数\(\vec w\)和\(b\)：
-$$\begin{equation} \min\limits_{\vec w,b}\frac{1}{2}||\vec w||^2 \quad\text{subject to}\quad y_i(\vec w\cdot \vec x_i-b) \geq 1, \forall i,\end{equation}$$对于正样本，类标号\(y_i\)为&#43;1，反之则为-1。根据拉格朗日对偶，(3)可以转换为如下的二次规划（QP）问题，其中\(\alpha_i\)为拉格朗日乘子。
-$$\begin{equation} \min\limits_{\vec \alpha}\Psi(\vec\alpha)=\min\limits_{\vec \alpha}\frac{1}{2}\sum_{i=1}^N\sum_{j=1}^Ny_iy_j(\vec x_i\cdot\vec x_j)\alpha_i\alpha_j-\sum_{i=1}^N\alpha_i,\end{equation}$$其中N为样本数量。上式还需满足如下两个约束条件：
-$$\begin{equation} \alpha_i\geq 0, \forall i,\end{equation}$$$$\begin{equation} \sum_{i=1}^Ny_i\alpha_i=0.\end{equation}$$一旦求解出所有的拉格朗日乘子，则我们可以通过如下的公式得到分类面参数\(\vec w\)和\(b\)。
-$$\begin{equation}\vec w=\sum_{i=1}^Ny_i\alpha_i\vec x_i,\quad b=\vec w\cdot\vec x_k-y_k\quad\text{for some}\quad\alpha_k&gt;0.\end{equation}$$当然并不是所有的数据都可以完美的线性划分，可能有少量数据就是混在对方阵营，这时可以通过引入松弛变量\(\xi_i\)得到软间隔形式的SVM：
-$$\begin{equation} \min\limits_{\vec w,b,\vec\xi}\frac{1}{2}||\vec w||^2&#43;C\sum_{i=1}^N\xi_i \quad\text{subject to}\quad y_i(\vec w\cdot \vec x_i-b) \geq 1-\xi_i, \forall i,\end{equation}$$其中的\(\xi_i\)为松弛变量，能假装把错的样本分对，\(C\)对max margin和margin failures的trades off。对于这个新的优化问题，约束变成了一个box constraint：
-$$\begin{equation}0\leq\alpha_i \leq C,\forall i.\end{equation}$$而松弛变量\(\xi_i\)不再出现在对偶公式中了。
-...</p>
+    <p>
+\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
+我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
+目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
+MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
+MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
+如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
+构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
+Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
+Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
+正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
+另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
+OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
+下面是我常用的\(\LaTeX\)中文模板：
+LaTeXDemo.pdf
+LaTeXDemo.tex
+</p>
   </div>
-  <footer class="entry-footer"><span title='2016-05-02 15:12:39 +0800 CST'>May 2, 2016</span>&nbsp;·&nbsp;5 min</footer>
-  <a class="entry-link" aria-label="post link to SVM之序列最小最优化算法（SMO算法）" href="http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/"></a>
+  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

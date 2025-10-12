@@ -59,9 +59,11 @@ $$\begin{equation} \min\limits_{\vec \alpha}\Psi(\vec\alpha)=\min\limits_{\vec \
 
 $$
 \begin{equation}
-\alpha_i = 0 \Leftrightarrow y_iu_i \geq 1,
-0 < \alpha_i < C \Leftrightarrow y_iu_i = 1,
-\alpha_i = C \Leftrightarrow y_iu_i \leq 1.
+\begin{cases}
+\alpha_i = 0 \Leftrightarrow y_iu_i \geq 1,\\
+0 < \alpha_i < C \Leftrightarrow y_iu_i = 1,\\
+\alpha_i = C \Leftrightarrow y_iu_i \leq 1.\\
+\end{cases}
 \end{equation}
 $$
 
