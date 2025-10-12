@@ -6,8 +6,24 @@
     <description>Recent content in 流水账 on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 04 Feb 2016 00:42:30 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 16 Mar 2016 11:44:37 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>和GRE纠缠的岁月</title>
+      <link>http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/</link>
+      <pubDate>Wed, 16 Mar 2016 11:44:37 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/</guid>
+      <description>&lt;p&gt;&lt;img alt=&#34;GRE3000&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/GRE3000.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;yn说最近在备考GMAT和托福，把手机都清理了只为专心学习。xx说TCP/IP大作业要用Qt做一个网络监控的软件，问我Qt好不好学。&lt;/p&gt;
+&lt;p&gt;GRE遇见Qt，会擦出怎样的火花呢~没错，我用Qt写了一个强化背诵GRE单词的软件——Cracking 3000&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Cracking-3000-1&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/Cracking-3000-1.png&#34;&gt; &lt;img alt=&#34;Cracking-3000-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/Cracking-3000-2.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当时的一本GRE单词书有3000个单词，用杨鹏17天刷过之后，很多都记不住，于是想有没有办法把记不住的单词筛选出来，集中力量强化记忆。网上已经有3000的Excel表，所以我很自然的想到了把表格导入软件，用软件快速测试，并把不认识的单词筛选到新的Excel表格中。这样就可以把不认识的单词表打印出来，记完之后再导入软件进行新一轮的测试筛选，直到不认识的单词数为零。&lt;/p&gt;
+&lt;p&gt;有了软件需求，代码实现起来就很快了。由于当时用Qt库比较多，所以直接拿来用了。软件实现这一块，主要是Excel表格的导入和导出，需要查一些文档，其他的就很简单了。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;GRE3000-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/GRE3000-2.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;虽然和GRE纠缠了一个多月，最终却没有考，但是想起当初早上6点爬起来背单词，晚上回宿舍抹黑写代码的情景，心情还是有一点小小的激动！以后类似的体验估计不会太多吧。&lt;/p&gt;
+&lt;p&gt;最后祝yn GT考试顺利，xx大作业圆满完成！&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/Cracking_3000.zip&#34;&gt;Cracking_3000软件安装包及说明&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>国科大半年体验报告</title>
       <link>http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/</link>
