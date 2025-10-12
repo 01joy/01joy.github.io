@@ -101,6 +101,21 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
+    <lastmod>2016-05-02T15:12:39+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/smo/</loc>
+    <lastmod>2016-05-02T15:12:39+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/svm/</loc>
+    <lastmod>2016-05-02T15:12:39+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/</loc>
+    <lastmod>2016-05-02T15:12:39+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2016-05-02T15:12:39+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/tags/gre/</loc>
     <lastmod>2016-03-16T11:44:37+08:00</lastmod>
   </url><url>
@@ -148,9 +163,6 @@
   </url><url>
     <loc>http://localhost:1313/tags/%E7%AE%97%E6%B3%95/</loc>
     <lastmod>2016-01-29T17:07:11+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2016-01-09T23:52:13+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</loc>
     <lastmod>2016-01-09T23:52:13+08:00</lastmod>
