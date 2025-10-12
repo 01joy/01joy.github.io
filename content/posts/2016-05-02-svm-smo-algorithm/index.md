@@ -172,7 +172,7 @@ $$
 function [alphas, offset] = bitjoy_seqminopt(data, targetLabels, boxConstraints, ...
     kernelFunc, smoOptions)
  
-% http://bitjoy.net/2016/05/02/svm-smo-algorithm/
+% https://bitjoy.net/posts/2016-05-02-svm-smo-algorithm/
 % 参考文献:
 % [1] A Fast Algorithm for Training  Support Vector Machines,
 %     http://research.microsoft.com/pubs/69644/tr-98-14.pdf
