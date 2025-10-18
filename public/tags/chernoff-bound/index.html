@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>调查问卷 | bitJoy</title>
+<title>Chernoff Bound | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/tags/%E8%B0%83%E6%9F%A5%E9%97%AE%E5%8D%B7/">
+<link rel="canonical" href="http://localhost:1313/tags/chernoff-bound/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E8%B0%83%E6%9F%A5%E9%97%AE%E5%8D%B7/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E8%B0%83%E6%9F%A5%E9%97%AE%E5%8D%B7/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/chernoff-bound/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/chernoff-bound/">
 <noscript>
     <style>
         #theme-toggle,
@@ -145,7 +145,7 @@
 <main class="main"> 
 <header class="page-header">
   <h1>
-    调查问卷
+    Chernoff Bound
   </h1>
 </header>
 
@@ -169,36 +169,6 @@ $$\begin{equation}n\geq\left\lceil\frac{3ln\frac{2}{\epsilon}}{p\delta^2}\right\
   </div>
   <footer class="entry-footer"><span title='2016-07-23 16:21:54 +0800 CST'>July 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 调查问卷的有效性（2）相对误差" href="http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">调查问卷的有效性（1）绝对误差
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>每年春晚过后，央视又要吹嘘说今年春晚收视率创新高了，但是我们总感觉央视在骗我们，因为我是越长大越不看春晚了[笑cry]，所以收视率到底是怎么统计出来的，央视的说法是否靠谱呢？
-最近的美国大选真是热闹，很多机构都会发放一些调查问卷，然后统计出希拉里或者唐纳德的民众支持率是多少，但是我并没有收到调查问卷，凭什么就得出了民众支持率了，意思是把我排除在民众之外咯？所以引出这样一个问题，调查问卷是否可信，即调查问卷的有效性。
-其实，央视统计收视率并不要问全中国14亿人口有多少人看了春晚，他只需要从14亿人口里面随机抽\(n\)个人，问一下这\(n\)个人里有多少人看了春晚，然后把看的人数除以总数就大概估计出全国的收视率了。同理调查民众支持率也是一样，只需要随机调查\(n\)个人的意向，把支持希拉里的人数除以总数就大概得到了希拉里的支持率。
-但是你要问了，通过抽样调查出来的收视率和支持率靠谱吗，需要随机抽样多少人才能得到一个比较好的全局近似解呢？今天我们就来解决这个问题。
-假设我们随机抽样了\(n\)个人，分别是\(x_1,x_2,…,x_n\)。如果第\(i\)个人看了春晚，则\(x_i=1\)，否则\(x_i=0\)。那么通过这\(n\)个人的收视情况，我们可以估计出一个收视率
-$$\begin{equation}\hat{p}=\frac{x_1&#43;x_2&#43;…&#43;x_n}{n}\end{equation}$$假设全国的真实收视率是\(p\)，那么平均到每一个人，他看了春晚的概率就是\(p\)，也即\(Pr(x_i=1)=p\)，所以有
-$$\begin{equation}E(x_i)=p\quad E(x_i^2)=p\quad Var(x_i)=p(1-p)\end{equation}$$我们的目的就是希望通过\(n\)个人估计出来的\(\hat{p}\)和\(p\)越接近越好。换句话说，我们希望\(\hat{p}\)和\(p\)相差大于5%的概率要小于5%。再换句话说就是有至少95%的概率，\(\hat{p}\)和\(p\)相差在5%以内，即\(\hat{p}\)和\(p\)很接近。注意这里的两个5%都是可以换成任意你想要的精度。用数学语言表示就是，\(n\)至少为多少时，以下不等式可以被满足。
-$$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$把(1)式代入(3)式，用\(\frac{1}{20}\)代替5%，得到等价形式：
-$$\begin{equation}Pr(|(\frac{x_1&#43;x_2&#43;…&#43;x_n}{n})-p|\geq\frac{1}{20})\\ \Longleftrightarrow~Pr(|X-np|\geq\frac{n}{20})\end{equation}$$其中\(X=x_1&#43;x_2&#43;…&#43;x_n\)。根据期望的线性可加性，有
-$$\begin{equation}E(X)=E(x_1&#43;x_2&#43;…&#43;x_n)=E(x_1)&#43;E(x_2)&#43;…&#43;E(x_n)=np\end{equation}$$所以(4)又等价于
-$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：
-$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。
-利用切比雪夫不等式求解(6)式
-$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\leq\frac{Var(X)}{n^2}*400\\ =\frac{n*Var(x_i)}{n^2}*400\\ =\frac{p(1-p)}{n}*400\\ \leq\frac{1/4}{n}*400=\frac{100}{n} \end{equation}$$第一个等号是因为\(n\)个变量是独立同分布的，所以方差也有类似于(5)式的线性性质。最后一个不等号是因为\(p(1-p)\)是一个开口向下的抛物线，在\(p=1/2\)时取到极值\(1/4\)。
-回到最初的不等式(3)，则(8)式要满足\(\frac{100}{n}\leq 5\%\)，解得\(n\geq 2000\)。注意到求出的\(n\)和总体人数是无关的，也就是说，虽然全中国有十几亿人口，但是央视只要随机抽样调查2000个人的收视情况，就能以比较高的概率准确估计出全国的收视率。
-这个结论还是很漂亮的，但是这种方法有两个限制条件：
-采样满足独立同分布，即这\(n\)个人是独立同分布的，不能针对某一特定人群调查 (3)式的5%是一个绝对误差，当\(p\)本身很小的时候，容易被5%淹没 对于第1个问题，稍微好处理一点，抽样的时候尽量随机一点。对于第2个问题，比较好的解决办法是引入相对误差，即把(3)式转换为如下的不等式
-$$\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$(9)式的求解就比较复杂了，得出的结论也没有上面那么简单，具体的求解方法请听下回分解。
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-07-23 16:01:59 +0800 CST'>July 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 调查问卷的有效性（1）绝对误差" href="http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-1/"></a>
 </article>
     </main>
     

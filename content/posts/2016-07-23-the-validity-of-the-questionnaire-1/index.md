@@ -39,11 +39,11 @@ $$\begin{equation}E(X)=E(x_1+x_2+…+x_n)=E(x_1)+E(x_2)+…+E(x_n)=np\end{equati
 
 $$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$
 
-我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：
+我们需要利用著名的[切比雪夫不等式](https://en.wikipedia.org/wiki/Chebyshev%27s_inequality)来求解上式，切比雪夫不等式如下：
 
 $$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$
 
-切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。
+切比雪夫不等式可以直接由[马尔可夫不等式](https://en.wikipedia.org/wiki/Markov%27s_inequality)得到，马尔可夫不等式的证明也不难，略过。
 
 利用切比雪夫不等式求解(6)式
 
