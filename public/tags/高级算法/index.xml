@@ -6,18 +6,57 @@
     <description>Recent content in 高级算法 on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 23 Jul 2016 16:21:54 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 04 Aug 2016 16:38:33 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/%E9%AB%98%E7%BA%A7%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>还原谷歌PageRank算法真相</title>
+      <link>http://localhost:1313/posts/2016-08-04-googles-pagerank-and-beyond/</link>
+      <pubDate>Thu, 04 Aug 2016 16:38:33 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-08-04-googles-pagerank-and-beyond/</guid>
+      <description>&lt;p&gt;之前写了&lt;a href=&#34;https://bitjoy.net/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/&#34;&gt;七篇博客&lt;/a&gt;详细介绍了搜索引擎的工作原理。彼时的搜索引擎主要讲查询和网页的相关性匹配，是动态的、在线的、实时的。相关性匹配有一个问题，网页很容易作弊，比如可以在一个网页中写满诸如“免费”、“美容”之类的垃圾关键词，进而提升查询相关性。但是用户在查询时，一定希望返回的网页比较权威可信，比如同样搜索“苹果电脑”，排名第一的应该是Apple的官网，而不应该是中关村在线之类的第三方网站。&lt;/p&gt;
+&lt;p&gt;权威性是一个静态的（或者说变化较慢的）衡量网页重要性的指标。但是应该怎样度量权威性呢，HITS算法使用authority来度量，即指向自身的网页数量越多，则自身的authority值越大。谷歌的PageRank算法是用PageRank值来衡量权威性的。HITS和PageRank一个比较大的区别是HITS和查询有关，而PageRank和查询无关，所以PageRank可以离线计算。下面主要介绍PageRank算法。&lt;/p&gt;
+&lt;p&gt;PageRank’s thesis is that a webpage is important if it is pointed to by other important pages.&lt;/p&gt;
+&lt;p&gt;我先不加解释的给出PageRank的公式，然后带领大家一步步推导出这个公式。&lt;/p&gt;
+$$\pi^T=\pi^T(\alpha S+(1-\alpha)E)$$&lt;p&gt;我们首先明确目标：PageRank计算的是网页的静态权威度（PR值），也就是如果给定了一个网络结构，则每个网页的PR值就可以通过PageRank算法计算出。假设网页$P_i$的PR值为$r(P_i)$，则$r(P_i)$等于所有指向$P_i$的网页的PR值之和，即&lt;/p&gt;
+$$\begin{equation}r(P_i)=\sum\limits_{P_j\in B_{P_i}}\frac{r(P_j)}{|P_j|}\end{equation}$$&lt;p&gt;其中$B_{P_i}$为指向$P_i$的网页集合，$|P_j|$为$P_j$的出边的数量。这个式子很好理解，包括两方面内容：1）$\sum\limits_{P_j\in B_{P_i}}$表示如果指向$P_i$的网页数量越多，说明网页$P_i$越重要；2）$\frac{r(P_j)}{|P_j|}$表示如果$P_j$指向的页面数量越少，但有一个指向了$P_i$，说明网页$P_i$越重要（如果一个大牛写了很多推荐信（$|P_j|$大），则这些推荐信的效力就下降了，如果大牛只给你写了推荐信（$|P_j|=1$），则这封推荐信的效力一定很高）。&lt;/p&gt;
+&lt;p&gt;(1)式有一个问题，初始给定一个网络结构时，并不知道$r(P_i), r(P_j)$，如何计算呢？Brin和Page利用递归的思想求解，初始假设所有网页的PR值相等，都为$\frac{1}{n}$，其中$n$为网络中网页的数量。则第$k+1$轮的PR计算公式为：&lt;/p&gt;
+$$\begin{equation}r_{k+1}(P_i)=\sum\limits_{P_j\in B_{P_i}}\frac{r_k(P_j)}{|P_j|}\end{equation}$$&lt;p&gt;初始对所有网页$P_i$有$r_0(P_i)=\frac{1}{n}$，迭代$k$步之后，可以计算出所有网页的PR值，然后按PR值从大到小排序，就可以知道每个网页的重要性了。&lt;/p&gt;
+&lt;p&gt;pr-1
+对于上图的小网络，我们可以计算出其每一步的PR值：&lt;/p&gt;
+&lt;p&gt;pr-2
+可以看到经过2次迭代之后，节点4的PR值最大，从图中也可以看出，节点4的出入边较多，它可能比较重要。&lt;/p&gt;
+&lt;p&gt;注意到对于(2)式，当$i,j$之间有边时，$\frac{1}{|P_j|}$相当于对$P_j$出度的归一化，设矩阵$H$为图的邻接矩阵的行归一化矩阵，对于上图，为&lt;/p&gt;
+&lt;p&gt;pr-3
+设行向量$\pi^{(k)T}$为第$k$轮迭代时所有网页的PR值，则式(2)可以转换为如下的矩阵形式：&lt;/p&gt;
+$$\begin{equation}\pi^{(k+1)T}=\pi^{(k)T}H\end{equation}$$&lt;p&gt;初始有$\pi^{(0)T}=\frac{1}{n}e^T$，$e^T$为全1的行向量。我们可以从(3)式观测出几点信息：&lt;/p&gt;
+&lt;p&gt;(3)式的每一轮计算涉及到向量和矩阵的乘法，复杂度为$O(n^2)$，$n$为矩阵$H$的大小
+$H$是一个稀疏矩阵，因为大部分网页只和很少的网页有链接关系，所以上述向量和矩阵的乘法复杂度还可以降低
+$H$有点像马尔科夫链中的随机转移矩阵，但又不完全是，因为如果有dangling nodes，则这一行就是全0，所以$H$被称为substochastic matrix
+pr-4
+上图中的节点3就是一个dangling node，它只有入边，没有出边，也就是说，每一轮迭代，PR值只会流入3号节点，不会从3号节点流出，久而久之，3就像一个水槽(sink)一样，吸走了大部分的PR，导致PR值虚高。&lt;/p&gt;
+&lt;p&gt;所以问题随之而来，怎样保证(3)式一定能够收敛到一个平稳概率分布$\pi^T$，$\pi^T$和$\pi^{(0)T}$有关吗，怎样解决dangling nodes问题，等等。此时需要引入一点马尔科夫链理论的知识。&lt;/p&gt;
+&lt;p&gt;在马尔科夫理论呢中，如果一个矩阵$P$是随机的（stochastic）、不可约的（irreducible）和非周期的（aperiodic），则对于任意的起始向量，都能收敛到一个唯一的平稳正向量。所以如果PageRank矩阵$H$满足上述三个条件，则可以用幂法（Power Method）找到一个平稳概率分布$\pi^T$。幂法是用来计算最大特征值的特征向量。因为$H$的最大特征值为1，所以可以用幂法找到稳态时（$\pi^T=\pi^TH$）的概率分布$\pi^T$。&lt;/p&gt;
+&lt;p&gt;下面我们就将矩阵$H$调整为随机的（stochastic）、不可约的（irreducible）和非周期的（aperiodic）。&lt;/p&gt;
+&lt;p&gt;行随机矩阵是指行和为1的非负矩阵。如果图中含有dangling nodes，则$H$不是随机的，比如上面的例子，第二行为全0。所以第一个调整是对于所有dangling nodes，都加上一个随机跳转向量$e^T/n$，含义就是如果进入死胡同（dangling nodes），则随机跳转到网络中的任意一个网页。定义向量$a$：&lt;/p&gt;
+$$\begin{equation}a_i=\begin{cases}1\quad\text{if page}~i\text{ is a dangling node}\\0\quad\text{otherwise}\end{cases}\end{equation}$$&lt;p&gt;则新的Google矩阵为：&lt;/p&gt;
+$$\begin{equation}S=H+a\frac{1}{n}e^T\end{equation}$$&lt;p&gt;新矩阵$S$就是一个行随机矩阵了。对于上图的例子，有&lt;/p&gt;
+&lt;p&gt;pr-5
+为了保证矩阵$S$满足不可约性（irreducible）和非周期性（aperiodic），必须使$S$对应的图是强连通的且每个节点有子回路。所以再次调整为：&lt;/p&gt;
+$$\begin{equation}G=\alpha S+(1-\alpha)\frac{1}{n}ee^T\end{equation}$$&lt;p&gt;令&lt;/p&gt;
+$$\begin{equation}E=\frac{1}{n}ee^T\end{equation}$$&lt;p&gt;则得到本博客开头的Google矩阵公式：&lt;/p&gt;
+$$\begin{equation}G=\alpha S+(1-\alpha)E\end{equation}$$&lt;p&gt;$E$即为随机平均游走矩阵。矩阵$G$也很好解释，大家上网的时候以$\alpha$的概率沿着某个网页里面的链接一步步深入进去（$S$），当沿着链接走累的时候，以$1-\alpha$的概率在地址栏输入一个新地址，随机跳走了（$E$）。&lt;/p&gt;
+&lt;p&gt;此时的矩阵$G$满足随机性（stochastic）、不可约性（irreducible）和非周期性（aperiodic），所以可以根据幂法（Power Method）找到一个平稳概率分布$\pi^T$，$\pi^T_i$就衡量了网页$P_i$的重要性或者权威性。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>调查问卷的有效性（2）相对误差</title>
       <link>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/</link>
       <pubDate>Sat, 23 Jul 2016 16:21:54 +0800</pubDate>
       <guid>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/</guid>
-      <description>$$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;上一回我们讲到当\(p\)本身很小的时候，容易被5%（绝对误差）给淹没掉，导致结果的不可信。我们可以引入相对误差，把(1)式转换为如下的不等式&lt;/p&gt;
+      <description>$$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;&lt;a href=&#34;https://bitjoy.net/posts/2016-07-23-the-validity-of-the-questionnaire-1/&#34;&gt;上一回&lt;/a&gt;我们讲到当\(p\)本身很小的时候，容易被5%（绝对误差）给淹没掉，导致结果的不可信。我们可以引入相对误差，把(1)式转换为如下的不等式&lt;/p&gt;
 $$\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$&lt;p&gt;同理，我们可以用&lt;/p&gt;
-$$\begin{equation}\hat{p}=\frac{x_1+x_2+…+x_n}{n}\end{equation}$$&lt;p&gt;代替\(\hat{p}\)（建议先看上一篇博客），转换为&lt;/p&gt;
+$$\begin{equation}\hat{p}=\frac{x_1+x_2+…+x_n}{n}\end{equation}$$&lt;p&gt;代替\(\hat{p}\)（建议先看&lt;a href=&#34;https://bitjoy.net/posts/2016-07-23-the-validity-of-the-questionnaire-1/&#34;&gt;上一篇博客&lt;/a&gt;），转换为&lt;/p&gt;
 $$\begin{equation}Pr(|X-np|\geq\delta np)\end{equation}$$&lt;p&gt;类似的，\(X=x_1+x_2+…+x_n\)，\(E(X)=\mu=np\)，所以(4)式等价为&lt;/p&gt;
-$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\end{equation}$$&lt;p&gt;这个时候，因为不等号右边和均值\(\mu\)有关，不能再用切比雪夫不等式了，我们需要另外一个武器：Chernoff bound。它有两种形式：&lt;/p&gt;
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\end{equation}$$&lt;p&gt;这个时候，因为不等号右边和均值\(\mu\)有关，不能再用切比雪夫不等式了，我们需要另外一个武器：&lt;a href=&#34;https://en.wikipedia.org/wiki/Chernoff_bound&#34;&gt;Chernoff bound&lt;/a&gt;。它有两种形式：&lt;/p&gt;
 $$\begin{equation}Pr(X\geq (1+\delta)\mu)\leq[\frac{e^\delta}{(1+\delta)^{1+\delta}}]^\mu\leq e^{-\frac{\mu}{3}\delta^2}\quad\forall\delta&gt;0\end{equation}$$$$\begin{equation}Pr(X\leq (1-\delta)\mu)\leq[\frac{e^{-\delta}}{(1-\delta)^{1-\delta}}]^\mu\leq e^{-\frac{\mu}{2}\delta^2}\quad\forall 0&lt;\delta&lt;1\end{equation}$$&lt;p&gt;Chernoff bound的证明需要用到马尔可夫不等式，有一点技巧。以上两种形式可以统一成&lt;/p&gt;
 $$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\end{equation}$$&lt;p&gt;也是一个很漂亮的不等式。&lt;/p&gt;
 &lt;p&gt;利用Chernoff bound求解(5)式：&lt;/p&gt;
@@ -40,8 +79,8 @@ $$\begin{equation}E(x_i)=p\quad E(x_i^2)=p\quad Var(x_i)=p(1-p)\end{equation}$$&
 $$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;把(1)式代入(3)式，用\(\frac{1}{20}\)代替5%，得到等价形式：&lt;/p&gt;
 $$\begin{equation}Pr(|(\frac{x_1+x_2+…+x_n}{n})-p|\geq\frac{1}{20})\\ \Longleftrightarrow~Pr(|X-np|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;其中\(X=x_1+x_2+…+x_n\)。根据期望的线性可加性，有&lt;/p&gt;
 $$\begin{equation}E(X)=E(x_1+x_2+…+x_n)=E(x_1)+E(x_2)+…+E(x_n)=np\end{equation}$$&lt;p&gt;所以(4)又等价于&lt;/p&gt;
-$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：&lt;/p&gt;
-$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
+$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的&lt;a href=&#34;https://en.wikipedia.org/wiki/Chebyshev%27s_inequality&#34;&gt;切比雪夫不等式&lt;/a&gt;来求解上式，切比雪夫不等式如下：&lt;/p&gt;
+$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由&lt;a href=&#34;https://en.wikipedia.org/wiki/Markov%27s_inequality&#34;&gt;马尔可夫不等式&lt;/a&gt;得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
 &lt;p&gt;利用切比雪夫不等式求解(6)式&lt;/p&gt;
 $$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\leq\frac{Var(X)}{n^2}*400\\ =\frac{n*Var(x_i)}{n^2}*400\\ =\frac{p(1-p)}{n}*400\\ \leq\frac{1/4}{n}*400=\frac{100}{n} \end{equation}$$&lt;p&gt;第一个等号是因为\(n\)个变量是独立同分布的，所以方差也有类似于(5)式的线性性质。最后一个不等号是因为\(p(1-p)\)是一个开口向下的抛物线，在\(p=1/2\)时取到极值\(1/4\)。&lt;/p&gt;
 &lt;p&gt;回到最初的不等式(3)，则(8)式要满足\(\frac{100}{n}\leq 5\%\)，解得\(n\geq 2000\)。注意到求出的\(n\)和总体人数是无关的，也就是说，虽然全中国有十几亿人口，但是央视只要随机抽样调查2000个人的收视情况，就能以比较高的概率准确估计出全国的收视率。&lt;/p&gt;

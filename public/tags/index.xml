@@ -142,6 +142,41 @@
       <description></description>
     </item>
     <item>
+      <title>Google</title>
+      <link>http://localhost:1313/tags/google/</link>
+      <pubDate>Thu, 04 Aug 2016 16:38:33 +0800</pubDate>
+      <guid>http://localhost:1313/tags/google/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>PageRank</title>
+      <link>http://localhost:1313/tags/pagerank/</link>
+      <pubDate>Thu, 04 Aug 2016 16:38:33 +0800</pubDate>
+      <guid>http://localhost:1313/tags/pagerank/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>搜索引擎</title>
+      <link>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</link>
+      <pubDate>Thu, 04 Aug 2016 16:38:33 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>马尔科夫</title>
+      <link>http://localhost:1313/tags/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB/</link>
+      <pubDate>Thu, 04 Aug 2016 16:38:33 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>高级算法</title>
+      <link>http://localhost:1313/tags/%E9%AB%98%E7%BA%A7%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Thu, 04 Aug 2016 16:38:33 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E9%AB%98%E7%BA%A7%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Chernoff Bound</title>
       <link>http://localhost:1313/tags/chernoff-bound/</link>
       <pubDate>Sat, 23 Jul 2016 16:21:54 +0800</pubDate>
@@ -160,13 +195,6 @@
       <link>http://localhost:1313/tags/%E8%B0%83%E6%9F%A5%E9%97%AE%E5%8D%B7/</link>
       <pubDate>Sat, 23 Jul 2016 16:21:54 +0800</pubDate>
       <guid>http://localhost:1313/tags/%E8%B0%83%E6%9F%A5%E9%97%AE%E5%8D%B7/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>高级算法</title>
-      <link>http://localhost:1313/tags/%E9%AB%98%E7%BA%A7%E7%AE%97%E6%B3%95/</link>
-      <pubDate>Sat, 23 Jul 2016 16:21:54 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E9%AB%98%E7%BA%A7%E7%AE%97%E6%B3%95/</guid>
       <description></description>
     </item>
     <item>
@@ -307,13 +335,6 @@
       <link>http://localhost:1313/tags/%E7%AE%97%E6%B3%95/</link>
       <pubDate>Fri, 29 Jan 2016 17:07:11 +0800</pubDate>
       <guid>http://localhost:1313/tags/%E7%AE%97%E6%B3%95/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>搜索引擎</title>
-      <link>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</link>
-      <pubDate>Sat, 09 Jan 2016 23:52:13 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</guid>
       <description></description>
     </item>
     <item>
