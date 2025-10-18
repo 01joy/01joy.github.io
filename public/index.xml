@@ -448,6 +448,22 @@ This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
 &lt;p&gt;欢迎评论，如需私信请联系: &lt;a href=&#34;mailto:bitjoy@163.com&#34;&gt;bitjoy@163.com&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
+      <title>调查问卷的有效性（2）相对误差</title>
+      <link>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/</link>
+      <pubDate>Sat, 23 Jul 2016 16:21:54 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/</guid>
+      <description>$$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;&lt;a href=&#34;https://bitjoy.net/posts/2016-07-23-the-validity-of-the-questionnaire-1/&#34;&gt;上一回&lt;/a&gt;我们讲到当\(p\)本身很小的时候，容易被5%（绝对误差）给淹没掉，导致结果的不可信。我们可以引入相对误差，把(1)式转换为如下的不等式&lt;/p&gt;
+$$\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$&lt;p&gt;同理，我们可以用&lt;/p&gt;
+$$\begin{equation}\hat{p}=\frac{x_1+x_2+…+x_n}{n}\end{equation}$$&lt;p&gt;代替\(\hat{p}\)（建议先看&lt;a href=&#34;https://bitjoy.net/posts/2016-07-23-the-validity-of-the-questionnaire-1/&#34;&gt;上一篇博客&lt;/a&gt;），转换为&lt;/p&gt;
+$$\begin{equation}Pr(|X-np|\geq\delta np)\end{equation}$$&lt;p&gt;类似的，\(X=x_1+x_2+…+x_n\)，\(E(X)=\mu=np\)，所以(4)式等价为&lt;/p&gt;
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\end{equation}$$&lt;p&gt;这个时候，因为不等号右边和均值\(\mu\)有关，不能再用切比雪夫不等式了，我们需要另外一个武器：&lt;a href=&#34;https://en.wikipedia.org/wiki/Chernoff_bound&#34;&gt;Chernoff bound&lt;/a&gt;。它有两种形式：&lt;/p&gt;
+$$\begin{equation}Pr(X\geq (1+\delta)\mu)\leq[\frac{e^\delta}{(1+\delta)^{1+\delta}}]^\mu\leq e^{-\frac{\mu}{3}\delta^2}\quad\forall\delta&gt;0\end{equation}$$$$\begin{equation}Pr(X\leq (1-\delta)\mu)\leq[\frac{e^{-\delta}}{(1-\delta)^{1-\delta}}]^\mu\leq e^{-\frac{\mu}{2}\delta^2}\quad\forall 0&lt;\delta&lt;1\end{equation}$$&lt;p&gt;Chernoff bound的证明需要用到马尔可夫不等式，有一点技巧。以上两种形式可以统一成&lt;/p&gt;
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\end{equation}$$&lt;p&gt;也是一个很漂亮的不等式。&lt;/p&gt;
+&lt;p&gt;利用Chernoff bound求解(5)式：&lt;/p&gt;
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\\=2e^{-\frac{np}{3}\delta^2}\leq\epsilon\end{equation}$$&lt;p&gt;解得&lt;/p&gt;
+$$\begin{equation}n\geq\left\lceil\frac{3ln\frac{2}{\epsilon}}{p\delta^2}\right\rceil\end{equation}$$&lt;p&gt;这个结果看起来就很复杂了。也就是说，如果要设计调查问卷使满足(2)式的精度，抽样的样本数必须满足(10)式。从(10)式可知，当要求的精度越高（即\(\delta\)和\(\epsilon\)越小），所需的样本数越大。并且结果还和真实值\(p\)有关。&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>调查问卷的有效性（1）绝对误差</title>
       <link>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-1/</link>
       <pubDate>Sat, 23 Jul 2016 16:01:59 +0800</pubDate>
@@ -463,8 +479,8 @@ $$\begin{equation}E(x_i)=p\quad E(x_i^2)=p\quad Var(x_i)=p(1-p)\end{equation}$$&
 $$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;把(1)式代入(3)式，用\(\frac{1}{20}\)代替5%，得到等价形式：&lt;/p&gt;
 $$\begin{equation}Pr(|(\frac{x_1+x_2+…+x_n}{n})-p|\geq\frac{1}{20})\\ \Longleftrightarrow~Pr(|X-np|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;其中\(X=x_1+x_2+…+x_n\)。根据期望的线性可加性，有&lt;/p&gt;
 $$\begin{equation}E(X)=E(x_1+x_2+…+x_n)=E(x_1)+E(x_2)+…+E(x_n)=np\end{equation}$$&lt;p&gt;所以(4)又等价于&lt;/p&gt;
-$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：&lt;/p&gt;
-$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
+$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的&lt;a href=&#34;https://en.wikipedia.org/wiki/Chebyshev%27s_inequality&#34;&gt;切比雪夫不等式&lt;/a&gt;来求解上式，切比雪夫不等式如下：&lt;/p&gt;
+$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由&lt;a href=&#34;https://en.wikipedia.org/wiki/Markov%27s_inequality&#34;&gt;马尔可夫不等式&lt;/a&gt;得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
 &lt;p&gt;利用切比雪夫不等式求解(6)式&lt;/p&gt;
 $$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\leq\frac{Var(X)}{n^2}*400\\ =\frac{n*Var(x_i)}{n^2}*400\\ =\frac{p(1-p)}{n}*400\\ \leq\frac{1/4}{n}*400=\frac{100}{n} \end{equation}$$&lt;p&gt;第一个等号是因为\(n\)个变量是独立同分布的，所以方差也有类似于(5)式的线性性质。最后一个不等号是因为\(p(1-p)\)是一个开口向下的抛物线，在\(p=1/2\)时取到极值\(1/4\)。&lt;/p&gt;
 &lt;p&gt;回到最初的不等式(3)，则(8)式要满足\(\frac{100}{n}\leq 5\%\)，解得\(n\geq 2000\)。注意到求出的\(n\)和总体人数是无关的，也就是说，虽然全中国有十几亿人口，但是央视只要随机抽样调查2000个人的收视情况，就能以比较高的概率准确估计出全国的收视率。&lt;/p&gt;
