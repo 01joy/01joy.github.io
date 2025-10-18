@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>切比雪夫不等式 on bitJoy</title>
+    <link>http://localhost:1313/tags/%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E4%B8%8D%E7%AD%89%E5%BC%8F/</link>
+    <description>Recent content in 切比雪夫不等式 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 23 Jul 2016 16:01:59 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E5%88%87%E6%AF%94%E9%9B%AA%E5%A4%AB%E4%B8%8D%E7%AD%89%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>调查问卷的有效性（1）绝对误差</title>
+      <link>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-1/</link>
+      <pubDate>Sat, 23 Jul 2016 16:01:59 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-1/</guid>
+      <description>&lt;p&gt;每年春晚过后，央视又要吹嘘说今年春晚收视率创新高了，但是我们总感觉央视在骗我们，因为我是越长大越不看春晚了[笑cry]，所以收视率到底是怎么统计出来的，央视的说法是否靠谱呢？&lt;/p&gt;
+&lt;p&gt;最近的美国大选真是热闹，很多机构都会发放一些调查问卷，然后统计出希拉里或者唐纳德的民众支持率是多少，但是我并没有收到调查问卷，凭什么就得出了民众支持率了，意思是把我排除在民众之外咯？所以引出这样一个问题，调查问卷是否可信，即调查问卷的有效性。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/www.carp.ca/wp-content/uploads/2012/08/questionnaire1.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;其实，央视统计收视率并不要问全中国14亿人口有多少人看了春晚，他只需要从14亿人口里面随机抽&lt;/p&gt;
+$$n$$&lt;p&gt;个人，问一下这&lt;/p&gt;
+$$n$$&lt;p&gt;个人里有多少人看了春晚，然后把看的人数除以总数就大概估计出全国的收视率了。同理调查民众支持率也是一样，只需要随机调查&lt;/p&gt;
+$$n$$&lt;p&gt;个人的意向，把支持希拉里的人数除以总数就大概得到了希拉里的支持率。&lt;/p&gt;
+&lt;p&gt;但是你要问了，通过抽样调查出来的收视率和支持率靠谱吗，需要随机抽样多少人才能得到一个比较好的全局近似解呢？今天我们就来解决这个问题。&lt;/p&gt;
+&lt;p&gt;假设我们随机抽样了&lt;/p&gt;
+$$n$$&lt;p&gt;个人，分别是&lt;/p&gt;
+$$x_1,x_2,…,x_n$$&lt;p&gt;。如果第&lt;/p&gt;
+$$i$$&lt;p&gt;个人看了春晚，则&lt;/p&gt;
+$$x_i=1$$&lt;p&gt;，否则&lt;/p&gt;
+$$x_i=0$$&lt;p&gt;。那么通过这&lt;/p&gt;
+$$n$$&lt;p&gt;个人的收视情况，我们可以估计出一个收视率&lt;/p&gt;
+$$!\begin{equation}\hat{p}=\frac{x_1+x_2+…+x_n}{n}\end{equation}$$&lt;p&gt;假设全国的真实收视率是&lt;/p&gt;
+$$p$$&lt;p&gt;，那么平均到每一个人，他看了春晚的概率就是&lt;/p&gt;
+$$p$$&lt;p&gt;，也即&lt;/p&gt;
+$$Pr(x_i=1)=p$$&lt;p&gt;，所以有&lt;/p&gt;
+$$!\begin{equation}E(x_i)=p\quad E(x_i^2)=p\quad Var(x_i)=p(1-p)\end{equation}$$&lt;p&gt;我们的目的就是希望通过&lt;/p&gt;
+$$n$$&lt;p&gt;个人估计出来的&lt;/p&gt;
+$$\hat{p}$$&lt;p&gt;和&lt;/p&gt;
+$$p$$&lt;p&gt;越接近越好。换句话说，我们希望&lt;/p&gt;
+$$\hat{p}$$&lt;p&gt;和&lt;/p&gt;
+$$p$$&lt;p&gt;相差大于5%的概率要小于5%。再换句话说就是有至少95%的概率，&lt;/p&gt;
+$$\hat{p}$$&lt;p&gt;和&lt;/p&gt;
+$$p$$&lt;p&gt;相差在5%以内，即&lt;/p&gt;
+$$\hat{p}$$&lt;p&gt;和&lt;/p&gt;
+$$p$$&lt;p&gt;很接近。注意这里的两个5%都是可以换成任意你想要的精度。用数学语言表示就是，&lt;/p&gt;
+$$n$$&lt;p&gt;至少为多少时，以下不等式可以被满足。&lt;/p&gt;
+$$!\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;把(1)式代入(3)式，用&lt;/p&gt;
+$$\frac{1}{20}$$&lt;p&gt;代替5%，得到等价形式：&lt;/p&gt;
+$$!\begin{equation}Pr(|(\frac{x_1+x_2+…+x_n}{n})-p|\geq\frac{1}{20})\\ \Longleftrightarrow~Pr(|X-np|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;其中&lt;/p&gt;
+$$X=x_1+x_2+…+x_n$$&lt;p&gt;。根据期望的线性可加性，有&lt;/p&gt;
+$$!\begin{equation}E(X)=E(x_1+x_2+…+x_n)=E(x_1)+E(x_2)+…+E(x_n)=np\end{equation}$$&lt;p&gt;所以(4)又等价于&lt;/p&gt;
+$$!\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：&lt;/p&gt;
+$$!\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
+&lt;p&gt;利用切比雪夫不等式求解(6)式&lt;/p&gt;
+$$!\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\leq\frac{Var(X)}{n^2}*400\\ =\frac{n*Var(x_i)}{n^2}*400\\ =\frac{p(1-p)}{n}*400\\ \leq\frac{1/4}{n}*400=\frac{100}{n} \end{equation}$$&lt;p&gt;第一个等号是因为&lt;/p&gt;
+$$n$$&lt;p&gt;个变量是独立同分布的，所以方差也有类似于(5)式的线性性质。最后一个不等号是因为&lt;/p&gt;
+$$p(1-p)$$&lt;p&gt;是一个开口向下的抛物线，在&lt;/p&gt;
+$$p=1/2$$&lt;p&gt;时取到极值&lt;/p&gt;
+$$1/4$$&lt;p&gt;。&lt;/p&gt;
+&lt;p&gt;回到最初的不等式(3)，则(8)式要满足&lt;/p&gt;
+$$\frac{100}{n}\leq 5\%$$&lt;p&gt;，解得&lt;/p&gt;
+$$n\geq 2000$$&lt;p&gt;。注意到求出的&lt;/p&gt;
+$$n$$&lt;p&gt;和总体人数是无关的，也就是说，虽然全中国有十几亿人口，但是央视只要随机抽样调查2000个人的收视情况，就能以比较高的概率准确估计出全国的收视率。&lt;/p&gt;
+&lt;p&gt;这个结论还是很漂亮的，但是这种方法有两个限制条件：&lt;/p&gt;
+&lt;p&gt;采样满足独立同分布，即这&lt;/p&gt;
+$$n$$&lt;p&gt;个人是独立同分布的，不能针对某一特定人群调查
+(3)式的5%是一个绝对误差，当&lt;/p&gt;
+$$p$$&lt;p&gt;本身很小的时候，容易被5%淹没
+对于第1个问题，稍微好处理一点，抽样的时候尽量随机一点。对于第2个问题，比较好的解决办法是引入相对误差，即把(3)式转换为如下的不等式&lt;/p&gt;
+$$!\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$&lt;p&gt;(9)式的求解就比较复杂了，得出的结论也没有上面那么简单，具体的求解方法请听下回分解。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

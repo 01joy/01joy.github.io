@@ -33,27 +33,27 @@
 &lt;p&gt;令\(k\)是\(N\rightarrow N\)的一个函数，我们称语言\(L\)属于\(IP[k]\)，如果存在一个\(k(|x|)\)多项式时间概率图灵机TM \(V\)，使得：&lt;/p&gt;
 $$
 \begin{equation}
+\begin{cases}
 x\in L \Longrightarrow\exists P\quad Pr[V \text{ accepts }x, V(x)=1]\geq 2/3 \\
 x\notin L \Longrightarrow\forall P\quad Pr[V \text{ accepts }x, V(x)=1]\leq 1/3
+\end{cases}
 \end{equation}
 $$&lt;p&gt;定义&lt;/p&gt;
 $$IP=\underset{c}{\bigcup} IP[n^c]$$&lt;p&gt;上述定义的第一条称为“完备性”（Completeness）：如果\(x\in L\)，则存在一个证明者P（prover），使得验证者V（verfier）能以多项式时间接受\(x\)，且接受的概率大于2/3；第二条称为“可靠性”（Soundness），如果\(x\notin L\)，则对于所有证明者P，V接受\(x\)的概率都不会超过1/3。&lt;/p&gt;
 &lt;p&gt;对应到上面的例子，完备性：当两只袜子的颜色确实不同时，V接受的概率为1&amp;gt;2/3；可靠性：当两只袜子的颜色相同时，重复100次实验，V接受的概率只有\((1/2)^{100}&lt;1/3\)。&lt;/p&gt;
 &lt;p&gt;IP这个复杂性类就是所有IP[k]的并集。在IP中，P的能力是无穷的，但它不一定是诚实的；V能力较弱，只能进行多项式时间的计算。&lt;/p&gt;
 &lt;p&gt;下面我们给出另外两个交互式证明的协议。&lt;/p&gt;
-&lt;p&gt;图不同构（Graph Non-isomorphism, GNI）的交互式证明&lt;/p&gt;
-&lt;p&gt;如果图&lt;/p&gt;
-$$G_1$$&lt;p&gt;和&lt;/p&gt;
-$$G_2$$&lt;p&gt;可以通过对顶点进行恰当标记来将它们转换为同一个图，则称&lt;/p&gt;
-$$G_1$$&lt;p&gt;和&lt;/p&gt;
-$$G_2$$&lt;p&gt;同构，记为&lt;/p&gt;
-$$G_1\cong G_2$$&lt;p&gt;。换句话说，如果&lt;/p&gt;
-$$G_1$$&lt;p&gt;和&lt;/p&gt;
-$$G_2$$&lt;p&gt;同构，则在&lt;/p&gt;
-$$G_1$$&lt;p&gt;的所有顶点标签上存在一个置换&lt;/p&gt;
-$$\pi$$&lt;p&gt;使得&lt;/p&gt;
-$$\pi (G_1)=G_2$$&lt;p&gt;，其中&lt;/p&gt;
-$$\pi (G_1)$$&lt;p&gt;是将&lt;/p&gt;</description>
+&lt;h1 id=&#34;图不同构graph-non-isomorphism-gni的交互式证明&#34;&gt;图不同构（Graph Non-isomorphism, GNI）的交互式证明&lt;/h1&gt;
+&lt;p&gt;如果图\(G_1\)和\(G_2\)可以通过对顶点进行恰当标记来将它们转换为同一个图，则称\(G_1\)和\(G_2\)同构，记为\(G_1\cong G_2\)。换句话说，如果\(G_1\)和\(G_2\)同构，则在\(G_1\)的所有顶点标签上存在一个置换\(\pi\)使得\(\pi (G_1)=G_2\)，其中\(\pi (G_1)\)是将\(\pi\)作用到\(G_1\)的各个顶点上之后得到的图。下图就是两个同构图，右边给出了置换\(\pi\)。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;isomorphism graph&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-07-14-the-interesting-interactive-proofs/isomorphism-graph.webp&#34;&gt;&lt;/p&gt;
+&lt;p&gt;图同构的补集为图不同构（Graph Non-isomorphism, GNI），即判定给定的两个图是否不同构。下面是GNI的一个交互式证明过程。&lt;/p&gt;
+&lt;p&gt;给定两个图\(G_1\)和\(G_2\)，证明者P想要向验证者V证明\(G_1\ncong G_2\)。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;V：随机选一个\(i\in \{1,2\}\)，对\(G_i\)做一个随机的置换，得到新图\(H\)，则有\(H\cong G_i\)，将\(H\)发送给P&lt;/li&gt;
+&lt;li&gt;P：发送\(j\)给V&lt;/li&gt;
+&lt;li&gt;V：如果\(i\neq j\)，则拒绝；否则重复100次实验，都有\(i==j\)，则相信\(G_1\ncong G_2\)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;完备性：如果\(G_1\ncong G_2\)，则\(H\)只和\(G_1, G_2\)中的一个图同构，P因为能力无穷，一定能找出和\(H\)同构的图\(G_j\)，且满足\(j==i\)。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

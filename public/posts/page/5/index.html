@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>零知识证明 | bitJoy</title>
+<title>Posts | bitJoy</title>
 <meta name="keywords" content="">
-<meta name="description" content="">
+<meta name="description" content="Posts - bitJoy">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/tags/%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E/">
+<link rel="canonical" href="http://localhost:1313/posts/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/posts/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/">
 <noscript>
     <style>
         #theme-toggle,
@@ -145,38 +145,29 @@
 <main class="main"> 
 <header class="page-header">
   <h1>
-    零知识证明
+    Posts
   </h1>
 </header>
 
-<article class="post-entry tag-entry"> 
+<article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">有趣的交互式证明
+    <h2 class="entry-hint-parent">Git相关笔记
     </h2>
   </header>
   <div class="entry-content">
-    <p>你是否想过如下问题：怎样向色盲证明两只袜子的颜色是不一样的？怎样证明两个图是不同构的？怎样证明一个数是二次非剩余的？
-咋听起来觉得很有意思吧，色盲是区分不了颜色的，怎么能让他相信两只袜子的颜色不一样呢。图同构问题目前既没有被证明属于P，也没有被证明属于NP-Complete。二次非剩余问题也没有被证明属于NP。
-这些听起来很“难”的问题，却可以通过交互式证明进行证明，下面先通过“向色盲证明两只袜子的颜色不同”这个有趣的例子一窥交互式证明的强大。
-向色盲证明两只袜子的颜色不同 P有一只红袜子和黄袜子，她的一个色盲朋友V不相信P的袜子颜色不同，P如何才能让V相信这是真的呢？一个简单的办法如下：
-P把两只袜子给V，V每只手拿了一只袜子 P转过身背对V V抛一枚硬币，如果头面朝上，则保持两只袜子不动，否则交换左右手的袜子 P转过身，V问P是否交换过袜子 如果P回答错误，则V不相信；否则，重复100次实验，如果P都回答正确，则V相信这两只袜子是不同颜色的 如果两只袜子的颜色确实不一样，则P通过区分两只袜子的颜色能正确回答V有没有交换过袜子。但是如果两只袜子颜色一样，则不管V有没有交换过，P都无法分辨这两只袜子，所以只好猜V有没有交换，而猜对的概率只有1/2，重复100次，都猜对的概率只有\((1/2)^{100}\)，这是一个非常小的数，可以认为几乎不会发生，即出错的概率极低。
-这就是交互式证明的一个例子，上述证明有三个特点：1）交互过程，整个证明需要P和V进行交互才能完成；2）具有随机性，即V需要抛一枚硬币，来决定是否交换袜子；3）零知识，虽然V最终相信了这两只袜子是不同颜色的，但V还是不知道这两只袜子是什么颜色的。
-下面我们给出交互式证明的形式化定义。
-交互式证明（Interactive Proofs, IP） 令\(k\)是\(N\rightarrow N\)的一个函数，我们称语言\(L\)属于\(IP[k]\)，如果存在一个\(k(|x|)\)多项式时间概率图灵机TM \(V\)，使得：
-$$ \begin{equation} \begin{cases} x\in L \Longrightarrow\exists P\quad Pr[V \text{ accepts }x, V(x)=1]\geq 2/3 \\ x\notin L \Longrightarrow\forall P\quad Pr[V \text{ accepts }x, V(x)=1]\leq 1/3 \end{cases} \end{equation} $$定义
-$$IP=\underset{c}{\bigcup} IP[n^c]$$上述定义的第一条称为“完备性”（Completeness）：如果\(x\in L\)，则存在一个证明者P（prover），使得验证者V（verfier）能以多项式时间接受\(x\)，且接受的概率大于2/3；第二条称为“可靠性”（Soundness），如果\(x\notin L\)，则对于所有证明者P，V接受\(x\)的概率都不会超过1/3。
-对应到上面的例子，完备性：当两只袜子的颜色确实不同时，V接受的概率为1&gt;2/3；可靠性：当两只袜子的颜色相同时，重复100次实验，V接受的概率只有\((1/2)^{100}&lt;1/3\)。
-IP这个复杂性类就是所有IP[k]的并集。在IP中，P的能力是无穷的，但它不一定是诚实的；V能力较弱，只能进行多项式时间的计算。
-下面我们给出另外两个交互式证明的协议。
-图不同构（Graph Non-isomorphism, GNI）的交互式证明 如果图\(G_1\)和\(G_2\)可以通过对顶点进行恰当标记来将它们转换为同一个图，则称\(G_1\)和\(G_2\)同构，记为\(G_1\cong G_2\)。换句话说，如果\(G_1\)和\(G_2\)同构，则在\(G_1\)的所有顶点标签上存在一个置换\(\pi\)使得\(\pi (G_1)=G_2\)，其中\(\pi (G_1)\)是将\(\pi\)作用到\(G_1\)的各个顶点上之后得到的图。下图就是两个同构图，右边给出了置换\(\pi\)。
-图同构的补集为图不同构（Graph Non-isomorphism, GNI），即判定给定的两个图是否不同构。下面是GNI的一个交互式证明过程。
-给定两个图\(G_1\)和\(G_2\)，证明者P想要向验证者V证明\(G_1\ncong G_2\)。
-V：随机选一个\(i\in \{1,2\}\)，对\(G_i\)做一个随机的置换，得到新图\(H\)，则有\(H\cong G_i\)，将\(H\)发送给P P：发送\(j\)给V V：如果\(i\neq j\)，则拒绝；否则重复100次实验，都有\(i==j\)，则相信\(G_1\ncong G_2\) 完备性：如果\(G_1\ncong G_2\)，则\(H\)只和\(G_1, G_2\)中的一个图同构，P因为能力无穷，一定能找出和\(H\)同构的图\(G_j\)，且满足\(j==i\)。
+    <p>一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： 1 2 3 4 5 6 git init touch README.md #optional git add . git commit -m &#39;your comment&#39; git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2016-07-14 20:56:37 +0800 CST'>July 14, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 有趣的交互式证明" href="http://localhost:1313/posts/2016-07-14-the-interesting-interactive-proofs/"></a>
+  <footer class="entry-footer"><span title='2014-11-11 23:12:34 +0800 CST'>November 11, 2014</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Git相关笔记" href="http://localhost:1313/posts/2014-11-11-git-notes/"></a>
 </article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="http://localhost:1313/posts/page/4/">
+      «&nbsp;Prev&nbsp;4/5
+    </a>
+  </nav>
+</footer>
     </main>
     
 <footer class="footer">
