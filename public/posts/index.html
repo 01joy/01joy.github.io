@@ -295,6 +295,69 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">调查问卷的有效性（1）绝对误差
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>每年春晚过后，央视又要吹嘘说今年春晚收视率创新高了，但是我们总感觉央视在骗我们，因为我是越长大越不看春晚了[笑cry]，所以收视率到底是怎么统计出来的，央视的说法是否靠谱呢？
+最近的美国大选真是热闹，很多机构都会发放一些调查问卷，然后统计出希拉里或者唐纳德的民众支持率是多少，但是我并没有收到调查问卷，凭什么就得出了民众支持率了，意思是把我排除在民众之外咯？所以引出这样一个问题，调查问卷是否可信，即调查问卷的有效性。
+其实，央视统计收视率并不要问全中国14亿人口有多少人看了春晚，他只需要从14亿人口里面随机抽
+$$n$$个人，问一下这
+$$n$$个人里有多少人看了春晚，然后把看的人数除以总数就大概估计出全国的收视率了。同理调查民众支持率也是一样，只需要随机调查
+$$n$$个人的意向，把支持希拉里的人数除以总数就大概得到了希拉里的支持率。
+但是你要问了，通过抽样调查出来的收视率和支持率靠谱吗，需要随机抽样多少人才能得到一个比较好的全局近似解呢？今天我们就来解决这个问题。
+假设我们随机抽样了
+$$n$$个人，分别是
+$$x_1,x_2,…,x_n$$。如果第
+$$i$$个人看了春晚，则
+$$x_i=1$$，否则
+$$x_i=0$$。那么通过这
+$$n$$个人的收视情况，我们可以估计出一个收视率
+$$!\begin{equation}\hat{p}=\frac{x_1&#43;x_2&#43;…&#43;x_n}{n}\end{equation}$$假设全国的真实收视率是
+$$p$$，那么平均到每一个人，他看了春晚的概率就是
+$$p$$，也即
+$$Pr(x_i=1)=p$$，所以有
+$$!\begin{equation}E(x_i)=p\quad E(x_i^2)=p\quad Var(x_i)=p(1-p)\end{equation}$$我们的目的就是希望通过
+$$n$$个人估计出来的
+$$\hat{p}$$和
+$$p$$越接近越好。换句话说，我们希望
+$$\hat{p}$$和
+$$p$$相差大于5%的概率要小于5%。再换句话说就是有至少95%的概率，
+$$\hat{p}$$和
+$$p$$相差在5%以内，即
+$$\hat{p}$$和
+$$p$$很接近。注意这里的两个5%都是可以换成任意你想要的精度。用数学语言表示就是，
+$$n$$至少为多少时，以下不等式可以被满足。
+$$!\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$把(1)式代入(3)式，用
+$$\frac{1}{20}$$代替5%，得到等价形式：
+$$!\begin{equation}Pr(|(\frac{x_1&#43;x_2&#43;…&#43;x_n}{n})-p|\geq\frac{1}{20})\\ \Longleftrightarrow~Pr(|X-np|\geq\frac{n}{20})\end{equation}$$其中
+$$X=x_1&#43;x_2&#43;…&#43;x_n$$。根据期望的线性可加性，有
+$$!\begin{equation}E(X)=E(x_1&#43;x_2&#43;…&#43;x_n)=E(x_1)&#43;E(x_2)&#43;…&#43;E(x_n)=np\end{equation}$$所以(4)又等价于
+$$!\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：
+$$!\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。
+利用切比雪夫不等式求解(6)式
+$$!\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\leq\frac{Var(X)}{n^2}*400\\ =\frac{n*Var(x_i)}{n^2}*400\\ =\frac{p(1-p)}{n}*400\\ \leq\frac{1/4}{n}*400=\frac{100}{n} \end{equation}$$第一个等号是因为
+$$n$$个变量是独立同分布的，所以方差也有类似于(5)式的线性性质。最后一个不等号是因为
+$$p(1-p)$$是一个开口向下的抛物线，在
+$$p=1/2$$时取到极值
+$$1/4$$。
+回到最初的不等式(3)，则(8)式要满足
+$$\frac{100}{n}\leq 5\%$$，解得
+$$n\geq 2000$$。注意到求出的
+$$n$$和总体人数是无关的，也就是说，虽然全中国有十几亿人口，但是央视只要随机抽样调查2000个人的收视情况，就能以比较高的概率准确估计出全国的收视率。
+这个结论还是很漂亮的，但是这种方法有两个限制条件：
+采样满足独立同分布，即这
+$$n$$个人是独立同分布的，不能针对某一特定人群调查 (3)式的5%是一个绝对误差，当
+$$p$$本身很小的时候，容易被5%淹没 对于第1个问题，稍微好处理一点，抽样的时候尽量随机一点。对于第2个问题，比较好的解决办法是引入相对误差，即把(3)式转换为如下的不等式
+$$!\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$(9)式的求解就比较复杂了，得出的结论也没有上面那么简单，具体的求解方法请听下回分解。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-07-23 16:01:59 +0800 CST'>July 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 调查问卷的有效性（1）绝对误差" href="http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-1/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">有趣的交互式证明
     </h2>
   </header>
@@ -307,60 +370,23 @@ P把两只袜子给V，V每只手拿了一只袜子 P转过身背对V V抛一枚
 这就是交互式证明的一个例子，上述证明有三个特点：1）交互过程，整个证明需要P和V进行交互才能完成；2）具有随机性，即V需要抛一枚硬币，来决定是否交换袜子；3）零知识，虽然V最终相信了这两只袜子是不同颜色的，但V还是不知道这两只袜子是什么颜色的。
 下面我们给出交互式证明的形式化定义。
 交互式证明（Interactive Proofs, IP） 令\(k\)是\(N\rightarrow N\)的一个函数，我们称语言\(L\)属于\(IP[k]\)，如果存在一个\(k(|x|)\)多项式时间概率图灵机TM \(V\)，使得：
-$$ \begin{equation} x\in L \Longrightarrow\exists P\quad Pr[V \text{ accepts }x, V(x)=1]\geq 2/3 \\ x\notin L \Longrightarrow\forall P\quad Pr[V \text{ accepts }x, V(x)=1]\leq 1/3 \end{equation} $$定义
+$$ \begin{equation} \begin{cases} x\in L \Longrightarrow\exists P\quad Pr[V \text{ accepts }x, V(x)=1]\geq 2/3 \\ x\notin L \Longrightarrow\forall P\quad Pr[V \text{ accepts }x, V(x)=1]\leq 1/3 \end{cases} \end{equation} $$定义
 $$IP=\underset{c}{\bigcup} IP[n^c]$$上述定义的第一条称为“完备性”（Completeness）：如果\(x\in L\)，则存在一个证明者P（prover），使得验证者V（verfier）能以多项式时间接受\(x\)，且接受的概率大于2/3；第二条称为“可靠性”（Soundness），如果\(x\notin L\)，则对于所有证明者P，V接受\(x\)的概率都不会超过1/3。
 对应到上面的例子，完备性：当两只袜子的颜色确实不同时，V接受的概率为1&gt;2/3；可靠性：当两只袜子的颜色相同时，重复100次实验，V接受的概率只有\((1/2)^{100}&lt;1/3\)。
 IP这个复杂性类就是所有IP[k]的并集。在IP中，P的能力是无穷的，但它不一定是诚实的；V能力较弱，只能进行多项式时间的计算。
 下面我们给出另外两个交互式证明的协议。
-图不同构（Graph Non-isomorphism, GNI）的交互式证明
-如果图
-$$G_1$$和
-$$G_2$$可以通过对顶点进行恰当标记来将它们转换为同一个图，则称
-$$G_1$$和
-$$G_2$$同构，记为
-$$G_1\cong G_2$$。换句话说，如果
-$$G_1$$和
-$$G_2$$同构，则在
-$$G_1$$的所有顶点标签上存在一个置换
-$$\pi$$使得
-$$\pi (G_1)=G_2$$，其中
-$$\pi (G_1)$$是将
+图不同构（Graph Non-isomorphism, GNI）的交互式证明 如果图\(G_1\)和\(G_2\)可以通过对顶点进行恰当标记来将它们转换为同一个图，则称\(G_1\)和\(G_2\)同构，记为\(G_1\cong G_2\)。换句话说，如果\(G_1\)和\(G_2\)同构，则在\(G_1\)的所有顶点标签上存在一个置换\(\pi\)使得\(\pi (G_1)=G_2\)，其中\(\pi (G_1)\)是将\(\pi\)作用到\(G_1\)的各个顶点上之后得到的图。下图就是两个同构图，右边给出了置换\(\pi\)。
+图同构的补集为图不同构（Graph Non-isomorphism, GNI），即判定给定的两个图是否不同构。下面是GNI的一个交互式证明过程。
+给定两个图\(G_1\)和\(G_2\)，证明者P想要向验证者V证明\(G_1\ncong G_2\)。
+V：随机选一个\(i\in \{1,2\}\)，对\(G_i\)做一个随机的置换，得到新图\(H\)，则有\(H\cong G_i\)，将\(H\)发送给P P：发送\(j\)给V V：如果\(i\neq j\)，则拒绝；否则重复100次实验，都有\(i==j\)，则相信\(G_1\ncong G_2\) 完备性：如果\(G_1\ncong G_2\)，则\(H\)只和\(G_1, G_2\)中的一个图同构，P因为能力无穷，一定能找出和\(H\)同构的图\(G_j\)，且满足\(j==i\)。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2016-07-14 20:56:37 +0800 CST'>July 14, 2016</span>&nbsp;·&nbsp;2 min</footer>
+  <footer class="entry-footer"><span title='2016-07-14 20:56:37 +0800 CST'>July 14, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 有趣的交互式证明" href="http://localhost:1313/posts/2016-07-14-the-interesting-interactive-proofs/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">LaTeX写作完美解决方案
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>
-\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
-我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
-目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
-MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
-MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
-如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
-构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
-Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
-Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
-正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
-另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
-OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
-下面是我常用的\(\LaTeX\)中文模板：
-LaTeXDemo.pdf
-LaTeXDemo.tex
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
-    <a class="next" href="http://localhost:1313/posts/page/2/">Next&nbsp;2/4&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/2/">Next&nbsp;2/5&nbsp;»
     </a>
   </nav>
 </footer>
