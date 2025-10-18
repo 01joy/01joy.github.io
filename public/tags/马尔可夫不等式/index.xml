@@ -24,8 +24,8 @@ $$\begin{equation}E(x_i)=p\quad E(x_i^2)=p\quad Var(x_i)=p(1-p)\end{equation}$$&
 $$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$&lt;p&gt;把(1)式代入(3)式，用\(\frac{1}{20}\)代替5%，得到等价形式：&lt;/p&gt;
 $$\begin{equation}Pr(|(\frac{x_1+x_2+…+x_n}{n})-p|\geq\frac{1}{20})\\ \Longleftrightarrow~Pr(|X-np|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;其中\(X=x_1+x_2+…+x_n\)。根据期望的线性可加性，有&lt;/p&gt;
 $$\begin{equation}E(X)=E(x_1+x_2+…+x_n)=E(x_1)+E(x_2)+…+E(x_n)=np\end{equation}$$&lt;p&gt;所以(4)又等价于&lt;/p&gt;
-$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的切比雪夫不等式来求解上式，切比雪夫不等式如下：&lt;/p&gt;
-$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由马尔可夫不等式得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
+$$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\end{equation}$$&lt;p&gt;我们需要利用著名的&lt;a href=&#34;https://en.wikipedia.org/wiki/Chebyshev%27s_inequality&#34;&gt;切比雪夫不等式&lt;/a&gt;来求解上式，切比雪夫不等式如下：&lt;/p&gt;
+$$\begin{equation}Pr(|X-E(X)|\geq~c)\leq\frac{Var(X)}{c^2}\end{equation}$$&lt;p&gt;切比雪夫不等式可以直接由&lt;a href=&#34;https://en.wikipedia.org/wiki/Markov%27s_inequality&#34;&gt;马尔可夫不等式&lt;/a&gt;得到，马尔可夫不等式的证明也不难，略过。&lt;/p&gt;
 &lt;p&gt;利用切比雪夫不等式求解(6)式&lt;/p&gt;
 $$\begin{equation}Pr(|X-E(X)|\geq\frac{n}{20})\leq\frac{Var(X)}{n^2}*400\\ =\frac{n*Var(x_i)}{n^2}*400\\ =\frac{p(1-p)}{n}*400\\ \leq\frac{1/4}{n}*400=\frac{100}{n} \end{equation}$$&lt;p&gt;第一个等号是因为\(n\)个变量是独立同分布的，所以方差也有类似于(5)式的线性性质。最后一个不等号是因为\(p(1-p)\)是一个开口向下的抛物线，在\(p=1/2\)时取到极值\(1/4\)。&lt;/p&gt;
 &lt;p&gt;回到最初的不等式(3)，则(8)式要满足\(\frac{100}{n}\leq 5\%\)，解得\(n\geq 2000\)。注意到求出的\(n\)和总体人数是无关的，也就是说，虽然全中国有十几亿人口，但是央视只要随机抽样调查2000个人的收视情况，就能以比较高的概率准确估计出全国的收视率。&lt;/p&gt;
