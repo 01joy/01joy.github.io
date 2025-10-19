@@ -151,6 +151,22 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Huffman编码压缩算法及其实现
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>哈弗曼编码是一个很经典的压缩算法，压缩率能达到50%，甚至更低。它的基本原理包括四个步骤：
+统计文件中每个字符出现的频率。 构建一个哈弗曼树。建树的过程是不断的合并频率最小的两个节点，父亲节点的频率为两个孩子节点的频率之和。如此循环直到合并成一个根节点。叶子节点为不同的字符及其频率。 生成哈弗曼编码。从树根开始对树进行编码，比如进入左孩子的边标记为0，进入右孩子的边标记为1，这里的0和1都是二进制位。这样之后，每个叶子节点都有一个唯一的二进制编码，这就是哈弗曼编码。频率越低的字符哈弗曼编码越长，频率越高的字符哈弗曼编码越短，这样就能起到压缩的效果。 第二遍扫描文件，把字符转换为对应的哈弗曼编码，保存成压缩文件。 解压缩的过程就是解析二进制位，然后查找哈弗曼树，每找到一个叶子节点，就解析出一个字符，直到解析完所有二进制位。下面详细解释我的C&#43;&#43;实现。
+首先定义一个哈弗曼编码类，对外只提供压缩Compress和解压缩Decompress两个接口。值得注意的是有一个Node结构体，用于构成哈弗曼树的节点。此外count_node的key是字符频率，value是所在节点，且是multimap类型的，所以count_node会自动按字符频率有小到大排序，在构建哈弗曼树时，每次只需要取count_node的前两个节点进行合并即可。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 class HuffmanCode { public: HuffmanCode(); void Compress(string src, string dest); void Decompress(string src, string dest); virtual ~HuffmanCode(); private: void CountLetter(string src); void ConstructHuffmanTree(); void GenerateHuffmanCode(); void WriteHuffmanCode(ofstream &amp;os); void Compressing(string src, string dest); void InsertIntoHuffmanTree(char letter, string &amp;code, int &amp;k); void ConstructHuffmanTreeFromFile(ifstream &amp;is); void Decompressing(ifstream &amp;is, ofstream &amp;os); map&lt;char, int&gt; letter_count; typedef struct Node { int id; bool is_leaf; char letter; int parent, lchild, rchild; Node() { } Node(int i, bool il, char lt, int p, int lc, int rc) : id(i), is_leaf(il), letter(lt), parent(p), lchild(lc), rchild(rc) { } }; multimap&lt;int, Node&gt; count_node; vector&lt;Node&gt; huffman_tree; map&lt;char, vector&lt;char&gt;&gt; letter_hcode; // hufman code for each letter }; 压缩函数Compress串起压缩的整个流程，包括统计字符频率、构建哈弗曼树、生成哈弗曼编码以及最后将原始文件转换成哈弗曼编码的二进制文件。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-18 09:54:55 +0800 CST'>August 18, 2016</span>&nbsp;·&nbsp;3 min</footer>
+  <a class="entry-link" aria-label="post link to Huffman编码压缩算法及其实现" href="http://localhost:1313/posts/2016-08-18-the-implementation-of-huffman-code/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">还原谷歌PageRank算法真相
     </h2>
   </header>
@@ -383,26 +399,6 @@ Cracking_3000软件安装包及说明
   </div>
   <footer class="entry-footer"><span title='2016-02-04 00:42:30 +0800 CST'>February 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 国科大半年体验报告" href="http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">卜神算法作业整理
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>这学期选修了卜老师的算法课，都说这课是神课，上过之后果然是神课。同样是算法课，别人12月底就考完了，我们要1月底才考试。
-本课程主要讲了以下几个专题：
-Divide-and-conquer Dynamic programming Greedy Linear programming Linear programming: duality Network flow Problem hardness: Polynomial-time reduction NP-Completeness Approximation algorithm 前三个专题的算法大多数本科时学过的，但是经卜老师讲一遍还会有新的收获。后六个专题接触较少，学到了很多新算法。
-下图是卜老师每节课必讲的问题求解思路图：
-（待我回家把图画出来…）
-本课程最神的要数课后作业了，一般deadline是周五，每到周四晚上，大家都做好熬通宵赶作业的准备，没熬到两三点都不好意思睡觉，我同学有一次甚至熬到了第二天六点！
-每次作业大概有10题，前7题是算法设计，后3题是算法实现，每题都不是省油的灯，不过如果把每道题都理解消化，算法及编程能力会有很大的提高。
-下面是我整理出来的算法题目和个人解答，大家感受一下。（仅供完成作业之后交流使用，拒绝抄袭！）
-Assignment1_DandC.zip A1sol.pdf | A1sol.tex A1sol_supplement.pdf | A1sol_supplement.tex_.zip Assignment2_DP.zip A2sol.pdf | A2sol.tex_.zip A2sol_supplement.pdf | A2sol_supplement.tex Assignment3_Greedy.zip A3sol.pdf | A3sol.tex_.zip A3sol_supplement.pdf | A3sol_supplement.tex Assignment4_LP.zip A4sol.pdf | A4sol.tex A4sol_supplement.pdf | A4sol_supplement.tex Assignment5_NF.zip A5sol.pdf | A5sol.tex A5sol_supplement.pdf | A5sol_supplement.tex Assignment6_NP.pdf A6sol.pdf | A6sol.tex Assignment7_App.pdf A7sol.pdf | A7sol.tex </p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-29 17:07:11 +0800 CST'>January 29, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 卜神算法作业整理" href="http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
