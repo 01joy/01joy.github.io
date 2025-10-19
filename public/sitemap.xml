@@ -102,7 +102,13 @@
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2016-08-18T09:54:55+08:00</lastmod>
+    <lastmod>2016-08-18T11:00:43+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</loc>
+    <lastmod>2016-08-18T11:00:43+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2016-08-18-the-stable-quick-sort/</loc>
+    <lastmod>2016-08-18T11:00:43+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/huffman/</loc>
     <lastmod>2016-08-18T09:54:55+08:00</lastmod>
