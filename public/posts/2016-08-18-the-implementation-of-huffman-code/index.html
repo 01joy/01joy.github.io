@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Huffman编码压缩算法及其实现 | bitJoy</title>
+<meta name="keywords" content="Huffman, 压缩">
+<meta name="description" content="哈弗曼编码是一个很经典的压缩算法，压缩率能达到50%，甚至更低。它的基本原理包括四个步骤：
+
+统计文件中每个字符出现的频率。
+构建一个哈弗曼树。建树的过程是不断的合并频率最小的两个节点，父亲节点的频率为两个孩子节点的频率之和。如此循环直到合并成一个根节点。叶子节点为不同的字符及其频率。
+生成哈弗曼编码。从树根开始对树进行编码，比如进入左孩子的边标记为0，进入右孩子的边标记为1，这里的0和1都是二进制位。这样之后，每个叶子节点都有一个唯一的二进制编码，这就是哈弗曼编码。频率越低的字符哈弗曼编码越长，频率越高的字符哈弗曼编码越短，这样就能起到压缩的效果。
+第二遍扫描文件，把字符转换为对应的哈弗曼编码，保存成压缩文件。
+
+解压缩的过程就是解析二进制位，然后查找哈弗曼树，每找到一个叶子节点，就解析出一个字符，直到解析完所有二进制位。下面详细解释我的C&#43;&#43;实现。
+首先定义一个哈弗曼编码类，对外只提供压缩Compress和解压缩Decompress两个接口。值得注意的是有一个Node结构体，用于构成哈弗曼树的节点。此外count_node的key是字符频率，value是所在节点，且是multimap类型的，所以count_node会自动按字符频率有小到大排序，在构建哈弗曼树时，每次只需要取count_node的前两个节点进行合并即可。
+
+
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+
+
+class HuffmanCode {
+
+public:
+    HuffmanCode();
+
+    void Compress(string src, string dest);
+    void Decompress(string src, string dest);
+
+    virtual ~HuffmanCode();
+
+private:
+    void CountLetter(string src);
+    void ConstructHuffmanTree();
+    void GenerateHuffmanCode();
+    void WriteHuffmanCode(ofstream &amp;os);
+    void Compressing(string src, string dest);
+
+    void InsertIntoHuffmanTree(char letter, string &amp;code, int &amp;k);
+    void ConstructHuffmanTreeFromFile(ifstream &amp;is);
+    void Decompressing(ifstream &amp;is, ofstream &amp;os);
+
+    map&lt;char, int&gt; letter_count;
+    typedef struct Node {
+        int id;
+        bool is_leaf;
+        char letter;
+        int parent, lchild, rchild;
+        Node() {
+        }
+        Node(int i, bool il, char lt, int p, int lc, int rc) :
+            id(i), is_leaf(il), letter(lt), parent(p), lchild(lc), rchild(rc) {
+        }
+    };
+    multimap&lt;int, Node&gt; count_node;
+    vector&lt;Node&gt; huffman_tree;
+    map&lt;char, vector&lt;char&gt;&gt; letter_hcode; // hufman code for each letter
+};
+
+
+压缩函数Compress串起压缩的整个流程，包括统计字符频率、构建哈弗曼树、生成哈弗曼编码以及最后将原始文件转换成哈弗曼编码的二进制文件。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2016-08-18-the-implementation-of-huffman-code/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2016-08-18-the-implementation-of-huffman-code/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Huffman编码压缩算法及其实现
+    </h1>
+    <div class="post-meta"><span title='2016-08-18 09:54:55 +0800 CST'>August 18, 2016</span>&nbsp;·&nbsp;3 min
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>哈弗曼编码是一个很经典的压缩算法，压缩率能达到50%，甚至更低。它的基本原理包括四个步骤：</p>
+<ol>
+<li>统计文件中每个字符出现的频率。</li>
+<li>构建一个哈弗曼树。建树的过程是不断的合并频率最小的两个节点，父亲节点的频率为两个孩子节点的频率之和。如此循环直到合并成一个根节点。叶子节点为不同的字符及其频率。</li>
+<li>生成哈弗曼编码。从树根开始对树进行编码，比如进入左孩子的边标记为0，进入右孩子的边标记为1，这里的0和1都是二进制位。这样之后，每个叶子节点都有一个唯一的二进制编码，这就是哈弗曼编码。频率越低的字符哈弗曼编码越长，频率越高的字符哈弗曼编码越短，这样就能起到压缩的效果。</li>
+<li>第二遍扫描文件，把字符转换为对应的哈弗曼编码，保存成压缩文件。</li>
+</ol>
+<p>解压缩的过程就是解析二进制位，然后查找哈弗曼树，每找到一个叶子节点，就解析出一个字符，直到解析完所有二进制位。下面详细解释我的C++实现。</p>
+<p>首先定义一个哈弗曼编码类，对外只提供压缩Compress和解压缩Decompress两个接口。值得注意的是有一个Node结构体，用于构成哈弗曼树的节点。此外count_node的key是字符频率，value是所在节点，且是multimap类型的，所以count_node会自动按字符频率有小到大排序，在构建哈弗曼树时，每次只需要取count_node的前两个节点进行合并即可。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HuffmanCode</span> {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    HuffmanCode();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Compress</span>(string src, string dest);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Decompress</span>(string src, string dest);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>HuffmanCode();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> CountLetter(string src);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ConstructHuffmanTree</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">GenerateHuffmanCode</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">WriteHuffmanCode</span>(ofstream <span style="color:#f92672">&amp;</span>os);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Compressing</span>(string src, string dest);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">InsertIntoHuffmanTree</span>(<span style="color:#66d9ef">char</span> letter, string <span style="color:#f92672">&amp;</span>code, <span style="color:#66d9ef">int</span> <span style="color:#f92672">&amp;</span>k);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ConstructHuffmanTreeFromFile</span>(ifstream <span style="color:#f92672">&amp;</span>is);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Decompressing</span>(ifstream <span style="color:#f92672">&amp;</span>is, ofstream <span style="color:#f92672">&amp;</span>os);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    map<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span>, <span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> letter_count;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Node</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> id;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">bool</span> is_leaf;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">char</span> letter;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> parent, lchild, rchild;
+</span></span><span style="display:flex;"><span>        Node() {
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        Node(<span style="color:#66d9ef">int</span> i, <span style="color:#66d9ef">bool</span> il, <span style="color:#66d9ef">char</span> lt, <span style="color:#66d9ef">int</span> p, <span style="color:#66d9ef">int</span> lc, <span style="color:#66d9ef">int</span> rc) <span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>            id(i), is_leaf(il), letter(lt), parent(p), lchild(lc), rchild(rc) {
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    };
+</span></span><span style="display:flex;"><span>    multimap<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, Node<span style="color:#f92672">&gt;</span> count_node;
+</span></span><span style="display:flex;"><span>    vector<span style="color:#f92672">&lt;</span>Node<span style="color:#f92672">&gt;</span> huffman_tree;
+</span></span><span style="display:flex;"><span>    map<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span>, vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&gt;&gt;</span> letter_hcode; <span style="color:#75715e">// hufman code for each letter
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>};
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>压缩函数Compress串起压缩的整个流程，包括统计字符频率、构建哈弗曼树、生成哈弗曼编码以及最后将原始文件转换成哈弗曼编码的二进制文件。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> HuffmanCode<span style="color:#f92672">::</span>Compress(string src, string dest) {
+</span></span><span style="display:flex;"><span>    CountLetter(src);
+</span></span><span style="display:flex;"><span>    ConstructHuffmanTree();
+</span></span><span style="display:flex;"><span>    GenerateHuffmanCode();
+</span></span><span style="display:flex;"><span>    Compressing(src, dest);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Compress中的前三个函数不难，值得注意的是Compressing函数，它是真正进行压缩的函数。函数首先调用WriteHuffmanCode把每个字符的哈弗曼编码写入文件，作为文件头信息，以备后续解压使用。然后循环读取文件，把字符转换为哈弗曼二进制编码。每8 bit哈弗曼二进制位构成一个char byte，多个byte构成os_buf，当os_buf满时写入文件。</p>
+<p>在最后边界位置，需要小心处理。因为可能所有二进制位并不刚好是8的整数倍，所以在压缩文件的末尾用 1 byte作为标记。如果flag为0x0，则所有二进制位刚好是8的整数倍，无需特别处理。如果flag为0x01，则还剩小于8个二进制位需要单独放在一个byte里面，所以还需要一个byte存储剩余多少个二进制位。假设最后3个bytes分别为x,y,z，则如果z==0x0，则x,y常规解析；如果z==0x01，则只解析x中的前y个bits。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> HuffmanCode<span style="color:#f92672">::</span>Compressing(string src, string dest) {
+</span></span><span style="display:flex;"><span>    ifstream <span style="color:#a6e22e">is</span>(src, ios<span style="color:#f92672">::</span>binary);
+</span></span><span style="display:flex;"><span>    ofstream <span style="color:#a6e22e">os</span>(dest, ios<span style="color:#f92672">::</span>binary);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    WriteHuffmanCode(os);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>is_buf <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span>[MAX_LEN], <span style="color:#f92672">*</span>os_buf <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">char</span>[MAX_LEN];
+</span></span><span style="display:flex;"><span>    list<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&gt;</span> tmp_hcode;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> start_pos <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, i, j, k, len, t;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> c, flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0</span>; <span style="color:#75715e">// flag for the last byte
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    list<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&gt;::</span>iterator it;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (is.peek() <span style="color:#f92672">!=</span> EOF) {
+</span></span><span style="display:flex;"><span>        is.read(is_buf, MAX_LEN);
+</span></span><span style="display:flex;"><span>        len <span style="color:#f92672">=</span> is.gcount();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> len; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>            tmp_hcode.insert(tmp_hcode.end(), letter_hcode[is_buf[i]].begin(), letter_hcode[is_buf[i]].end());
+</span></span><span style="display:flex;"><span>        k <span style="color:#f92672">=</span> tmp_hcode.size() <span style="color:#f92672">/</span> <span style="color:#ae81ff">8</span>;
+</span></span><span style="display:flex;"><span>        t <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        it <span style="color:#f92672">=</span> tmp_hcode.begin();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">*</span> k) {
+</span></span><span style="display:flex;"><span>            c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> (j <span style="color:#f92672">=</span> i; j <span style="color:#f92672">&lt;=</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">7</span>; j<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>                c <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>it <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;1&#39;</span>) <span style="color:#f92672">?</span> (c <span style="color:#f92672">|</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> (i <span style="color:#f92672">+</span> <span style="color:#ae81ff">7</span> <span style="color:#960050;background-color:#1e0010">–</span> j))) <span style="color:#f92672">:</span> c; <span style="color:#75715e">// char -&gt; bit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                it<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            os_buf[t<span style="color:#f92672">++</span>] <span style="color:#f92672">=</span> c;
+</span></span><span style="display:flex;"><span>            i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">8</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        os.write(os_buf, t <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">char</span>));
+</span></span><span style="display:flex;"><span>        tmp_hcode.erase(tmp_hcode.begin(), it);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0</span>;
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">bool</span> done <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (it <span style="color:#f92672">!=</span> tmp_hcode.end()) {
+</span></span><span style="display:flex;"><span>        done <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>        c <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>it <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;1&#39;</span>) <span style="color:#f92672">?</span> (c <span style="color:#f92672">|</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> i)) <span style="color:#f92672">:</span> c; <span style="color:#75715e">// left bits
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        i<span style="color:#960050;background-color:#1e0010">–</span>;
+</span></span><span style="display:flex;"><span>        it<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>done) {
+</span></span><span style="display:flex;"><span>        os.write(<span style="color:#f92672">&amp;</span>c, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">char</span>));
+</span></span><span style="display:flex;"><span>        c <span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span> <span style="color:#960050;background-color:#1e0010">–</span> i; <span style="color:#75715e">// only c bits used in the last byte
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        os.write(<span style="color:#f92672">&amp;</span>c, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">char</span>));
+</span></span><span style="display:flex;"><span>        flag <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x1</span>; <span style="color:#75715e">// the last byte is incomplete
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    }
+</span></span><span style="display:flex;"><span>    os.write(<span style="color:#f92672">&amp;</span>flag, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">char</span>));
+</span></span><span style="display:flex;"><span>    is.close();
+</span></span><span style="display:flex;"><span>    os.close();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">delete</span>[] is_buf;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">delete</span>[] os_buf;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>函数Decompress串起解压缩的整个流程。首先调用ConstructHuffmanTreeFromFile读取压缩文件的头信息，也就是字符和哈弗曼编码的对应关系，然后构建哈弗曼树。同样Decompressing是实际的解压缩过程，它不断读取哈弗曼二进制位，然后从哈弗曼树根节点开始往下走，直到到达一个叶子节点，则解析出一个字符，如此循环，直到解析完所有二进制位。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> HuffmanCode<span style="color:#f92672">::</span>Decompress(string src, string dest) {
+</span></span><span style="display:flex;"><span>    ifstream <span style="color:#a6e22e">is</span>(src, ios<span style="color:#f92672">::</span>binary);
+</span></span><span style="display:flex;"><span>    ofstream <span style="color:#a6e22e">os</span>(dest, ios<span style="color:#f92672">::</span>binary);
+</span></span><span style="display:flex;"><span>    ConstructHuffmanTreeFromFile(is);
+</span></span><span style="display:flex;"><span>    Decompressing(is, os);
+</span></span><span style="display:flex;"><span>    is.close();
+</span></span><span style="display:flex;"><span>    os.close();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>完整项目可以查看我的<a href="https://github.com/01joy/HZip">Github项目HZip</a>，Windows版可执行程序请<a href="https://github.com/01joy/HZip/raw/master/Release/HZip.exe">点此下载</a>。</p>
+<p>压缩命令为：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>HZip.exe -c original_file_path compressed_file_path
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>解压缩命令为：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-PowerShell" data-lang="PowerShell"><span style="display:flex;"><span>HZip.exe -x compressed_file_path decompressed_file_path
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>下面是一些测试结果。</p>
+<p>//还没有统计好。。。</p>
+<p>//看来还是7Z道高一尺。</p>
+<p>我后面发现HZip甚至可以压缩/解压缩中文txt、pdf、图片、视频等（其实只要是ASCII编码的应该都可以吧？）。但是中文压缩效率较低，图片视频等压缩之后的大小几乎和没压缩是一样的:-(其实这很好理解，因为哈弗曼编码是根据字符频率的差异来编码的，英文只有26个字母加上一些符号，压缩效率肯定很高，而中文是以字为单位存储的，所以当以char读取来编码的时候，不同char的数量肯定更多，导致压缩效率较低。图片和视频就不得而知了。</p>
+<p>在测试的时候我发现压缩和解压缩大文件的时候，速度极其的慢，简直到了不能忍的地步，下一步我将分析性能瓶颈，争取把速度提高到可以接受的范围。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/huffman/">Huffman</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%8E%8B%E7%BC%A9/">压缩</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>公告</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2016-08-04-googles-pagerank-and-beyond/">
+    <span class="title">Next »</span>
+    <br>
+    <span>还原谷歌PageRank算法真相</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
