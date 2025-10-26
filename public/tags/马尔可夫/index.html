@@ -159,14 +159,15 @@
 前面我们介绍的谷歌矩阵和HMM中的转移矩阵都属于随机矩阵，所以随机矩阵也称为概率矩阵、转移矩阵、或马尔可夫矩阵。
 随机矩阵有一个性质，就是其所有特征值的绝对值小于等于1，且其最大特征值为1。下面通过两种方法证明这个结论。
 首先，随机矩阵A肯定有特征值1，即
-$$\begin{equation}A\vec 1=1\times\vec 1\end{equation}$$其中的单位向量$\vec 1=(\frac{1}{n},…,\frac{1}{n})^T$，因为A的行和为1，所以上述等式成立。即1是A的特征值。
-反证法
-假设存在大于1的特征值$\lambda$，则有$A\vec x=\lambda\vec x$。令$x_k$是$\vec x$中最大的元素。又因为A的元素非负，且行和为1，所以$\lambda\vec x$中的每个元素都是$\vec x$中元素的凸组合，所以$\lambda\vec x$中的每个元素都小于等于$x_k$。
-$$\begin{equation}a_{i1}x_1&#43;a_{i2}x_2&#43;…&#43;a_{in}x_n=\lambda x_i\leq x_k\end{equation}$$但是如果$\lambda&gt;1$，则$\lambda x_k&gt;x_k$，和(2)式矛盾，所以$\lambda\leq 1$。又因为(1)式，所以A的最大特征值为1。
-常规证法
-设对称随机矩阵A的特征值$\lambda$对应的特征向量为$x$（为了简便，以下省略向量符号），则有$Ax=\lambda x$，即$x^TAx=\lambda x^Tx$，欲证明$|\lambda|\leq 1$，只需证明
-$$\begin{equation}\lambda=\frac{}{}\leq 1\end{equation}$$根据定义有：
-$$\begin{equation}=\sum_{i=1}^na_{ii}x_i^2&#43;2\sum_{i...</p>
+$$\begin{equation}A\vec 1=1\times\vec 1\end{equation}$$其中的单位向量\(\vec 1=(\frac{1}{n},…,\frac{1}{n})^T\)，因为A的行和为1，所以上述等式成立。即1是A的特征值。
+反证法 假设存在大于1的特征值\(\lambda\)，则有\(A\vec x=\lambda\vec x\)。令\(x_k\)是\(\vec x\)中最大的元素。又因为A的元素非负，且行和为1，所以\(\lambda\vec x\)中的每个元素都是\(\vec x\)中元素的凸组合，所以\(\lambda\vec x\)中的每个元素都小于等于\(x_k\)。
+$$\begin{equation}a_{i1}x_1&#43;a_{i2}x_2&#43;…&#43;a_{in}x_n=\lambda x_i\leq x_k\end{equation}$$但是如果\(\lambda&gt;1\)，则\(\lambda x_k&gt;x_k\)，和(2)式矛盾，所以\(\lambda\leq 1\)。又因为(1)式，所以A的最大特征值为1。
+常规证法 设对称随机矩阵A的特征值\(\lambda\)对应的特征向量为\(x\)（为了简便，以下省略向量符号），则有\(Ax=\lambda x\)，即\(x^TAx=\lambda x^Tx\)，欲证明\(|\lambda|\leq 1\)，只需证明
+$$\begin{equation}\lambda=\frac{&lt; x, Ax &gt;}{&lt; x, x &gt;}\leq 1\end{equation}$$根据定义有：
+$$\begin{equation}&lt; x, Ax &gt;=\sum_{i=1}^na_{ii}x_i^2&#43;2\sum_{i &lt; j, i\sim j}a_{ij}x_ix_j\end{equation}$$对于\(i &lt; j, i\sim j\)，有：
+$$\begin{equation}a_{ij}(x_i-x_j)^2=a_{ij}x_i^2-2a_{ij}x_ix_j&#43;a_{ij}x_j^2\end{equation}$$两边求和并移项得到：
+$$ \begin{equation} \begin{array} \displaystyle{2\sum_{i &lt; j}}a_{ij}x_ix_j &amp; = &amp; \displaystyle{\sum_{i &lt; j}a_{ij}x_i^2&#43;\sum_{i &lt; j}a_{ij}x_j^2-\sum_{i &lt; j}a_{ij}(x_i-x_j)^2}\\ &amp; = &amp; \displaystyle{\sum_{i &lt; j}a_{ij}x_i^2&#43;\sum_{i &lt; j}a_{ji}x_j^2-\sum_{i &lt; j}a_{ij}(x_i-x_j)^2}\\ &amp; = &amp; \displaystyle{\sum_{i &lt; j}a_{ij}x_i^2&#43;\sum_{i &gt; j}a_{ij}x_i^2-\sum_{i &lt; j}a_{ij}(x_i-x_j)^2}\\ &amp; = &amp; \displaystyle{\sum_i(\sum_{j\neq i}a_{ij}x_i^2)-\sum_{i &lt; j}a_{ij}(x_i-x_j)^2}\\ &amp; = &amp; \displaystyle{\sum_i(x_i^2(1-a_{ii}))-\sum_{i &lt; j}a_{ij}(x_i-x_j)^2} \end{array} \end{equation} $$第2、3个等号都是因为A是对称矩阵，所以可以把\(a_{ij}\)替换为\(a_{ji}\)，然后互换\(i,j\)下标。最后一个等号是因为A的行和为1。
+...</p>
   </div>
   <footer class="entry-footer"><span title='2016-08-23 18:59:57 +0800 CST'>August 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 随机矩阵及其特征值" href="http://localhost:1313/posts/2016-08-23-the-eigenvalue-of-stochastic-matrix/"></a>
