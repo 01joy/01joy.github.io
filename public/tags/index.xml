@@ -142,9 +142,23 @@
       <description></description>
     </item>
     <item>
+      <title>Baum-Welch</title>
+      <link>http://localhost:1313/tags/baum-welch/</link>
+      <pubDate>Sun, 21 Aug 2016 18:46:01 +0800</pubDate>
+      <guid>http://localhost:1313/tags/baum-welch/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>EM</title>
+      <link>http://localhost:1313/tags/em/</link>
+      <pubDate>Sun, 21 Aug 2016 18:46:01 +0800</pubDate>
+      <guid>http://localhost:1313/tags/em/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>HMM</title>
       <link>http://localhost:1313/tags/hmm/</link>
-      <pubDate>Sat, 20 Aug 2016 18:12:53 +0800</pubDate>
+      <pubDate>Sun, 21 Aug 2016 18:46:01 +0800</pubDate>
       <guid>http://localhost:1313/tags/hmm/</guid>
       <description></description>
     </item>
