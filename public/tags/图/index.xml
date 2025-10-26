@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>图 on bitJoy</title>
+    <link>http://localhost:1313/tags/%E5%9B%BE/</link>
+    <description>Recent content in 图 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 22 Aug 2016 18:41:45 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E5%9B%BE/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>马尔可夫聚类算法</title>
+      <link>http://localhost:1313/posts/2016-08-22-the-markov-cluster-algorithm/</link>
+      <pubDate>Mon, 22 Aug 2016 18:41:45 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-08-22-the-markov-cluster-algorithm/</guid>
+      <description>&lt;p&gt;马尔可夫聚类算法（The Markov Cluster Algorithm, MCL）是一种快速可扩展的基于图的聚类算法。它的基本思想为：在一个稀疏图G中，如果某个区域A是稠密的（是一个聚类），则在A中随机游走k步，还在A内的概率很大，也就是说，A内的k步路径（k-length path）很多。所以我们可以在图中随机游走k步，如果某个区域连通的概率很大，则该区域是一个聚类。随机游走的下一步只和当前所处节点有关，也就是说这是一个马尔可夫的随机游走过程。&lt;/p&gt;
+&lt;p&gt;我们用一个例子来演示马尔可夫聚类算法的过程。&lt;/p&gt;
+&lt;p&gt;mcl-1&lt;/p&gt;
+&lt;p&gt;上图是一个很小的网络，我们用肉眼大概能看出有三个聚类，分别是左边的{1,6,7,10}，中间的{2,3,5}和右边的{4,8,9,11,12}。我们用MCL看看结果如何。&lt;/p&gt;
+&lt;p&gt;为了随机游走，我们常用邻接矩阵来表示图，如果i,j有边，则N[i][j]=1，否则N[i][j]=0。又随机游走可能有自回路，所以加上单位矩阵I，得到矩阵N+I。&lt;/p&gt;
+&lt;p&gt;MCL有两个关键的步骤，分别是Expansion和Inflation。&lt;/p&gt;
+&lt;p&gt;Expansion就是不断对矩阵进行幂次运算，相当于随机游走。假设随机游走了2步，则得到如下图的关联矩阵&lt;/p&gt;
+$$(N+I)^2$$&lt;p&gt;，第1行第10列为4，说明1到10的2-length path有4条：1→6→10，1→7→10，1→1→10，1→10→10。随机游走k步之后，&lt;/p&gt;
+$$(N+I)^k[i][j]$$&lt;p&gt;越大，说明&lt;/p&gt;
+$$i$$&lt;p&gt;和&lt;/p&gt;
+$$j$$&lt;p&gt;之间的连通性越强。&lt;/p&gt;
+$$!\begin{equation}Expand(M)=M^k\end{equation}$$&lt;p&gt;mcl-2&lt;/p&gt;
+&lt;p&gt;Inflation是为了增强更强的连接，减弱更弱的连接，只有这样才能得到边界比较明确的聚类。MCL的做法是对元素做幂次运算，然后按列归一化，公式为：&lt;/p&gt;
+$$!\begin{equation}(\Gamma_rM)_{pq}=\frac{(M_{pq})^r}{\sum_{i=1}^k(M_{iq})^r}\end{equation}$$&lt;p&gt;参数经验值是&lt;/p&gt;
+$$k=r=2$$&lt;p&gt;。不断做Expansion和Inflation操作，直到算法收敛，得到若干个聚类。中间过程请点此查看，下图为最终结果。&lt;/p&gt;
+&lt;p&gt;mcl-4&lt;/p&gt;
+&lt;p&gt;从图中可以看出，和1有边的只剩下6,7,10了，所以得到聚类{1,6,7,10}，同理能得到聚类{2,3,5}和{4,8,9,11,12} ，和我们肉眼得到的结果是一致的。&lt;/p&gt;
+&lt;p&gt;MCL算法的原理很简单，得到的聚类效果也不错。下面总结一下MCL的算法过程：&lt;/p&gt;
+&lt;p&gt;给定无向图G，Expansion和Inflation的参数&lt;/p&gt;
+$$k$$&lt;p&gt;和&lt;/p&gt;
+$$r$$&lt;p&gt;
+生成G的邻接矩阵&lt;/p&gt;
+$$N$$&lt;p&gt;
+添加自回路，得到矩阵&lt;/p&gt;
+$$N+I$$&lt;p&gt;
+循环对&lt;/p&gt;
+$$N+I$$&lt;p&gt;做Expansion和Inflation操作，即计算公式(1)和(2)，直到收敛
+根据最终得到的矩阵，进行划分聚类
+此算法是我在上《生物信息学中的算法设计》课上是学到的，当时觉得这个算法真是神奇，如此简单，但又如此有效，实在高明。查阅文献得知，此为Stijn van Dongen的博士论文，本博客的图片均来自其博士论文，想深入了解图聚类算法，请下载他的论文。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
