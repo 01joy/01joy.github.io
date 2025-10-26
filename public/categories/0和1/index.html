@@ -151,34 +151,45 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">随机矩阵及其特征值
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>随机矩阵是这样一类方阵，其元素为非负实数，且行和或列和为1。如果行和为1，则称为行随机矩阵；如果列和为1，则称为列随机矩阵；如果行和和列和都为1，则称为双随机矩阵。
+前面我们介绍的谷歌矩阵和HMM中的转移矩阵都属于随机矩阵，所以随机矩阵也称为概率矩阵、转移矩阵、或马尔可夫矩阵。
+随机矩阵有一个性质，就是其所有特征值的绝对值小于等于1，且其最大特征值为1。下面通过两种方法证明这个结论。
+首先，随机矩阵A肯定有特征值1，即
+$$\begin{equation}A\vec 1=1\times\vec 1\end{equation}$$其中的单位向量$\vec 1=(\frac{1}{n},…,\frac{1}{n})^T$，因为A的行和为1，所以上述等式成立。即1是A的特征值。
+反证法
+假设存在大于1的特征值$\lambda$，则有$A\vec x=\lambda\vec x$。令$x_k$是$\vec x$中最大的元素。又因为A的元素非负，且行和为1，所以$\lambda\vec x$中的每个元素都是$\vec x$中元素的凸组合，所以$\lambda\vec x$中的每个元素都小于等于$x_k$。
+$$\begin{equation}a_{i1}x_1&#43;a_{i2}x_2&#43;…&#43;a_{in}x_n=\lambda x_i\leq x_k\end{equation}$$但是如果$\lambda&gt;1$，则$\lambda x_k&gt;x_k$，和(2)式矛盾，所以$\lambda\leq 1$。又因为(1)式，所以A的最大特征值为1。
+常规证法
+设对称随机矩阵A的特征值$\lambda$对应的特征向量为$x$（为了简便，以下省略向量符号），则有$Ax=\lambda x$，即$x^TAx=\lambda x^Tx$，欲证明$|\lambda|\leq 1$，只需证明
+$$\begin{equation}\lambda=\frac{}{}\leq 1\end{equation}$$根据定义有：
+$$\begin{equation}=\sum_{i=1}^na_{ii}x_i^2&#43;2\sum_{i...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-23 18:59:57 +0800 CST'>August 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 随机矩阵及其特征值" href="http://localhost:1313/posts/2016-08-23-the-eigenvalue-of-stochastic-matrix/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">马尔可夫聚类算法
     </h2>
   </header>
   <div class="entry-content">
     <p>马尔可夫聚类算法（The Markov Cluster Algorithm, MCL）是一种快速可扩展的基于图的聚类算法。它的基本思想为：在一个稀疏图G中，如果某个区域A是稠密的（是一个聚类），则在A中随机游走k步，还在A内的概率很大，也就是说，A内的k步路径（k-length path）很多。所以我们可以在图中随机游走k步，如果某个区域连通的概率很大，则该区域是一个聚类。随机游走的下一步只和当前所处节点有关，也就是说这是一个马尔可夫的随机游走过程。
 我们用一个例子来演示马尔可夫聚类算法的过程。
-mcl-1
 上图是一个很小的网络，我们用肉眼大概能看出有三个聚类，分别是左边的{1,6,7,10}，中间的{2,3,5}和右边的{4,8,9,11,12}。我们用MCL看看结果如何。
 为了随机游走，我们常用邻接矩阵来表示图，如果i,j有边，则N[i][j]=1，否则N[i][j]=0。又随机游走可能有自回路，所以加上单位矩阵I，得到矩阵N&#43;I。
 MCL有两个关键的步骤，分别是Expansion和Inflation。
-Expansion就是不断对矩阵进行幂次运算，相当于随机游走。假设随机游走了2步，则得到如下图的关联矩阵
-$$(N&#43;I)^2$$，第1行第10列为4，说明1到10的2-length path有4条：1→6→10，1→7→10，1→1→10，1→10→10。随机游走k步之后，
-$$(N&#43;I)^k[i][j]$$越大，说明
-$$i$$和
-$$j$$之间的连通性越强。
-$$!\begin{equation}Expand(M)=M^k\end{equation}$$mcl-2
+Expansion就是不断对矩阵进行幂次运算，相当于随机游走。假设随机游走了2步，则得到如下图的关联矩阵\((N&#43;I)^2\)，第1行第10列为4，说明1到10的2-length path有4条：1→6→10，1→7→10，1→1→10，1→10→10。随机游走k步之后，\((N&#43;I)^k[i][j]\)越大，说明\(i\)和\(j\)之间的连通性越强。
+$$\begin{equation}Expand(M)=M^k\end{equation}$$
 Inflation是为了增强更强的连接，减弱更弱的连接，只有这样才能得到边界比较明确的聚类。MCL的做法是对元素做幂次运算，然后按列归一化，公式为：
-$$!\begin{equation}(\Gamma_rM)_{pq}=\frac{(M_{pq})^r}{\sum_{i=1}^k(M_{iq})^r}\end{equation}$$参数经验值是
-$$k=r=2$$。不断做Expansion和Inflation操作，直到算法收敛，得到若干个聚类。中间过程请点此查看，下图为最终结果。
-mcl-4
+$$\begin{equation}(\Gamma_rM)_{pq}=\frac{(M_{pq})^r}{\sum_{i=1}^k(M_{iq})^r}\end{equation}$$参数经验值是\(k=r=2\)。不断做Expansion和Inflation操作，直到算法收敛，得到若干个聚类。中间过程请点此查看，下图为最终结果。
 从图中可以看出，和1有边的只剩下6,7,10了，所以得到聚类{1,6,7,10}，同理能得到聚类{2,3,5}和{4,8,9,11,12} ，和我们肉眼得到的结果是一致的。
 MCL算法的原理很简单，得到的聚类效果也不错。下面总结一下MCL的算法过程：
-给定无向图G，Expansion和Inflation的参数
-$$k$$和
-$$r$$ 生成G的邻接矩阵
-$$N$$ 添加自回路，得到矩阵
-$$N&#43;I$$ 循环对
-$$N&#43;I$$做Expansion和Inflation操作，即计算公式(1)和(2)，直到收敛 根据最终得到的矩阵，进行划分聚类 此算法是我在上《生物信息学中的算法设计》课上是学到的，当时觉得这个算法真是神奇，如此简单，但又如此有效，实在高明。查阅文献得知，此为Stijn van Dongen的博士论文，本博客的图片均来自其博士论文，想深入了解图聚类算法，请下载他的论文。
+给定无向图G，Expansion和Inflation的参数\(k\)和\(r\) 生成G的邻接矩阵\(N\) 添加自回路，得到矩阵\(N&#43;I\) 循环对\(N&#43;I\)做Expansion和Inflation操作，即计算公式(1)和(2)，直到收敛 根据最终得到的矩阵，进行划分聚类 此算法是我在上《生物信息学中的算法设计》课上是学到的，当时觉得这个算法真是神奇，如此简单，但又如此有效，实在高明。查阅文献得知，此为Stijn van Dongen的博士论文，本博客的图片均来自其博士论文，想深入了解图聚类算法，请下载他的论文。
 </p>
   </div>
   <footer class="entry-footer"><span title='2016-08-22 18:41:45 +0800 CST'>August 22, 2016</span>&nbsp;·&nbsp;1 min</footer>
@@ -395,34 +406,6 @@ V：随机选一个\(i\in \{1,2\}\)，对\(G_i\)做一个随机的置换，得�
   </div>
   <footer class="entry-footer"><span title='2016-07-14 20:56:37 +0800 CST'>July 14, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 有趣的交互式证明" href="http://localhost:1313/posts/2016-07-14-the-interesting-interactive-proofs/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">LaTeX写作完美解决方案
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>
-\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
-我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
-目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
-MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
-MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
-如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
-构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
-Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
-Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
-正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
-另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
-OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
-下面是我常用的\(\LaTeX\)中文模板：
-LaTeXDemo.pdf
-LaTeXDemo.tex
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

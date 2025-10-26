@@ -151,6 +151,34 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">LaTeX写作完美解决方案
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>
+\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
+我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
+目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
+MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
+MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
+如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
+构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
+Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
+Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
+正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
+另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
+OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
+下面是我常用的\(\LaTeX\)中文模板：
+LaTeXDemo.pdf
+LaTeXDemo.tex
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">SVM之序列最小最优化算法（SMO算法）
     </h2>
   </header>
@@ -377,28 +405,6 @@ $$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times 
   </div>
   <footer class="entry-footer"><span title='2015-11-13 10:55:51 +0800 CST'>November 13, 2015</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 解决Win10间歇性断网的问题" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">浮点数知识及Grisu算法介绍
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>进入研究生生涯完成的第一个新生培训作业是“2.5亿个浮点数的外部排序算法”，前后折腾了将近一个月，结果是在i7处理器上，限制512MB内存，排序用时250秒左右。
-这个作业的常规思路大部分人都能想到，按块读取文件-&gt;atof转换为double-&gt;内部快速排序或基数排序-&gt;dtoa转换为char*-&gt;按块写入文件。这里面中间的三个过程都很耗时，特别是atof和dtoa，因为精度只要求保留9位小数，所以可以自己实现atof和dtoa来加速，也可以使用多线程加速。
-整个作业都是基于对IEEE754浮点数的深刻理解展开的，所以下面详细讲解浮点数的一些知识。
-IEEE754双精度浮点数 目前大多数CPU内浮点数的表示都遵循IEEE754标准，IEEE754双精度浮点数（double）表示如下图所示。
-IEEE754 double在内存中的形式[1]
-sign bit：符号位，1位，用来表示正负号，0表示非负；1表示负 exponent：指数位，11位，用来表示次方数，是一个无符号数 fraction：尾数位，52位，用来表示精确度，也是一个无符号数，有些资料也叫做mantissa或significand 这种表示形式有两点需要注意。
-第一，既然exponent是无符号的，那么怎样表示负指数呢？
-IEEE754规定，二进制串中算得的e需要减去一个偏移量bias，对于double，bias=1023，即e’=e-bias。因为\(e\in[0,2^{11}-1]\)，所以最终\(e’\in[-2^{10}&#43;1,2^{10}]\)。但是如果把e本身看作有符号数e”，则\(e”\in[-2^{10},2^{10}-1]\)，既然e”和e’相差微小，为什么不直接把e看成有符号数，而非要把它看成无符号数，再减去一个偏移量bias呢？
-这是因为如果把e看成无符号数再减偏移量，浮点数大小比较速度更快。引用维基百科的一段话：
-By arranging the fields so that the sign bit is in the most significant bit position, the biased exponent in the middle, then the mantissa in the least significant bits, the resulting value will be ordered properly, whether it’s interpreted as a floating point or integer value. This allows high speed comparisons of floating point numbers using fixed point hardware.
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2015-08-30 20:45:36 +0800 CST'>August 30, 2015</span>&nbsp;·&nbsp;4 min</footer>
-  <a class="entry-link" aria-label="post link to 浮点数知识及Grisu算法介绍" href="http://localhost:1313/posts/2015-08-30-introduction-to-floating-point-numbers-and-grisu-algorithm/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
