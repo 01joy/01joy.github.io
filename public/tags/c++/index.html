@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Categories | bitJoy</title>
+<title>C&#43;&#43; | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/categories/">
+<link rel="canonical" href="http://localhost:1313/tags/c&#43;&#43;/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/c&#43;&#43;/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/c&#43;&#43;/">
 <noscript>
     <style>
         #theme-toggle,
@@ -116,7 +116,7 @@
         <ul id="menu">
             <li>
                 <a href="http://localhost:1313/categories" title="Categories">
-                    <span class="active">Categories</span>
+                    <span>Categories</span>
                 </a>
             </li>
             <li>
@@ -142,34 +142,37 @@
         </ul>
     </nav>
 </header>
-<main class="main">
+<main class="main"> 
 <header class="page-header">
-    <h1>Categories</h1>
+  <h1>
+    C&#43;&#43;
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="http://localhost:1313/categories/0%E5%92%8C1/">0和1 <sup><strong><sup>25</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/paper-reading/">Paper Reading <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">和我一起构建搜索引擎 <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/">回忆录 <sup><strong><sup>4</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/">流水账 <sup><strong><sup>11</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B8%B8%E8%AE%B0/">游记 <sup><strong><sup>2</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/">随想录 <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">C&#43;&#43;基本数据类型备忘
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>今天阅读《C&#43;&#43; Primer, 5e》的第二章，介绍C&#43;&#43;的基本内置类型，觉得有一些平时工作容易出错的知识点，现摘录如下：
+[cpp] unsigned char c = -1; // 假设char占8比特，c的值为255 [/cpp]
+当我们赋给无符号类型一个超出它表示范围的值时，结果是初始值对无符号类型表示数值总数取模后的余数。例如，8比特大小的unsigned char可以表示0至255区间内的值，如果我们赋了一个区间以外的值，则实际的结果是该值对256取模后所得的余数。因此，把-1赋给8比特大小的unsigned char所得的结果是255。
+[cpp] signed char c2 = 256; // 假设char占8比特，c2的值是未定义的 [/cpp]
+当我们赋给带符号类型一个超出它表示范围的值时，结果是未定义的（undefined）。此时，程序可能继续工作、可能崩溃，也可能生成垃圾数据。
+[cpp] unsigned u = 10; int i = -42; std::cout « i &#43; i « std::endl; // 输出-84 std::cout « u &#43; i « std::endl; // 如果int占32位，输出4294967264 [/cpp]
+在第一个输出表达式里，两个（负）整数相加并得到了期望的结果。在第二个输出表达式里，相加前首先把整数-42转换成无符号数。把负数转换成无符号数类似于直接给无符号数赋一个负数，结果等于这个负数加上无符号数的模。unsigned (int)的取值范围是0~
+$$2^{32}-1$$，所以总数有
+$$2^{32}$$个数，-42%
+$$2^{32}$$=-42&#43;
+$$2^{32}$$，u&#43;i=10&#43;(-42&#43;
+$$2^{32}$$)=4294967264。
+[cpp] unsigned u1 = 42, u2 = 10; std::cout « u1 – u2 « std::endl; // 正确：输出32 std::cout « u2 – u1 « std::endl; // 正确：不过，结果是取模后的值 [/cpp]
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-09-24 20:37:05 +0800 CST'>September 24, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to C&#43;&#43;基本数据类型备忘" href="http://localhost:1313/posts/2016-09-24-memo-about-cpp-built-in-types/"></a>
+</article>
     </main>
     
 <footer class="footer">

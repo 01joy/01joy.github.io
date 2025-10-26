@@ -151,6 +151,35 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">有趣的交互式证明
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>你是否想过如下问题：怎样向色盲证明两只袜子的颜色是不一样的？怎样证明两个图是不同构的？怎样证明一个数是二次非剩余的？
+咋听起来觉得很有意思吧，色盲是区分不了颜色的，怎么能让他相信两只袜子的颜色不一样呢。图同构问题目前既没有被证明属于P，也没有被证明属于NP-Complete。二次非剩余问题也没有被证明属于NP。
+这些听起来很“难”的问题，却可以通过交互式证明进行证明，下面先通过“向色盲证明两只袜子的颜色不同”这个有趣的例子一窥交互式证明的强大。
+向色盲证明两只袜子的颜色不同 P有一只红袜子和黄袜子，她的一个色盲朋友V不相信P的袜子颜色不同，P如何才能让V相信这是真的呢？一个简单的办法如下：
+P把两只袜子给V，V每只手拿了一只袜子 P转过身背对V V抛一枚硬币，如果头面朝上，则保持两只袜子不动，否则交换左右手的袜子 P转过身，V问P是否交换过袜子 如果P回答错误，则V不相信；否则，重复100次实验，如果P都回答正确，则V相信这两只袜子是不同颜色的 如果两只袜子的颜色确实不一样，则P通过区分两只袜子的颜色能正确回答V有没有交换过袜子。但是如果两只袜子颜色一样，则不管V有没有交换过，P都无法分辨这两只袜子，所以只好猜V有没有交换，而猜对的概率只有1/2，重复100次，都猜对的概率只有\((1/2)^{100}\)，这是一个非常小的数，可以认为几乎不会发生，即出错的概率极低。
+这就是交互式证明的一个例子，上述证明有三个特点：1）交互过程，整个证明需要P和V进行交互才能完成；2）具有随机性，即V需要抛一枚硬币，来决定是否交换袜子；3）零知识，虽然V最终相信了这两只袜子是不同颜色的，但V还是不知道这两只袜子是什么颜色的。
+下面我们给出交互式证明的形式化定义。
+交互式证明（Interactive Proofs, IP） 令\(k\)是\(N\rightarrow N\)的一个函数，我们称语言\(L\)属于\(IP[k]\)，如果存在一个\(k(|x|)\)多项式时间概率图灵机TM \(V\)，使得：
+$$ \begin{equation} \begin{cases} x\in L \Longrightarrow\exists P\quad Pr[V \text{ accepts }x, V(x)=1]\geq 2/3 \\ x\notin L \Longrightarrow\forall P\quad Pr[V \text{ accepts }x, V(x)=1]\leq 1/3 \end{cases} \end{equation} $$定义
+$$IP=\underset{c}{\bigcup} IP[n^c]$$上述定义的第一条称为“完备性”（Completeness）：如果\(x\in L\)，则存在一个证明者P（prover），使得验证者V（verfier）能以多项式时间接受\(x\)，且接受的概率大于2/3；第二条称为“可靠性”（Soundness），如果\(x\notin L\)，则对于所有证明者P，V接受\(x\)的概率都不会超过1/3。
+对应到上面的例子，完备性：当两只袜子的颜色确实不同时，V接受的概率为1&gt;2/3；可靠性：当两只袜子的颜色相同时，重复100次实验，V接受的概率只有\((1/2)^{100}&lt;1/3\)。
+IP这个复杂性类就是所有IP[k]的并集。在IP中，P的能力是无穷的，但它不一定是诚实的；V能力较弱，只能进行多项式时间的计算。
+下面我们给出另外两个交互式证明的协议。
+图不同构（Graph Non-isomorphism, GNI）的交互式证明 如果图\(G_1\)和\(G_2\)可以通过对顶点进行恰当标记来将它们转换为同一个图，则称\(G_1\)和\(G_2\)同构，记为\(G_1\cong G_2\)。换句话说，如果\(G_1\)和\(G_2\)同构，则在\(G_1\)的所有顶点标签上存在一个置换\(\pi\)使得\(\pi (G_1)=G_2\)，其中\(\pi (G_1)\)是将\(\pi\)作用到\(G_1\)的各个顶点上之后得到的图。下图就是两个同构图，右边给出了置换\(\pi\)。
+图同构的补集为图不同构（Graph Non-isomorphism, GNI），即判定给定的两个图是否不同构。下面是GNI的一个交互式证明过程。
+给定两个图\(G_1\)和\(G_2\)，证明者P想要向验证者V证明\(G_1\ncong G_2\)。
+V：随机选一个\(i\in \{1,2\}\)，对\(G_i\)做一个随机的置换，得到新图\(H\)，则有\(H\cong G_i\)，将\(H\)发送给P P：发送\(j\)给V V：如果\(i\neq j\)，则拒绝；否则重复100次实验，都有\(i==j\)，则相信\(G_1\ncong G_2\) 完备性：如果\(G_1\ncong G_2\)，则\(H\)只和\(G_1, G_2\)中的一个图同构，P因为能力无穷，一定能找出和\(H\)同构的图\(G_j\)，且满足\(j==i\)。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-07-14 20:56:37 +0800 CST'>July 14, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 有趣的交互式证明" href="http://localhost:1313/posts/2016-07-14-the-interesting-interactive-proofs/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">LaTeX写作完美解决方案
     </h2>
   </header>
@@ -383,28 +412,6 @@ $$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times 
   </div>
   <footer class="entry-footer"><span title='2016-01-04 13:56:23 +0800 CST'>January 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（一）简介" href="http://localhost:1313/posts/2016-01-04-introduction-to-building-a-search-engine-1/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">解决Win10间歇性断网的问题
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>安装WIN10一个月以来，校园有线网经常间歇性断网，通常是20分钟不到就断了，需要重启或者把有线连接关闭再打开才可以。在微博上问过微软客服也无果，后来Google到某国外的解决办法，现记录如下。
-说到底WIN10断网的问题还是和驱动有关，先看一下我的有线网卡Broadcom NetLink (TM) Gigabit Ethernet，驱动信息是这样的：
-还是13年的驱动，版本号是15.6.0.14，于是第一想到的是更新驱动。点击驱动右键选更新-&gt;自动搜索更新的驱动程序软件-&gt;提示“已安装适合设备的最佳驱动程序软件”，但这明明不是最新的驱动啊！
-于是在Broadcom的官网上找到了最新驱动win_b57_x64-17.2.0.2，版本号是17.2.0.2，更新日期2015-10-27，原来这才是最新的驱动。
-（2018.1.25更新：上面的地址已失效，最新地址请点击此处，并选择DOWNLOADS→Software→NetLink®/NetXtreme® I Desktop/Mobile/Server (x64)，也可以从本站下载。）
-在安装最新驱动之前，我们需要关闭WIN10的自动更新驱动功能，因为WIN10会认为它的15.6.0.14版本是最新的，在windows update时把实际最新的17.2.0.2版本替换掉。具体做法是在Cortana中搜索“更改设备安装设置”并打开，选择否，从不安装来自Windows更新的驱动程序软件，如下。
-然后重启进入安全模式，再次在设备管理器中右键点击网卡驱动，选择更新-&gt;浏览计算机以查找驱动程序软件-&gt;从计算机的设备驱动程序列表中选取-&gt;点击从磁盘安装按钮-&gt;浏览找到你之前在网上下载的最新驱动（*.inf格式）-&gt;选中-&gt;依次确定。刷新之后再次查看驱动信息如下：
-可以看到驱动已经更新到最新的版本了。再次重启进入正常模式，目前用了两天了也没有再断过网。
-其他WIN10驱动问题应该也可以用类似的方法解决。
-（话说我的WIN10偶尔会死机，就是用着用着突然鼠标和键盘完全动不了了，只能强制重启，有谁知道这是怎么回事吗？）
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2015-11-13 10:55:51 +0800 CST'>November 13, 2015</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 解决Win10间歇性断网的问题" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

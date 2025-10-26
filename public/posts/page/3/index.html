@@ -151,6 +151,34 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">LaTeX写作完美解决方案
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>
+\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
+我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
+目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
+MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
+MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
+如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
+构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
+Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
+Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
+正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
+另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
+OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
+下面是我常用的\(\LaTeX\)中文模板：
+LaTeXDemo.pdf
+LaTeXDemo.tex
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">SVM之序列最小最优化算法（SMO算法）
     </h2>
   </header>
@@ -359,38 +387,12 @@ $$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times 
   <footer class="entry-footer"><span title='2016-01-07 19:31:25 +0800 CST'>January 7, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（四）检索模型" href="http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-4/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">和我一起构建搜索引擎（三）构建索引
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>目前正是所谓的“大数据”时代，数据量多到难以计数，怎样结构化的存储以便于分析计算，是当前的一大难题。上一篇博客我们简单抓取了1000个搜狐新闻数据，搜索的过程就是从这1000个新闻中找出和关键词相关的新闻来，那么怎样快速搜索呢，总不可能依次打开xml文件一个字一个字的找吧，这时就需要借助倒排索引这个强大的数据结构。
-在讲倒排索引之前，我们先介绍一下布尔检索。布尔检索只是简单返回包含某个关键词的文档，比如查询“苹果手机”，则返回所有包含“苹果”和“手机”关键词的文档，布尔检索并不对返回结果排序，所以有可能返回的第一个文档是“某个男孩边吃苹果边玩手机…“。
-实现布尔检索并不难，我们需要构建一个如下图的词项文档矩阵：
-图1. 布尔检索中的词项文档矩阵
-每行对应一个词项，每列对应一个文档，如果该值为1，表示该行词项出现在该列文档中。比如词项”苹果“出现在doc1和doc3文档中，如果我们要找同时出现”苹果“和”手机“的文档，只需把他们对应的向量取出来进行”与“操作，此为101&amp;011=001，所以doc3同时出现了”苹果“和”手机“两个关键词，我们将其返回。
-布尔检索虽然很快，但是它也有很多缺陷，比如不能对结果排序，词项只有出现和不出现两种状态，但是一篇文档中出现10次“苹果“和只出现1次”苹果“，他们的相关度肯定是不相同的。所以需要对布尔检索进行改进。
-在扫描文档时，不但记录某词项出现与否，还记录该词项出现的次数，即词项频率(tf)；同时我们记录该文档的长度(ld)，以及某词项在不同文档中出现的次数，即文档频率(df)。
-图2. 倒排索引结构图
-这样我们就得到了如上图的倒排索引。左边部分被称为词典，存储的是1000个新闻中所有不同的词项；右边部分被称为倒排记录表，存储的是出现Term_i的那些文档信息。倒排索引中存储的变量都是为了给后续检索模型使用。
-讲到这里，我们需要解决如下几个问题。
-怎样得到一篇文档中的所有词项。给我们一篇新闻稿子，人类很容易分辨出”苹果“和”手机“是两个不同的词项，但是计算机怎么知道是这两个词呢？为什么不是”苹”、”国手“和”机“呢？这就需要进行中文分词，我们可以借助开源的jieba中文分词组件来完成，jieba分词能够将一个中文句子切成一个个词项，这样我们就可以统计tf, df了。 有些词，如”的“、”地“、”得“、”如果“等，几乎每篇文档都会出现，他们起不到很好的区分文档的效果，这类词被称为”停用词“，我们需要把他们去掉。去停词的步骤可以在jieba分词之后完成。 怎样存储倒排记录表。假设1000个文档共有20000个不同的词项，如果用类似图1的矩阵形式存储，需要耗费100020000=210^7个存储单元，但是图1往往是一个稀疏矩阵，因为一个文档中可能只出现了200个不同的词项，剩余的19800个词项都是空的。用矩阵方式存储时空效率都不高。所以我们可以采用图2的方式，词典用B-树或hash存储，倒排记录表用邻接链表存储方式，这样能大大减少存储空间。如果我们要将图2保存到数据库，可以对倒排记录表序列化成一个长的字符串，写入到一个单元格，读取的时候再反序列化。比如每个Doc内部用’\t’连接，Doc之间用’\n’连接，读取的时候split即可。 倒排索引构建算法使用内存式单遍扫描索引构建方法（SPIMI），其实就是依次对每篇新闻进行分词，如果出现新的词项则插入到词典中，否则将该文档的信息追加到词项对应的倒排记录表中。SPIMI的伪代码如下：
-图3. SPIMI算法伪代码
-下面是构建索引的所有代码：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 # -*- coding: utf-8 -*- &#34;&#34;&#34; Created on Sat Dec 5 23:31:22 2015 @author: bitjoy.net &#34;&#34;&#34; from os import listdir import xml.etree.ElementTree as ET import jieba import sqlite3 import configparser class Doc: docid = 0 date_time = &#39;&#39; tf = 0 ld = 0 def __init__(self, docid, date_time, tf, ld): self.docid = docid self.date_time = date_time self.tf = tf self.ld = ld def __repr__(self): return(str(self.docid) &#43; &#39;\t&#39; &#43; self.date_time &#43; &#39;\t&#39; &#43; str(self.tf) &#43; &#39;\t&#39; &#43; str(self.ld)) def __str__(self): return(str(self.docid) &#43; &#39;\t&#39; &#43; self.date_time &#43; &#39;\t&#39; &#43; str(self.tf) &#43; &#39;\t&#39; &#43; str(self.ld)) class IndexModule: stop_words = set() postings_lists = {} config_path = &#39;&#39; config_encoding = &#39;&#39; def __init__(self, config_path, config_encoding): self.config_path = config_path self.config_encoding = config_encoding config = configparser.ConfigParser() config.read(config_path, config_encoding) f = open(config[&#39;DEFAULT&#39;][&#39;stop_words_path&#39;], encoding = config[&#39;DEFAULT&#39;][&#39;stop_words_encoding&#39;]) words = f.read() self.stop_words = set(words.split(&#39;\n&#39;)) def is_number(self, s): try: float(s) return True except ValueError: return False def clean_list(self, seg_list): cleaned_dict = {} n = 0 for i in seg_list: i = i.strip().lower() if i != &#39;&#39; and not self.is_number(i) and i not in self.stop_words: n = n &#43; 1 if i in cleaned_dict: cleaned_dict[i] = cleaned_dict[i] &#43; 1 else: cleaned_dict[i] = 1 return n, cleaned_dict def write_postings_to_db(self, db_path): conn = sqlite3.connect(db_path) c = conn.cursor() c.execute(&#34;&#39;DROP TABLE IF EXISTS postings&#39;&#34;) c.execute(&#34;&#39;CREATE TABLE postings(term TEXT PRIMARY KEY, df INTEGER, docs TEXT)&#39;&#34;) for key, value in self.postings_lists.items(): doc_list = &#39;\n&#39;.join(map(str,value[1])) t = (key, value[0], doc_list) c.execute(&#34;INSERT INTO postings VALUES (?, ?, ?)&#34;, t) conn.commit() conn.close() def construct_postings_lists(self): config = configparser.ConfigParser() config.read(self.config_path, self.config_encoding) files = listdir(config[&#39;DEFAULT&#39;][&#39;doc_dir_path&#39;]) AVG_L = 0 for i in files: root = ET.parse(config[&#39;DEFAULT&#39;][&#39;doc_dir_path&#39;] &#43; i).getroot() title = root.find(&#39;title&#39;).text body = root.find(&#39;body&#39;).text docid = int(root.find(&#39;id&#39;).text) date_time = root.find(&#39;datetime&#39;).text seg_list = jieba.lcut(title &#43; &#39;。&#39; &#43; body, cut_all=False) ld, cleaned_dict = self.clean_list(seg_list) AVG_L = AVG_L &#43; ld for key, value in cleaned_dict.items(): d = Doc(docid, date_time, value, ld) if key in self.postings_lists: self.postings_lists[key][0] = self.postings_lists[key][0] &#43; 1 # df&#43;&#43; self.postings_lists[key][1].append(d) else: self.postings_lists[key] = [1, [d]] # [df, [Doc]] AVG_L = AVG_L / len(files) config.set(&#39;DEFAULT&#39;, &#39;N&#39;, str(len(files))) config.set(&#39;DEFAULT&#39;, &#39;avg_l&#39;, str(AVG_L)) with open(self.config_path, ‘w’, encoding = self.config_encoding) as configfile: config.write(configfile) self.write_postings_to_db(config[‘DEFAULT’][‘db_path’]) if __name__ == &#34;__main__&#34;: im = IndexModule(&#39;../config.ini&#39;, &#39;utf-8&#39;) im.construct_postings_lists() 运行之后会在./data/下生成一个ir.db数据库文件，这就是构建好的索引数据库。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-07 19:07:17 +0800 CST'>January 7, 2016</span>&nbsp;·&nbsp;3 min</footer>
-  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（三）构建索引" href="http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-3/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/2/">
-      «&nbsp;Prev&nbsp;2/5
+      «&nbsp;Prev&nbsp;2/6
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/4/">Next&nbsp;4/5&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/4/">Next&nbsp;4/6&nbsp;»
     </a>
   </nav>
 </footer>
