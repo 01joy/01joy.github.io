@@ -295,75 +295,63 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">2016 08 20 Introduction to Hmm 1
+    <h2 class="entry-hint-parent">隐马尔可夫模型及其应用（2）学习问题&amp;识别问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>上一回介绍了HMM的解码问题，今天我们介绍HMM的学习问题和识别问题，先来看学习问题。
+正如上一回结束时所说，HMM的学习问题是：仅已知观测序列\(\vec y\)，要估计出模型参数组\(\vec\lambda=(\mu,A,B)\)，其中\(\mu\)为初始概率分布向量，\(A\)为转移概率矩阵，\(B\)为发射概率矩阵。
+算法设计 求解HMM的参数学习问题，就是求解如下的最优化问题：
+$$\begin{equation} P(\vec Y = \vec y|\hat \lambda)=\max\limits_{\vec \lambda} P(\vec Y = \vec y|\vec \lambda)\end{equation}$$也就是找一个参数\(\vec \lambda\)，使得模型在该参数下最有可能产生当前的观测\(\vec y\)。如果使用极大似然法求解，对于似然函数\(P(\vec Y=\vec y|\vec \lambda)=\sum\limits_{i_1,…,i_T}\mu_{i_1}b_{i_1y_1}a_{i_1i_2}…a_{i_{T-1}i_T}b_{i_Ty_T}\)而言，这个最大值问题的计算量过大，在实际中是不可能被采用的。为此，人们构造了一个递推算法，使其能相当合理地给出模型参数\(\vec \lambda\)的粗略估计。其核心思想是：并不要求备选\(\vec\lambda\)使得\(P(\vec Y=\vec y|\vec \lambda)\)达到最大或局部极大，而只要求使\(P(\vec Y=\vec y|\vec \lambda)\)相当大，从而使计算变为实际可能。
+EM算法 为此，我们定义一个描述模型“趋势”的量\(Q(\vec\lambda^*|\vec\lambda)\)代替似然函数\(P(\vec Y=\vec y|\vec\lambda)\)，其定义为：
+$$\begin{equation} Q(\vec\lambda^*|\vec\lambda)=\sum\limits_{\vec x}P(\vec x,\vec y|\vec\lambda)\ln P(\vec x,\vec y|\vec\lambda^*)\end{equation}$$利用在\(0 &lt; x &lt; 1\)时，不等式\(\ln x\leq x-1\)成立，可以证明：
+$$\begin{equation} Q(\vec\lambda^*|\vec\lambda)-Q(\vec\lambda|\vec\lambda)\leq P(\vec Y=\vec y|\vec\lambda^*)-P(\vec Y=\vec y|\vec\lambda)\end{equation}$$由此可见，对于固定的\(\vec\lambda\)，只要\(Q(\vec\lambda^*|\vec\lambda)&gt;Q(\vec\lambda|\vec\lambda)\)，就有\(P(\vec Y=\vec y|\vec\lambda^*)&gt;P(\vec Y=\vec y|\vec\lambda)\)。于是想把模型\(\vec\lambda_m\)修改为更好的模型\(\vec\lambda_{m&#43;1}\)，只需找\(\vec\lambda_{m&#43;1}\)使得：
+$$\begin{equation}Q(\vec\lambda_{m&#43;1}|\vec\lambda_m)=\sup_{\vec\lambda}Q(\vec\lambda|\vec\lambda_m)\end{equation}$$即只要把\(Q(\vec\lambda|\vec\lambda_m)\)关于\(\vec\lambda\)的最大值处取成\(\vec\lambda_{m&#43;1}\)，就有\(P(\vec Y=\vec y|\vec\lambda_{m&#43;1})&gt;P(\vec Y=\vec y|\vec\lambda_m)\)。
+这样得到的模型序列\(\{\vec\lambda_m\}\)能保证\(P(\vec Y=\vec y|\vec\lambda_m)\)关于\(m\)是严格递增的，虽然在这里还不能在理论上证明\(P(\vec Y=\vec y|\vec\lambda_m)\)收敛到\(\max_{\vec\lambda}P(\vec Y=\vec y|\vec\lambda)\)，但是当\(m\)充分大时，\(\vec\lambda_m\)也还能提供在实际中较为满意的粗略近似。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-21 18:46:01 +0800 CST'>August 21, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 隐马尔可夫模型及其应用（2）学习问题&识别问题" href="http://localhost:1313/posts/2016-08-21-introduction-to-hmm-2/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">隐马尔可夫模型及其应用（1）简介&amp;解码问题
     </h2>
   </header>
   <div class="entry-content">
     <p>隐马尔可夫模型（Hidden Markov Model, HMM）是统计模型，它用来描述一个含有隐含未知参数的马尔可夫过程。其难点是从可观察的参数中确定该过程的隐含参数。然后利用这些参数来作进一步的分析，例如模式识别。
 先举一个简单的例子以直观地理解HMM的实质——韦小宝的骰子。
-hmm-2
 假设韦小宝有两个骰子，一个正常的骰子A，A以1/6的概率均等的出现每个点；一个不正常的骰子B，B出现5,6点数的概率为0.3，出现其他点数的概率为0.1。显然投掷B更容易出现大的点数。每次试验第一次投掷时，韦小宝会以0.4的概率出千（即投掷B）。但是在一次试验中，韦小宝不太可能一直出千，所以骰子会在A、B之间转换，比如这次投了B，下次可能会以0.1的概率投A。A、B之间的转移概率如下图。
-hmm-1
-某一次试验，我们观察到韦小宝掷出的骰子序列为$O=(1,3,4,5,5,6,6,3,2,6)$，请问韦小宝什么时候出千了。这个问题就可以通过HMM求解。
+某一次试验，我们观察到韦小宝掷出的骰子序列为\(O=(1,3,4,5,5,6,6,3,2,6)\)，请问韦小宝什么时候出千了。这个问题就可以通过HMM求解。
 HMM有2个状态：
-观测状态。我们观察到的骰子序列称为观测状态$\mathbf{Y}={y_1,y_2,…,y_T}$ 隐状态。隐含在每个观测状态里面的是隐状态$\mathbf{X}={x_1,x_2,…,x_T}$ T是时间，也可以认为是观测的次数。HMM有3个参数：
-初始分布$\mathbf{\mu}=(\mu_i)$，$\mu_i=Pr(x_1=i)$，即第一次观测时，每个隐状态出现的概率 转移概率矩阵$A=(a_{ij})$，$a_{ij}=Pr(x_{t&#43;1}=j|x_t=i)$，即t时刻的隐状态为i，t&#43;1时刻转移到隐状态j的概率 发射概率矩阵$B=(b_{il})$，$b_{il}=Pr(y_t=l|x_t=i)$，即t时候隐状态为i的情况下，观测到状态为l的概率 参数$\mathbf{\lambda={\mu,A,B}}$称为HMM的模型参数。具体到上面的例子，我们有初始分布和转移概率为：
-hmm-3
+观测状态。我们观察到的骰子序列称为观测状态\(\mathbf{Y}=\{y_1,y_2,…,y_T\}\) 隐状态。隐含在每个观测状态里面的是隐状态\(\mathbf{X}=\{x_1,x_2,…,x_T\}\) T是时间，也可以认为是观测的次数。HMM有3个参数：
+初始分布\(\mathbf{\mu}=(\mu_i)\)，\(\mu_i=Pr(x_1=i)\)，即第一次观测时，每个隐状态出现的概率 转移概率矩阵\(A=(a_{ij})\)，\(a_{ij}=Pr(x_{t&#43;1}=j|x_t=i)\)，即t时刻的隐状态为i，t&#43;1时刻转移到隐状态j的概率 发射概率矩阵\(B=(b_{il})\)，\(b_{il}=Pr(y_t=l|x_t=i)\)，即t时候隐状态为i的情况下，观测到状态为l的概率 参数\(\mathbf{\lambda=\{\mu,A,B\}}\)称为HMM的模型参数。具体到上面的例子，我们有初始分布和转移概率为：
 发射概率为：
-hmm-4
-观测状态为$\mathbf{Y}=(1,3,4,5,5,6,6,3,2,6)$，问题就是求解出隐状态$\mathbf{X}$，此问题被称为HMM的解码问题，可以由著名的维特比算法（Viterbi algorithm）解决。
-解码问题是要求出使得观测状态$Y$出现概率最大的隐状态$X$，假设有N个隐状态（本例为2），共有T个时刻（本例为10），则每个时刻有N个取值可能，则共有$N^T$条可能的隐状态链（本例为$2^{10}$）。我们需要求出每一条隐状态链下T个发射概率的乘积，然后取最大值，这是指数时间复杂度的（$O(N^T)$）。
-hmm-5
-但是Viterbi算法是一个动态规划算法，只需多项式时间即可解决该问题。该算法的原理很好理解，假设我们求得到$s_{i2}$的最大概率路径为下图中的红线$s_{11}\rightarrow s_{22}\rightarrow … s_{i2}$，则在求经过$s_{i2}$到$s_{(i&#43;1)1}$的最大概率路径时，不需要再测试$s_{13}\rightarrow s_{21}\rightarrow s_{i2}\rightarrow s_{(i&#43;1)1}$这条路径（下图蓝线），因为显然已经知道红线概率大于蓝线概率了。图中还有很多类似蓝线的路径都可以不用计算了，大大提高了求解速度。
-因为计算第$i&#43;1$时刻的累积概率只和第$i$时刻的概率有关，每次至多计算$N*N$个概率乘积（可以从$i$时刻的$N$个状态到达$i&#43;1$时刻的某个状态，$i&#43;1$时刻共有$N$个状态），最多计算T次（共T个时刻），所以时间复杂度降到了$O(N^2T)$。
-hmm-6
+观测状态为\(\mathbf{Y}=(1,3,4,5,5,6,6,3,2,6)\)，问题就是求解出隐状态\(\mathbf{X}\)，此问题被称为HMM的解码问题，可以由著名的维特比算法（Viterbi algorithm）解决。
+解码问题是要求出使得观测状态\(Y\)出现概率最大的隐状态\(X\)，假设有N个隐状态（本例为2），共有T个时刻（本例为10），则每个时刻有N个取值可能，则共有\(N^T\)条可能的隐状态链（本例为\(2^{10}\)）。我们需要求出每一条隐状态链下T个发射概率的乘积，然后取最大值，这是指数时间复杂度的（\(O(N^T)\)）。
+但是Viterbi算法是一个动态规划算法，只需多项式时间即可解决该问题。该算法的原理很好理解，假设我们求得到\(s_{i2}\)的最大概率路径为下图中的红线\(s_{11}\rightarrow s_{22}\rightarrow … s_{i2}\)，则在求经过\(s_{i2}\)到\(s_{(i&#43;1)1}\)的最大概率路径时，不需要再测试\(s_{13}\rightarrow s_{21}\rightarrow s_{i2}\rightarrow s_{(i&#43;1)1}\)这条路径（下图蓝线），因为显然已经知道红线概率大于蓝线概率了。图中还有很多类似蓝线的路径都可以不用计算了，大大提高了求解速度。
+因为计算第\(i&#43;1\)时刻的累积概率只和第\(i\)时刻的概率有关，每次至多计算\(N*N\)个概率乘积（可以从\(i\)时刻的\(N\)个状态到达\(i&#43;1\)时刻的某个状态，\(i&#43;1\)时刻共有\(N\)个状态），最多计算T次（共T个时刻），所以时间复杂度降到了\(O(N^2T)\)。
 下面我们形式化的描述Viterbi算法。
-假设$\delta_t(i)$为$t$时刻取到隐状态$i$，且1~t的观测状态都符合观测值$Y$的各个路径的最大概率，即
-$$\begin{equation}\delta_t(i)=\underset{i_1,…,i_{t-1}}{\max}Pr(X_t=i,X_{t-1}=i_{t-1},…,X_1=i_1,Y_t=y_t,…,Y_1=y_1|\mathbf{\lambda})\end{equation}$$联系上图，可认为$\delta_t(i)$为红线。则递推公式为：
-$$\begin{equation}\delta_{t&#43;1}(i)=b_{iy_{t&#43;1}}\underset{j}{\max}(\delta_t(j)a_{ji})\end{equation}$$由$j$到$i$的转移概率，再乘上$i$发射$y_{t&#43;1}$的概率。
-在初始时刻$t=1$，有：
-$$\begin{equation}\delta_1(i)=\mu_ib_{iy_1}\end{equation}$$最后的全局最大概率为$\underset{j}{\max}\delta_T(j)$。为了得到完整路径，我们保留每一隐状态取得最大概率时的上一隐状态，即：
-$$\begin{equation}\psi_{t&#43;1}(i)=j^*\end{equation}$$其中$j^*$要满足
-$$\begin{equation}\delta_{t&#43;1}(i)=b_{iy_{t&#43;1}}\delta_t(j^*)a_{j^*i}\end{equation}$$最后使用如下回溯法得到所有最佳隐状态：
+假设\(\delta_t(i)\)为\(t\)时刻取到隐状态\(i\)，且1~t的观测状态都符合观测值\(Y\)的各个路径的最大概率，即
+$$ \begin{equation}\delta_t(i)=\underset{i_1,…,i_{t-1}}{\max}Pr(X_t=i,X_{t-1}=i_{t-1},…,X_1=i_1,Y_t=y_t,…,Y_1=y_1|\mathbf{\lambda})\end{equation} $$联系上图，可认为\(\delta_t(i)\)为红线。则递推公式为：
+$$ \begin{equation}\delta_{t&#43;1}(i)=b_{iy_{t&#43;1}}\underset{j}{\max}(\delta_t(j)a_{ji})\end{equation} $$由\(j\)到\(i\)的转移概率，再乘上\(i\)发射\(y_{t&#43;1}\)的概率。
+在初始时刻\(t=1\)，有：
+$$ \begin{equation}\delta_1(i)=\mu_ib_{iy_1}\end{equation} $$最后的全局最大概率为\(\underset{j}{\max}\delta_T(j)\)。为了得到完整路径，我们保留每一隐状态取得最大概率时的上一隐状态，即：
+$$ \begin{equation}\psi_{t&#43;1}(i)=j^*\end{equation} $$其中\(j^*\)要满足
+$$ \begin{equation}\delta_{t&#43;1}(i)=b_{iy_{t&#43;1}}\delta_t(j^*)a_{j^*i}\end{equation} $$最后使用如下回溯法得到所有最佳隐状态：
 $$\begin{equation}X_T=i^*\in\{i:\delta_T(i)=\underset{j}{\max}\delta_T(j)\}\end{equation}$$$$\begin{equation}X_t=\psi_{t&#43;1}(X_{t&#43;1})\end{equation}$$下面我们利用Viterbi算法来求解韦小宝的骰子这个例子。
-$t=1$时，$y_1=1$，有$\delta_1(A)=0.61/6=0.1$，$\delta_1(B)=0.40.1=0.04$。
-$t=2$时，$y_2=3$，有：
-隐状态为A：a）A-&gt;A有$\delta_2(A)=(1/6)0.10.8=1.3310^{-2}$；b）B-&gt;A有$\delta_2(A)=(1/6)0.040.1=6.610^{-4}$。所以A-&gt;A，$\psi_2(A)=A$。 隐状态为B：a）A-&gt;B有$\delta_2(B)=0.10.10.2=210^{-3}$；b）B-&gt;B有$\delta_2(B)=0.10.040.9=3.610^{-3}$。所以B-&gt;B，$\psi_2(B)=B$。 如此计算下去，可以得到如下表：
-hmm-7
-$t=10$时最大概率为$\delta_{10}(B)$，经过回溯得到最佳隐状态为：
-hmm-8
+\(t=1\)时，\(y_1=1\)，有\(\delta_1(A)=0.6*1/6=0.1\)，\(\delta_1(B)=0.4*0.1=0.04\)。
+\(t=2\)时，\(y_2=3\)，有：
+隐状态为A：a）A-&gt;A有\(\delta_2(A)=(1/6)*0.1*0.8=1.33*10^{-2}\)；b）B-&gt;A有\(\delta_2(A)=(1/6)*0.04*0.1=6.6*10^{-4}\)。所以A-&gt;A，\(\psi_2(A)=A\)。 隐状态为B：a）A-&gt;B有\(\delta_2(B)=0.1*0.1*0.2=2*10^{-3}\)；b）B-&gt;B有\(\delta_2(B)=0.1*0.04*0.9=3.6*10^{-3}\)。所以B-&gt;B，\(\psi_2(B)=B\)。 如此计算下去，可以得到如下表： \(t=10\)时最大概率为\(\delta_{10}(B)\)，经过回溯得到最佳隐状态为：
 所以HMM很神奇吧，可以抓住韦小宝从第5次开始就一直在出千，而且出千之后，掷出的点数大部分为5和6。
 Viterbi算法还可用于解决语音识别或者拼音输入法。我们知道中文的一个拼音可以对应多个汉字，连续的一段拼音就能组成成千上万种可能的句子，哪一个句子才是最佳候选呢？我们可以把每个拼音当成观测状态，同音的汉字当成可能的隐状态。通过背景语料库统计得到每个汉字出现在词首的概率、汉字之间的转移概率和汉字与拼音之间的发射概率，这样我们就能得到模型参数，然后利用Viterbi算法求解出一个最佳的隐状态序列，这样就能完成一个简易的拼音输入法。
 HMM在实际中主要有3个方面的应用，分别是：
-从一段观测序列$\mathbf{Y}$及已知模型$\mathbf{\lambda=(\mu,A,B)}$出发，估计出隐状态$\mathbf{X}$的最佳值，称为解码问题，这是状态估计问题。这篇博客讨论的就是这个问题。 从一段观测序列$\mathbf{Y}$出发，估计模型参数组$\mathbf{\lambda=(\mu,A,B)}$，称为学习问题，就是参数估计问题。 对于一个特定的观测链$\mathbf{Y}$，已知它可能是由已经学习好的若干模型之一所得的观测，要决定此观测究竟是得自其中哪一个模型，这称为识别问题，就是分类问题。 关于HMM的学习问题和识别问题，请听下回分解。
+从一段观测序列\(\mathbf{Y}\)及已知模型\(\mathbf{\lambda=(\mu,A,B)}\)出发，估计出隐状态\(\mathbf{X}\)的最佳值，称为解码问题，这是状态估计问题。这篇博客讨论的就是这个问题。 从一段观测序列\(\mathbf{Y}\)出发，估计模型参数组\(\mathbf{\lambda=(\mu,A,B)}\)，称为学习问题，就是参数估计问题。 对于一个特定的观测链\(\mathbf{Y}\)，已知它可能是由已经学习好的若干模型之一所得的观测，要决定此观测究竟是得自其中哪一个模型，这称为识别问题，就是分类问题。 关于HMM的学习问题和识别问题，请听下回分解。
 </p>
   </div>
   <footer class="entry-footer"><span title='2016-08-20 18:12:53 +0800 CST'>August 20, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 2016 08 20 Introduction to Hmm 1" href="http://localhost:1313/posts/2016-08-20-introduction-to-hmm-1/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">2016年中总结
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>半年的时光又过去了，圆满结束了一年的集中教学任务，离开了美丽的雁栖湖，回到闹市中关村。
-这半年基本上延续了研一上学期的高强度学习，四门硬课。《高级算法》这门课由四位大师级的老师授课，内容囊括了近似算法、计算复杂性、随机算法、局部搜索、全息规约等，完全是神一样的课。最后复习的时候，大家都生不如死啊，不过经过一个月的挑灯夜战，我还是取得了97分的好成绩，值了。
-《大数据系统与大规模数据分析》这门课的老师是一个年轻的海归，要求很严格，有专门的算法检查平时作业是否抄袭，真的有好几个同学因为抄袭而得0分。这门课的大作业是在GraphLite上实现SVD，我带领队员经过一个月的努力比较圆满的完成了大作业，感谢组里的编程大神。
-《机器学习方法与应用》是面向电子学院的课程，讲得太简单，考试基本是概念题，不建议选修。
-《生物信息学中的算法设计》这门课其实应该叫统计机器学习在生物信息领域的应用，讲的内容比《机器学习方法与应用》的内容更深更广。不过内容太多也难以消化，好好做大作业应该会有不少收获。
-集中教学一年，研一上的GPA是87分，研一下的GPA是89.3分，平均是88.1分。
-除了完成若干个课程大作业，这学期还完成了两个组内大作业，分别是倒排索引和蛋白质搜索引擎，也多谢XN和我一起查Bug、对答案。（天啊，我半年是做了多少个大作业啊…）
-这半年每周二回所和师姐交接任务，真是要感谢天真呆萌的JL师姐，当初保研的时候就被师姐的热情所感染，现在又有幸接替师姐的接力棒，好幸运。
-要说上半年最大的收获，应该是收获了一枚女朋友吧~没错，就是我这篇博客里提到的欣欣~真的没想到这么聊得来，一起吃饭、看电影、聊代码、骑行、游山玩水。这半年拍的照片，比我前22年拍的照片还多。和她在一起很开心，不过有时候也会很累，身体累（羸弱），有时候也心累，毕竟课程压力和组内压力摆在那里，白天去玩了，晚上还是要加班补回来的。有时候冷落了她，也会感到愧疚不安，特别是我在复习《高级算法》期间，两人都很少见面，那一次是真的惹欣欣生气了:-(
-总结一下在雁栖湖一年的收获，大致有如下图的四个方面：
-看看年初计划的完成情况：
-完成国科大下学期的课程任务：完成 接手pLink软件：完成 刷完LeetCode所有题目：上半年基本没刷题，下半年一定完成 读10本书：目前读了《数学之美》、《大话设计模式》、《我不知道该说什么，关于死亡还是爱情》、《男人来自火星、女人来自金星，卷I》，还差6本，下半年加油！ 去电影院看10场电影：目前看了《美人鱼》、《北京遇上西雅图之不二情书》、《忍者神龟2：破影而出》，还差好多… 改正坐姿：有一段时间刻意改正了，但是这东西貌似改不过来？ 下半年就进入实验室，开始科研实战了，做交联的师兄师姐都毕业了，留下我一个人，感觉好艰难，希望我能顺利进入角色，协助师兄把文章发了，维护好pLink2的软件，并且开发集群版。
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-08-20 11:33:26 +0800 CST'>August 20, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 2016年中总结" href="http://localhost:1313/posts/2016-08-20-2016-mid-year-summary/"></a>
+  <a class="entry-link" aria-label="post link to 隐马尔可夫模型及其应用（1）简介&解码问题" href="http://localhost:1313/posts/2016-08-20-introduction-to-hmm-1/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
