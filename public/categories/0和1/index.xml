@@ -6,8 +6,51 @@
     <description>Recent content in 0和1 on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 07 Feb 2017 19:15:56 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 07 Feb 2017 23:21:41 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/0%E5%92%8C1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gperftools性能分析工具使用教程</title>
+      <link>http://localhost:1313/posts/2017-02-07-gperftools-tutorial/</link>
+      <pubDate>Tue, 07 Feb 2017 23:21:41 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2017-02-07-gperftools-tutorial/</guid>
+      <description>&lt;p&gt;上一篇博客简单介绍了Linux平台下不同性能分析工具的特点，最后是Google出品的gperftools胜出。今天我们将举一个用gperftools对链接库进行性能分析的例子。&lt;/p&gt;
+&lt;p&gt;假设我们创建了一个TestGperftools项目，其中包括一个动态链接库模块complex和主程序main，build文件夹用于存放动态链接库和可执行程序，文件结构如下所示。&lt;/p&gt;
+&lt;p&gt;[shell]
+czl@ubuntu:~/czl/TestGperftools$ tree
+.
+├── build
+├── complex
+│   ├── complex.cpp
+│   ├── complex.h
+│   └── Makefile
+├── main
+│   ├── main.cpp
+│   └── Makefile
+└── Makefile&lt;/p&gt;
+&lt;p&gt;3 directories, 6 files
+[/shell]&lt;/p&gt;
+&lt;p&gt;其中complex借用了这篇博客的第三个公式计算圆周率π，主要用来模拟一个很耗时的操作。该模块会生成一个libcomplex.so动态链接库供外部调用。其complex.cpp函数如下：&lt;/p&gt;
+&lt;p&gt;[cpp]
+#include &amp;ldquo;complex.h&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Complex::Complex() {
+}&lt;/p&gt;
+&lt;p&gt;void Complex::recordPI(double x) {
+pis.push_back(x);
+if (pis.size() &amp;gt; 10000) pis.clear();
+}&lt;/p&gt;
+&lt;p&gt;double Complex::calculatePI(int n) {
+double x = 2, z = 2;
+int a = 1, b = 3;
+while (n–) {
+z = z*a / b;
+x += z;
+a++;
+b += 2;
+recordPI(x);
+}
+return x;
+}&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Linux性能分析工具简介</title>
       <link>http://localhost:1313/posts/2017-02-07-introduction-to-performance-analysis-tools-in-linux/</link>
@@ -16,28 +59,35 @@
       <description>&lt;p&gt;这半年一直在研究pLink 2的加速策略，了解了相关的性能分析工具，现记录如下。&lt;/p&gt;
 &lt;p&gt;对软件进行加速的技术路线一般为：首先对代码进行性能分析（ performance analysis，也称为 profiling），然后针对性能瓶颈提出优化方案，最后在大数据集上评测加速效果。所以进行性能优化的前提就是准确地测量代码中各个模块的时间消耗。听起来很简单，不就是测量每行代码的运行时间吗，直接用time_t t=clock();不就好了，但是事情并没有那么简单。如果只进行粗粒度的性能分析，比如测量几个大的模块的运行时间，clock()还比较准确，但是如果测量的是运算量比较小的函数调用，而且有大量的小函数调用，clock()就不太准确了。&lt;/p&gt;
 &lt;p&gt;比如下面的一段代码，我最开始的性能分析方法是在fun1()~fun3()前后添加time_t t=clock()，然后作差求和的。但是3个fun()加起来的时间居然不等于整个while循环的时间，有将近50%的时间不翼而飞了！&lt;/p&gt;
-&lt;p&gt;[cpp]
-while(true) {
-if(fun1()) {
-for(int i=0;i&amp;lt;k;++k) {
-if(flag1) {
-fun2();
-}
-}
-} else {
-fun3();
-}
-}
-[/cpp]&lt;/p&gt;
-&lt;p&gt;一种可能是while循环以及内部的for循环本身占用了较多的时间，但是好像不太可能呀。还有一种可能是clock()测量有误，time_t只能精确到秒，clock_t只能精确到毫秒，如果一次fun*()的时间太短，导致一次测量几乎为0，那么多次的while和for循环调用累加的时间也几乎为0，导致实际测量到的fun*()时间远小于真实时间。所以自己用代码进行性能分析可能会有较大的误差，最好借助已有的性能分析工具。&lt;/p&gt;
-&lt;p&gt;性能分析和操作系统有较大的关系。因为C++11以前的多线程在不同操作系统中有不同的实现，比如在Windows中使用的是Win32 threads，需要包含windows.h头文件，在Linux中使用的是POSIX Threads，需要包含pthread.h头文件，所以选择性能分析工具首先需要看代码使用的多线程是哪个版本。如果使用的是Win32 threads，则需要在Windows平台选择热点分析工具；如果使用的是POSIX Threads，则需要在Linux平台选择热点分析工具；当然，如果代码中没有多线程或者采用的多线程是C++11标准统一的多线程，原则上可以忽略操作系统的限制。&lt;/p&gt;
-&lt;p&gt;Windows平台上，之前用过微软的Visual Studio工具进行Profiling，效果很不错，网上的介绍也很多，这里就不详细介绍了。&lt;/p&gt;
-&lt;p&gt;通过网络搜索我发现了三款Linux平台下主流的热点分析工具，分别是GNU gprof、Valgrind和Google perftools，三款工具的主要特点如下表：&lt;/p&gt;
-&lt;p&gt;工具	使用命令	是否需要重新编译	Profiling速度	是否支持多线程热点分析	是否支持链接库热点分析
-GNU gprof	./test; gprof ./test ./gmon.out	是	慢	否	否
-Valgrind	Valgrind –tool=callgrind ./test	否	非常慢	是	是
-Google perftools	LD_PRELOAD=/usr/lib/libprofiler.so CPUPROFILE=./test.prof ./test	否	快	是	是
-GNU gprof是GNU G++自带的热点分析工具，使用方法是：1. 使用-pg选项重新编译代码；2. 执行程序./test，生成热点分析结果gmont.out；3.使用gprof查看结果gprof ./test ./gmon.out。因为gprof要求用-pg重新编译代码，需要在Debug模式下进行Profiling，所以速度较慢。另外gprof不支持多线程的热点分析。这个工具另一个大问题是，不支持链接库的热点分析。很多大型项目为了模块化管理会生成很多动态链接库供其他程序调用，如果要分析每个模块的热点，这个工具就不适用了。&lt;/p&gt;</description>
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 6
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 7
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 8
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt; 9
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;10
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;while&lt;/span&gt; (true) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (fun1()) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; k; &lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;k) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; (flag1) {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        fun2();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  } &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    fun3();
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;一种可能是while循环以及内部的for循环本身占用了较多的时间，但是好像不太可能呀。还有一种可能是clock()测量有误，time_t只能精确到秒，clock_t只能精确到毫秒，如果一次fun*()的时间太短，导致一次测量几乎为0，那么多次的while和for循环调用累加的时间也几乎为0，导致实际测量到的fun*()时间远小于真实时间。所以自己用代码进行性能分析可能会有较大的误差，最好借助已有的性能分析工具。&lt;/p&gt;</description>
     </item>
     <item>
       <title>C&#43;&#43;基本数据类型备忘</title>
