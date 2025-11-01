@@ -151,6 +151,37 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">和我一起构建搜索引擎（七）总结展望
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>至此，整个新闻搜索引擎构建完毕，总体效果令人满意，不过还是有很多可以改进的地方。下面总结一下本系统的优点和不足。
+优点
+倒排索引存储方式。因为不同词项的倒排记录表长度一般不同，所以没办法以常规的方式存入关系型数据库。通过将一个词项的倒排记录表序列化成一个字符串再存入数据库，读取的时候通过反序列化获得相关数据，整个结构类似于邻接表的形式。
+推荐阅读实现方式。利用特征提取的方法，用25个关键词表示一篇新闻，大大减小了文档词项矩阵规模，提高计算效率的同时不影响推荐新闻相关性。
+借用了Reddit的热度公式，融合了时间因素。
+不足
+构建索引时，为了降低索引规模，提高算法速度，我们将纯数字词项过滤了，同时忽略了词项大小写。虽然索引规模下降了，但是牺牲了搜索引擎的正确率。
+构建索引时，采用了jieba的精确分词模式，比如句子“我来到北京清华大学”的分词结果为“我/ 来到/ 北京/ 清华大学”，“清华大学”作为一个整体被当作一个词项，如果搜索关键词是“清华”，则该句子不能匹配，但显然这个句子和“清华”相关。所以后续可以采用结巴的搜索引擎分词模式，虽然索引规模增加了，但能提升搜索引擎的召回率。
+在推荐阅读模块，虽然进行了维度约减，但是当数据量较大时（数十万条新闻），得到的文档词项矩阵也是巨大的，会远远超过现有PC的内存大小。所以可以先对新闻进行粗略的聚类，再在类内计算两两cosine相似度，得到值得推荐的新闻。
+在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数\(k_1\)和\(k_2\)，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。
+完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
+以下是系列博客：
+和我一起构建搜索引擎（一）简介
+和我一起构建搜索引擎（二）网络爬虫
+和我一起构建搜索引擎（三）构建索引
+和我一起构建搜索引擎（四）检索模型
+和我一起构建搜索引擎（五）推荐阅读
+和我一起构建搜索引擎（六）系统展示
+和我一起构建搜索引擎（七）总结展望
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-01-09 23:52:13 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（七）总结展望" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">和我一起构建搜索引擎（六）系统展示
     </h2>
   </header>
@@ -357,28 +388,6 @@ $$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times 
   </div>
   <footer class="entry-footer"><span title='2015-11-22 12:16:00 +0800 CST'>November 22, 2015</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 北国的雪" href="http://localhost:1313/posts/2015-11-22-snow-in-beijing/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">解决Win10间歇性断网的问题
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>安装WIN10一个月以来，校园有线网经常间歇性断网，通常是20分钟不到就断了，需要重启或者把有线连接关闭再打开才可以。在微博上问过微软客服也无果，后来Google到某国外的解决办法，现记录如下。
-说到底WIN10断网的问题还是和驱动有关，先看一下我的有线网卡Broadcom NetLink (TM) Gigabit Ethernet，驱动信息是这样的：
-还是13年的驱动，版本号是15.6.0.14，于是第一想到的是更新驱动。点击驱动右键选更新-&gt;自动搜索更新的驱动程序软件-&gt;提示“已安装适合设备的最佳驱动程序软件”，但这明明不是最新的驱动啊！
-于是在Broadcom的官网上找到了最新驱动win_b57_x64-17.2.0.2，版本号是17.2.0.2，更新日期2015-10-27，原来这才是最新的驱动。
-（2018.1.25更新：上面的地址已失效，最新地址请点击此处，并选择DOWNLOADS→Software→NetLink®/NetXtreme® I Desktop/Mobile/Server (x64)，也可以从本站下载。）
-在安装最新驱动之前，我们需要关闭WIN10的自动更新驱动功能，因为WIN10会认为它的15.6.0.14版本是最新的，在windows update时把实际最新的17.2.0.2版本替换掉。具体做法是在Cortana中搜索“更改设备安装设置”并打开，选择否，从不安装来自Windows更新的驱动程序软件，如下。
-然后重启进入安全模式，再次在设备管理器中右键点击网卡驱动，选择更新-&gt;浏览计算机以查找驱动程序软件-&gt;从计算机的设备驱动程序列表中选取-&gt;点击从磁盘安装按钮-&gt;浏览找到你之前在网上下载的最新驱动（*.inf格式）-&gt;选中-&gt;依次确定。刷新之后再次查看驱动信息如下：
-可以看到驱动已经更新到最新的版本了。再次重启进入正常模式，目前用了两天了也没有再断过网。
-其他WIN10驱动问题应该也可以用类似的方法解决。
-（话说我的WIN10偶尔会死机，就是用着用着突然鼠标和键盘完全动不了了，只能强制重启，有谁知道这是怎么回事吗？）
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2015-11-13 10:55:51 +0800 CST'>November 13, 2015</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 解决Win10间歇性断网的问题" href="http://localhost:1313/posts/2015-11-13-solution-to-win10s-network-problem/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
