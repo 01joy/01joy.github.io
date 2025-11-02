@@ -151,6 +151,28 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">逻辑回归之Python应用实例
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>上一篇博客主要介绍了逻辑回归的理论知识，这篇博客咱们用Python机器学习包sklearn中的LogisticRegression做一个分类的实例。
+数据还是学生样本，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。先上分类效果图：
+完整的Python代码如下：
+-- coding: utf-8 -- &#34;&#34;&#34; Created on Wed Nov 08 17:49:41 2017
+@author: zhenlin &#34;&#34;&#34;
+import numpy as np
+import pandas as pd from sklearn.cross_validation import train_test_split from sklearn.linear_model import LogisticRegression import matplotlib.pyplot as plt from sklearn.metrics import precision_recall_curve from sklearn.metrics import classification_report
+1. 构造数据 sample_number = 200
+第一个高斯分布参数 mean1 = [0, 4] # 两个维度上的均值 cov1 = [[5, 3], [3, 10]] # 两个维度的协方差矩阵，必须满足对称半正定
+第二个高斯分布参数 mean2 = [7, 5] cov2 = [[7, 2], [2, 15]]
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-12-05 21:20:01 +0800 CST'>December 5, 2017</span>&nbsp;·&nbsp;3 min</footer>
+  <a class="entry-link" aria-label="post link to 逻辑回归之Python应用实例" href="http://localhost:1313/posts/2017-12-05-logistic-regression-in-python/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）
     </h2>
   </header>
