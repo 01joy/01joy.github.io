@@ -151,6 +151,43 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">还原谷歌PageRank算法真相
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>之前写了七篇博客详细介绍了搜索引擎的工作原理。彼时的搜索引擎主要讲查询和网页的相关性匹配，是动态的、在线的、实时的。相关性匹配有一个问题，网页很容易作弊，比如可以在一个网页中写满诸如“免费”、“美容”之类的垃圾关键词，进而提升查询相关性。但是用户在查询时，一定希望返回的网页比较权威可信，比如同样搜索“苹果电脑”，排名第一的应该是Apple的官网，而不应该是中关村在线之类的第三方网站。
+权威性是一个静态的（或者说变化较慢的）衡量网页重要性的指标。但是应该怎样度量权威性呢，HITS算法使用authority来度量，即指向自身的网页数量越多，则自身的authority值越大。谷歌的PageRank算法是用PageRank值来衡量权威性的。HITS和PageRank一个比较大的区别是HITS和查询有关，而PageRank和查询无关，所以PageRank可以离线计算。下面主要介绍PageRank算法。
+PageRank’s thesis is that a webpage is important if it is pointed to by other important pages.
+我先不加解释的给出PageRank的公式，然后带领大家一步步推导出这个公式。
+$$\pi^T=\pi^T(\alpha S&#43;(1-\alpha)E)$$我们首先明确目标：PageRank计算的是网页的静态权威度（PR值），也就是如果给定了一个网络结构，则每个网页的PR值就可以通过PageRank算法计算出。假设网页\(P_i\)的PR值为\(r(P_i)\)，则\(r(P_i)\)等于所有指向\(P_i\)的网页的PR值之和，即
+$$\begin{equation}r(P_i)=\sum\limits_{P_j\in B_{P_i}}\frac{r(P_j)}{|P_j|}\end{equation}$$其中\(B_{P_i}\)为指向\(P_i\)的网页集合，\(|P_j|\)为\(P_j\)的出边的数量。这个式子很好理解，包括两方面内容：1）\(\sum\limits_{P_j\in B_{P_i}}\)表示如果指向\(P_i\)的网页数量越多，说明网页\(P_i\)越重要；2）\(\frac{r(P_j)}{|P_j|}\)表示如果\(P_j\)指向的页面数量越少，但有一个指向了\(P_i\)，说明网页\(P_i\)越重要（如果一个大牛写了很多推荐信（\(|P_j|\)大），则这些推荐信的效力就下降了，如果大牛只给你写了推荐信（\(|P_j|=1\)），则这封推荐信的效力一定很高）。
+(1)式有一个问题，初始给定一个网络结构时，并不知道\(r(P_i), r(P_j)\)，如何计算呢？Brin和Page利用递归的思想求解，初始假设所有网页的PR值相等，都为\(\frac{1}{n}\)，其中\(n\)为网络中网页的数量。则第\(k&#43;1\)轮的PR计算公式为：
+$$\begin{equation}r_{k&#43;1}(P_i)=\sum\limits_{P_j\in B_{P_i}}\frac{r_k(P_j)}{|P_j|}\end{equation}$$初始对所有网页\(P_i\)有\(r_0(P_i)=\frac{1}{n}\)，迭代\(k\)步之后，可以计算出所有网页的PR值，然后按PR值从大到小排序，就可以知道每个网页的重要性了。
+对于上图的小网络，我们可以计算出其每一步的PR值：
+可以看到经过2次迭代之后，节点4的PR值最大，从图中也可以看出，节点4的出入边较多，它可能比较重要。
+注意到对于(2)式，当\(i,j\)之间有边时，\(\frac{1}{|P_j|}\)相当于对\(P_j\)出度的归一化，设矩阵\(H\)为图的邻接矩阵的行归一化矩阵，对于上图，为
+设行向量\(\pi^{(k)T}\)为第\(k\)轮迭代时所有网页的PR值，则式(2)可以转换为如下的矩阵形式：
+$$\begin{equation}\pi^{(k&#43;1)T}=\pi^{(k)T}H\end{equation}$$初始有\(\pi^{(0)T}=\frac{1}{n}e^T\)，\(e^T\)为全1的行向量。我们可以从(3)式观测出几点信息：
+(3)式的每一轮计算涉及到向量和矩阵的乘法，复杂度为\(O(n^2)\)，\(n\)为矩阵\(H\)的大小 \(H\)是一个稀疏矩阵，因为大部分网页只和很少的网页有链接关系，所以上述向量和矩阵的乘法复杂度还可以降低 \(H\)有点像马尔科夫链中的随机转移矩阵，但又不完全是，因为如果有dangling nodes，则这一行就是全0，所以\(H\)被称为substochastic matrix 上图中的节点3就是一个dangling node，它只有入边，没有出边，也就是说，每一轮迭代，PR值只会流入3号节点，不会从3号节点流出，久而久之，3就像一个水槽(sink)一样，吸走了大部分的PR，导致PR值虚高。
+所以问题随之而来，怎样保证(3)式一定能够收敛到一个平稳概率分布\(\pi^T\)，\(\pi^T\)和\(\pi^{(0)T}\)有关吗，怎样解决dangling nodes问题，等等。此时需要引入一点马尔科夫链理论的知识。
+在马尔科夫理论呢中，如果一个矩阵\(P\)是随机的（stochastic）、不可约的（irreducible）和非周期的（aperiodic），则对于任意的起始向量，都能收敛到一个唯一的平稳正向量。所以如果PageRank矩阵\(H\)满足上述三个条件，则可以用幂法（Power Method）找到一个平稳概率分布\(\pi^T\)。幂法是用来计算最大特征值的特征向量。因为\(H\)的最大特征值为1，所以可以用幂法找到稳态时（\(\pi^T=\pi^TH\)）的概率分布\(\pi^T\)。
+下面我们就将矩阵\(H\)调整为随机的（stochastic）、不可约的（irreducible）和非周期的（aperiodic）。
+行随机矩阵是指行和为1的非负矩阵。如果图中含有dangling nodes，则\(H\)不是随机的，比如上面的例子，第二行为全0。所以第一个调整是对于所有dangling nodes，都加上一个随机跳转向量\(e^T/n\)，含义就是如果进入死胡同（dangling nodes），则随机跳转到网络中的任意一个网页。定义向量\(a\)：
+$$\begin{equation}a_i=\begin{cases}1\quad\text{if page}~i\text{ is a dangling node}\\0\quad\text{otherwise}\end{cases}\end{equation}$$则新的Google矩阵为：
+$$\begin{equation}S=H&#43;a\frac{1}{n}e^T\end{equation}$$新矩阵\(S\)就是一个行随机矩阵了。对于上图的例子，有
+为了保证矩阵\(S\)满足不可约性（irreducible）和非周期性（aperiodic），必须使\(S\)对应的图是强连通的且每个节点有自回路。所以再次调整为：
+$$\begin{equation}G=\alpha S&#43;(1-\alpha)\frac{1}{n}ee^T\end{equation}$$令
+$$\begin{equation}E=\frac{1}{n}ee^T\end{equation}$$则得到本博客开头的Google矩阵公式：
+$$\begin{equation}G=\alpha S&#43;(1-\alpha)E\end{equation}$$\(E\)即为随机平均游走矩阵。矩阵\(G\)也很好解释，大家上网的时候以\(\alpha\)的概率沿着某个网页里面的链接一步步深入进去（\(S\)），当沿着链接走累的时候，以\(1-\alpha\)的概率在地址栏输入一个新地址，随机跳走了（\(E\)）。
+此时的矩阵\(G\)满足随机性（stochastic）、不可约性（irreducible）和非周期性（aperiodic），所以可以根据幂法（Power Method）找到一个平稳概率分布\(\pi^T\)，\(\pi^T_i\)就衡量了网页\(P_i\)的重要性或者权威性。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-04 16:38:33 +0800 CST'>August 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 还原谷歌PageRank算法真相" href="http://localhost:1313/posts/2016-08-04-googles-pagerank-and-beyond/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">调查问卷的有效性（2）相对误差
     </h2>
   </header>
@@ -379,32 +416,6 @@ $$BM25_{score}(Q,d)=\sum_{t\in Q}w(t,d)$$$$w(t,d)=\frac{qtf}{k_3&#43;qtf}\times 
   </div>
   <footer class="entry-footer"><span title='2016-01-07 19:31:25 +0800 CST'>January 7, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（四）检索模型" href="http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-4/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">和我一起构建搜索引擎（三）构建索引
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>目前正是所谓的“大数据”时代，数据量多到难以计数，怎样结构化的存储以便于分析计算，是当前的一大难题。上一篇博客我们简单抓取了1000个搜狐新闻数据，搜索的过程就是从这1000个新闻中找出和关键词相关的新闻来，那么怎样快速搜索呢，总不可能依次打开xml文件一个字一个字的找吧，这时就需要借助倒排索引这个强大的数据结构。
-在讲倒排索引之前，我们先介绍一下布尔检索。布尔检索只是简单返回包含某个关键词的文档，比如查询“苹果手机”，则返回所有包含“苹果”和“手机”关键词的文档，布尔检索并不对返回结果排序，所以有可能返回的第一个文档是“某个男孩边吃苹果边玩手机…“。
-实现布尔检索并不难，我们需要构建一个如下图的词项文档矩阵：
-图1. 布尔检索中的词项文档矩阵
-每行对应一个词项，每列对应一个文档，如果该值为1，表示该行词项出现在该列文档中。比如词项”苹果“出现在doc1和doc3文档中，如果我们要找同时出现”苹果“和”手机“的文档，只需把他们对应的向量取出来进行”与“操作，此为101&amp;011=001，所以doc3同时出现了”苹果“和”手机“两个关键词，我们将其返回。
-布尔检索虽然很快，但是它也有很多缺陷，比如不能对结果排序，词项只有出现和不出现两种状态，但是一篇文档中出现10次“苹果“和只出现1次”苹果“，他们的相关度肯定是不相同的。所以需要对布尔检索进行改进。
-在扫描文档时，不但记录某词项出现与否，还记录该词项出现的次数，即词项频率(tf)；同时我们记录该文档的长度(ld)，以及某词项在不同文档中出现的次数，即文档频率(df)。
-图2. 倒排索引结构图
-这样我们就得到了如上图的倒排索引。左边部分被称为词典，存储的是1000个新闻中所有不同的词项；右边部分被称为倒排记录表，存储的是出现Term_i的那些文档信息。倒排索引中存储的变量都是为了给后续检索模型使用。
-讲到这里，我们需要解决如下几个问题。
-怎样得到一篇文档中的所有词项。给我们一篇新闻稿子，人类很容易分辨出”苹果“和”手机“是两个不同的词项，但是计算机怎么知道是这两个词呢？为什么不是”苹”、”国手“和”机“呢？这就需要进行中文分词，我们可以借助开源的jieba中文分词组件来完成，jieba分词能够将一个中文句子切成一个个词项，这样我们就可以统计tf, df了。 有些词，如”的“、”地“、”得“、”如果“等，几乎每篇文档都会出现，他们起不到很好的区分文档的效果，这类词被称为”停用词“，我们需要把他们去掉。去停词的步骤可以在jieba分词之后完成。 怎样存储倒排记录表。假设1000个文档共有20000个不同的词项，如果用类似图1的矩阵形式存储，需要耗费100020000=210^7个存储单元，但是图1往往是一个稀疏矩阵，因为一个文档中可能只出现了200个不同的词项，剩余的19800个词项都是空的。用矩阵方式存储时空效率都不高。所以我们可以采用图2的方式，词典用B-树或hash存储，倒排记录表用邻接链表存储方式，这样能大大减少存储空间。如果我们要将图2保存到数据库，可以对倒排记录表序列化成一个长的字符串，写入到一个单元格，读取的时候再反序列化。比如每个Doc内部用’\t’连接，Doc之间用’\n’连接，读取的时候split即可。 倒排索引构建算法使用内存式单遍扫描索引构建方法（SPIMI），其实就是依次对每篇新闻进行分词，如果出现新的词项则插入到词典中，否则将该文档的信息追加到词项对应的倒排记录表中。SPIMI的伪代码如下：
-图3. SPIMI算法伪代码
-下面是构建索引的所有代码：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 # -*- coding: utf-8 -*- &#34;&#34;&#34; Created on Sat Dec 5 23:31:22 2015 @author: bitjoy.net &#34;&#34;&#34; from os import listdir import xml.etree.ElementTree as ET import jieba import sqlite3 import configparser class Doc: docid = 0 date_time = &#39;&#39; tf = 0 ld = 0 def __init__(self, docid, date_time, tf, ld): self.docid = docid self.date_time = date_time self.tf = tf self.ld = ld def __repr__(self): return(str(self.docid) &#43; &#39;\t&#39; &#43; self.date_time &#43; &#39;\t&#39; &#43; str(self.tf) &#43; &#39;\t&#39; &#43; str(self.ld)) def __str__(self): return(str(self.docid) &#43; &#39;\t&#39; &#43; self.date_time &#43; &#39;\t&#39; &#43; str(self.tf) &#43; &#39;\t&#39; &#43; str(self.ld)) class IndexModule: stop_words = set() postings_lists = {} config_path = &#39;&#39; config_encoding = &#39;&#39; def __init__(self, config_path, config_encoding): self.config_path = config_path self.config_encoding = config_encoding config = configparser.ConfigParser() config.read(config_path, config_encoding) f = open(config[&#39;DEFAULT&#39;][&#39;stop_words_path&#39;], encoding = config[&#39;DEFAULT&#39;][&#39;stop_words_encoding&#39;]) words = f.read() self.stop_words = set(words.split(&#39;\n&#39;)) def is_number(self, s): try: float(s) return True except ValueError: return False def clean_list(self, seg_list): cleaned_dict = {} n = 0 for i in seg_list: i = i.strip().lower() if i != &#39;&#39; and not self.is_number(i) and i not in self.stop_words: n = n &#43; 1 if i in cleaned_dict: cleaned_dict[i] = cleaned_dict[i] &#43; 1 else: cleaned_dict[i] = 1 return n, cleaned_dict def write_postings_to_db(self, db_path): conn = sqlite3.connect(db_path) c = conn.cursor() c.execute(&#34;&#39;DROP TABLE IF EXISTS postings&#39;&#34;) c.execute(&#34;&#39;CREATE TABLE postings(term TEXT PRIMARY KEY, df INTEGER, docs TEXT)&#39;&#34;) for key, value in self.postings_lists.items(): doc_list = &#39;\n&#39;.join(map(str,value[1])) t = (key, value[0], doc_list) c.execute(&#34;INSERT INTO postings VALUES (?, ?, ?)&#34;, t) conn.commit() conn.close() def construct_postings_lists(self): config = configparser.ConfigParser() config.read(self.config_path, self.config_encoding) files = listdir(config[&#39;DEFAULT&#39;][&#39;doc_dir_path&#39;]) AVG_L = 0 for i in files: root = ET.parse(config[&#39;DEFAULT&#39;][&#39;doc_dir_path&#39;] &#43; i).getroot() title = root.find(&#39;title&#39;).text body = root.find(&#39;body&#39;).text docid = int(root.find(&#39;id&#39;).text) date_time = root.find(&#39;datetime&#39;).text seg_list = jieba.lcut(title &#43; &#39;。&#39; &#43; body, cut_all=False) ld, cleaned_dict = self.clean_list(seg_list) AVG_L = AVG_L &#43; ld for key, value in cleaned_dict.items(): d = Doc(docid, date_time, value, ld) if key in self.postings_lists: self.postings_lists[key][0] = self.postings_lists[key][0] &#43; 1 # df&#43;&#43; self.postings_lists[key][1].append(d) else: self.postings_lists[key] = [1, [d]] # [df, [Doc]] AVG_L = AVG_L / len(files) config.set(&#39;DEFAULT&#39;, &#39;N&#39;, str(len(files))) config.set(&#39;DEFAULT&#39;, &#39;avg_l&#39;, str(AVG_L)) with open(self.config_path, ‘w’, encoding = self.config_encoding) as configfile: config.write(configfile) self.write_postings_to_db(config[‘DEFAULT’][‘db_path’]) if __name__ == &#34;__main__&#34;: im = IndexModule(&#39;../config.ini&#39;, &#39;utf-8&#39;) im.construct_postings_lists() 运行之后会在./data/下生成一个ir.db数据库文件，这就是构建好的索引数据库。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-07 19:07:17 +0800 CST'>January 7, 2016</span>&nbsp;·&nbsp;3 min</footer>
-  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（三）构建索引" href="http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-3/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

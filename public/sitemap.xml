@@ -101,6 +101,21 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
+    <lastmod>2017-11-26T18:54:44+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/sigmoid/</loc>
+    <lastmod>2017-11-26T18:54:44+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2017-11-26-introduction-to-logistic-regression/</loc>
+    <lastmod>2017-11-26T18:54:44+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2017-11-26T18:54:44+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</loc>
+    <lastmod>2017-11-26T18:54:44+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/posts/2017-10-08-2017-solo-travel-in-zhengzhou-and-hangzhou/</loc>
     <lastmod>2017-10-08T10:56:16+08:00</lastmod>
   </url><url>
@@ -139,9 +154,6 @@
   </url><url>
     <loc>http://localhost:1313/tags/%E9%9D%92%E6%97%85/</loc>
     <lastmod>2017-10-08T10:56:16+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2017-02-07T23:21:41+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/gperftools/</loc>
     <lastmod>2017-02-07T23:21:41+08:00</lastmod>
@@ -351,9 +363,6 @@
     <lastmod>2016-05-02T15:12:39+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/</loc>
-    <lastmod>2016-05-02T15:12:39+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2016-05-02T15:12:39+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/gre/</loc>

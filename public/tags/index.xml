@@ -142,6 +142,27 @@
       <description></description>
     </item>
     <item>
+      <title>Sigmoid</title>
+      <link>http://localhost:1313/tags/sigmoid/</link>
+      <pubDate>Sun, 26 Nov 2017 18:54:44 +0800</pubDate>
+      <guid>http://localhost:1313/tags/sigmoid/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>机器学习</title>
+      <link>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sun, 26 Nov 2017 18:54:44 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>逻辑回归</title>
+      <link>http://localhost:1313/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</link>
+      <pubDate>Sun, 26 Nov 2017 18:54:44 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>二七纪念塔</title>
       <link>http://localhost:1313/tags/%E4%BA%8C%E4%B8%83%E7%BA%AA%E5%BF%B5%E5%A1%94/</link>
       <pubDate>Sun, 08 Oct 2017 10:56:16 +0800</pubDate>
@@ -559,13 +580,6 @@
       <link>http://localhost:1313/tags/svm/</link>
       <pubDate>Mon, 02 May 2016 15:12:39 +0800</pubDate>
       <guid>http://localhost:1313/tags/svm/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>机器学习</title>
-      <link>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</link>
-      <pubDate>Mon, 02 May 2016 15:12:39 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</guid>
       <description></description>
     </item>
     <item>
