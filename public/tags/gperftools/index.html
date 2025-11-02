@@ -157,16 +157,10 @@
   <div class="entry-content">
     <p>上一篇博客简单介绍了Linux平台下不同性能分析工具的特点，最后是Google出品的gperftools胜出。今天我们将举一个用gperftools对链接库进行性能分析的例子。
 假设我们创建了一个TestGperftools项目，其中包括一个动态链接库模块complex和主程序main，build文件夹用于存放动态链接库和可执行程序，文件结构如下所示。
-[shell] czl@ubuntu:~/czl/TestGperftools$ tree . ├── build ├── complex │ ├── complex.cpp │ ├── complex.h │ └── Makefile ├── main │ ├── main.cpp │ └── Makefile └── Makefile
-3 directories, 6 files [/shell]
-其中complex借用了这篇博客的第三个公式计算圆周率π，主要用来模拟一个很耗时的操作。该模块会生成一个libcomplex.so动态链接库供外部调用。其complex.cpp函数如下：
-[cpp] #include “complex.h”
-Complex::Complex() { }
-void Complex::recordPI(double x) { pis.push_back(x); if (pis.size() &gt; 10000) pis.clear(); }
-double Complex::calculatePI(int n) { double x = 2, z = 2; int a = 1, b = 3; while (n–) { z = z*a / b; x &#43;= z; a&#43;&#43;; b &#43;= 2; recordPI(x); } return x; }
+1 2 3 4 5 6 7 8 9 10 11 12 13 czl@ubuntu:~/czl/TestGperftools$ tree . ├── build ├── complex │ ├── complex.cpp │ ├── complex.h │ └── Makefile ├── main │ ├── main.cpp │ └── Makefile └── Makefile 3 directories, 6 files 其中complex借用了这篇博客的第三个公式计算圆周率π，主要用来模拟一个很耗时的操作。该模块会生成一个libcomplex.so动态链接库供外部调用。其complex.cpp函数如下：
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2017-02-07 23:21:41 +0800 CST'>February 7, 2017</span>&nbsp;·&nbsp;2 min</footer>
+  <footer class="entry-footer"><span title='2017-02-07 23:21:41 +0800 CST'>February 7, 2017</span>&nbsp;·&nbsp;3 min</footer>
   <a class="entry-link" aria-label="post link to Gperftools性能分析工具使用教程" href="http://localhost:1313/posts/2017-02-07-gperftools-tutorial/"></a>
 </article>
 
