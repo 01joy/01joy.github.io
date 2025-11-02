@@ -6,8 +6,37 @@
     <description>Recent content in Python on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 13 Aug 2015 17:27:15 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 05 Dec 2017 21:20:01 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>逻辑回归之Python应用实例</title>
+      <link>http://localhost:1313/posts/2017-12-05-logistic-regression-in-python/</link>
+      <pubDate>Tue, 05 Dec 2017 21:20:01 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2017-12-05-logistic-regression-in-python/</guid>
+      <description>&lt;p&gt;上一篇博客主要介绍了逻辑回归的理论知识，这篇博客咱们用Python机器学习包sklearn中的LogisticRegression做一个分类的实例。&lt;/p&gt;
+&lt;p&gt;数据还是学生样本，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。先上分类效果图：&lt;/p&gt;
+&lt;p&gt;完整的Python代码如下：&lt;/p&gt;
+&lt;h1 id=&#34;---coding-utf-8---&#34;&gt;-&lt;em&gt;- coding: utf-8 -&lt;/em&gt;-&lt;/h1&gt;
+&lt;p&gt;&amp;quot;&amp;quot;&amp;quot;
+Created on Wed Nov 08 17:49:41 2017&lt;/p&gt;
+&lt;p&gt;@author: zhenlin
+&amp;quot;&amp;quot;&amp;quot;&lt;/p&gt;
+&lt;p&gt;import numpy as np&lt;br&gt;
+import pandas as pd
+from sklearn.cross_validation import train_test_split
+from sklearn.linear_model import LogisticRegression
+import matplotlib.pyplot as plt
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import classification_report&lt;/p&gt;
+&lt;h1 id=&#34;1-构造数据&#34;&gt;1. 构造数据&lt;/h1&gt;
+&lt;p&gt;sample_number = 200&lt;/p&gt;
+&lt;h1 id=&#34;第一个高斯分布参数&#34;&gt;第一个高斯分布参数&lt;/h1&gt;
+&lt;p&gt;mean1 = [0, 4] # 两个维度上的均值
+cov1 = [[5, 3], [3, 10]] # 两个维度的协方差矩阵，必须满足对称半正定&lt;/p&gt;
+&lt;h1 id=&#34;第二个高斯分布参数&#34;&gt;第二个高斯分布参数&lt;/h1&gt;
+&lt;p&gt;mean2 = [7, 5]
+cov2 = [[7, 2], [2, 15]]&lt;/p&gt;</description>
+    </item>
     <item>
       <title>百度图片批量下载器（python3 &#43; pyqt5 &#43; eric6 &#43; cx_Freeze4）</title>
       <link>http://localhost:1313/posts/2015-08-13-baidu-image-downloader-python3-pyqt5-eric6-cx_freeze4/</link>
