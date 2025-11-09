@@ -151,6 +151,19 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">解决Hugo的Giscus评论系统出现URI_TOO_LONG的问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>xxx
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-09 13:08:18 +0800 CST'>November 9, 2025</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 解决Hugo的Giscus评论系统出现URI_TOO_LONG的问题" href="http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">论文阅读：Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID
     </h2>
   </header>
@@ -301,7 +314,7 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
   <div class="entry-content">
     <p>VSCode是微软开源的一个很强大的IDE，可以支持几乎所有编程语言，而且是跨平台的，Linux用户终于可以用上宇宙最强IDE了。我最近在使用VSCode编写调试Python项目，其调试功能很强大，和VS上调试C&#43;&#43;的感觉是一样的，强烈推荐。
 VSCode还可以连接Github，进行版本控制。下面以我最近学习的深度学习项目为例，介绍下怎样在Ubuntu下使用VSCode连接Github。以我fork的repo为例：https://github.com/01joy/neural-networks-and-deep-learning。
-连接Github有两种方式，一种是HTTPS，另一种三SSH，在每个repo页面的右边，有一个Clone or download按钮，可以获取到这两种连接方式的地址。HTTPS方式和网址类似，以HTTPS开头；SSH方式以git@githu.com开头。使用HTTPS连接比较简单，但是每次push的时候需要输入用户名和密码，比较麻烦，如果想记住密码，需要把用户名和密码以明文的形式保存到一个文件中，个人感觉不方便且不安全。下面以SSH连接为例进行介绍。
+连接Github有两种方式，一种是HTTPS，另一种是SSH，在每个repo页面的右边，有一个Clone or download按钮，可以获取到这两种连接方式的地址。HTTPS方式和网址类似，以HTTPS开头；SSH方式以git@githu.com开头。使用HTTPS连接比较简单，但是每次push的时候需要输入用户名和密码，比较麻烦，如果想记住密码，需要把用户名和密码以明文的形式保存到一个文件中，个人感觉不方便且不安全。下面以SSH连接为例进行介绍。
 首先设置Github提交时的用户名和密码，一般设置成全局的：https://help.github.com/articles/setting-your-username-in-git/、https://help.github.com/articles/setting-your-commit-email-address-in-git/ 生成一对新的SSH公钥和私钥，并添加到ssh-agent中。注意生成的时候需要输入passphrase，这个passphrase不是Github的密码，自己随便取一个记住就好。https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/ 把SSH的公钥添加到Github账号中：https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/ 测试SSH连接是否成功：https://help.github.com/articles/testing-your-ssh-connection/ （可选）修改SSH密码，即第1步设置的passphrase：https://help.github.com/articles/working-with-ssh-key-passphrases/ 到这里，本级就能通过SSH连接Github了。 如果没有安装VSCode，可以直接通过Ubuntu的终端连接Github，步骤如下：
 在本地创建一个和远程repo名称一样的空文件夹 终端cd到该文件夹内 git init # 在该文件夹内初始化 git remote add origin git@github.com:01joy/notes-on-writing.git # 使用repo的SSH地址 git pull origin master # 把远程代码拉到本地 修改代码 git add . # 在根目录执行，添加所有修改 git commit -m ‘comments’ # commit第7步添加的修改 git push origin master # 把第8步发布到远程 如果安装了VSCode，其实和直接用终端是一样的，在菜单栏的Terminal下新建一个终端，在这个终端内执行上述代码，如果在第4步出现”Enter password to unlock the private key”时，输入创建SSH时第2步的密码即可，只需一次，下次就不用再输入密码了。点击File的Open Folder打开本地repo文件夹。点击VSCode左边栏的Explorer可以在编辑器下修改代码。切换到左边栏的Source Control可以进行Git相关操作，修改的文件右边会出现一个M，点击这个M会出现diff视图；Source Control左边的右上角有三个点，点击这个按钮会出现很多Git操作，包括commit、push等，其实相当于调用上述代码，效果是一样的。
 VSCode快捷键Ctrl&#43;Shift&#43;P会出现命令窗口，在里面输入commit、push等会出现相关操作的，能起到一定的加速效果，当然也可以自定义快捷键。
@@ -310,27 +323,6 @@ Have Fun!
   </div>
   <footer class="entry-footer"><span title='2018-11-13 11:09:48 +0800 CST'>November 13, 2018</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to Ubuntu下使用VSCode连接Github" href="http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Word2016批注行距太大的问题
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>最近导师给我批注文章，说我的Word文档的批注行距极大，从入学到现在一直都是如此，对他造成了极大的困扰，希望我能解决这个问题。
-但是我自己用Word2016查看导师的批注，看不出行距极大的问题，显示完全是正常的。后来猜测导师用的是旧版的Word2010，于是在虚拟机中安装了Word2010，进行测试。
-经过长时间的Debug，终于发现问题所在。Word针对批注有一个默认的样式，为“批注文字（使用前隐藏）”，可以点击样式右下角的箭头，或者直接按快捷键Ctrl&#43;Shift&#43;Alt&#43;S调出样式窗口。然后点击底部的管理样式就可以看到所有的样式了。有意思的是，批注文字样式默认是隐藏的，所以在下图的样式列表中是找不到这个样式的。
-找到批注文字样式，点击修改，在弹出的窗口中点击左下角的格式，选择段落，就可以看到批注的默认格式了。段落格式看不出什么异常，Word2016和Word2010的批注段落格式都是一样的，其中“如果定义了文档网格，则对齐到网格”都是默认选中的。
-有意思的是，Word2016和Word2010对网格的默认设置却不一样。在布局、页面设置中点击右下角的箭头，打开页面设置对话框。切换到文档网格选项卡。
-Word2016默认指定了行网格，而Word2010默认却是无网格。因为批注文字样式中选中了“如果定义了文档网格，则对齐到网格”这个选项，Word2016默认指定了行网格，所以批注文字会对齐到行网格，导致行间距太大，Word2010默认没有指定任何网格，所以其批注文字的行间距是正常。
-Word2016文档网格，默认指定了行网格
-Word2010文档网格，默认无网格
-解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-09-01 10:53:25 +0800 CST'>September 1, 2018</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to Word2016批注行距太大的问题" href="http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
