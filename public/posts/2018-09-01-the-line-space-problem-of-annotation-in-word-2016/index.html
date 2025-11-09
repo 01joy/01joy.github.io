@@ -5,48 +5,24 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>公告 | bitJoy</title>
-<meta name="keywords" content="">
-<meta name="description" content="博客数据恢复中，敬请期待！
-测试图片：
+<title>Word2016批注行距太大的问题 | bitJoy</title>
+<meta name="keywords" content="Word, 教程">
+<meta name="description" content="最近导师给我批注文章，说我的Word文档的批注行距极大，从入学到现在一直都是如此，对他造成了极大的困扰，希望我能解决这个问题。
+但是我自己用Word2016查看导师的批注，看不出行距极大的问题，显示完全是正常的。后来猜测导师用的是旧版的Word2010，于是在虚拟机中安装了Word2010，进行测试。
+经过长时间的Debug，终于发现问题所在。Word针对批注有一个默认的样式，为“批注文字（使用前隐藏）”，可以点击样式右下角的箭头，或者直接按快捷键Ctrl&#43;Shift&#43;Alt&#43;S调出样式窗口。然后点击底部的管理样式就可以看到所有的样式了。有意思的是，批注文字样式默认是隐藏的，所以在下图的样式列表中是找不到这个样式的。
 
-测试代码：
+找到批注文字样式，点击修改，在弹出的窗口中点击左下角的格式，选择段落，就可以看到批注的默认格式了。段落格式看不出什么异常，Word2016和Word2010的批注段落格式都是一样的，其中“如果定义了文档网格，则对齐到网格”都是默认选中的。
 
+有意思的是，Word2016和Word2010对网格的默认设置却不一样。在布局、页面设置中点击右下角的箭头，打开页面设置对话框。切换到文档网格选项卡。
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
+Word2016默认指定了行网格，而Word2010默认却是无网格。因为批注文字样式中选中了“如果定义了文档网格，则对齐到网格”这个选项，Word2016默认指定了行网格，所以批注文字会对齐到行网格，导致行间距太大，Word2010默认没有指定任何网格，所以其批注文字的行间距是正常。
 
+Word2016文档网格，默认指定了行网格
 
-// Necessary header files for input output functions
-#include &lt;iostream&gt;
-using namespace std;
-
-// main() function: where the execution of
-// C&#43;&#43; program begins
-int main() {
-  
-    // This statement prints &#34;Hello World&#34;
-    cout &lt;&lt; &#34;Hello World&#34;;
-
-    return 0;
-}
-
-
-测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.">
+Word2010文档网格，默认无网格
+解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="canonical" href="http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -55,7 +31,7 @@ This is an inline \(a^*=x-b^*\) equation.">
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/">
 <noscript>
     <style>
         #theme-toggle,
@@ -184,74 +160,46 @@ This is an inline \(a^*=x-b^*\) equation.">
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      公告
+      Word2016批注行距太大的问题
     </h1>
-    <div class="post-meta"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span>&nbsp;·&nbsp;1 min
+    <div class="post-meta"><span title='2018-09-01 10:53:25 +0800 CST'>September 1, 2018</span>&nbsp;·&nbsp;1 min
 
 </div>
   </header> 
 
-  <div class="post-content"><p>博客数据恢复中，敬请期待！</p>
-<p>测试图片：
-<img alt="这是图片" loading="lazy" src="/posts/2025-08-15-announcement/myimg.png"></p>
-<p>测试代码：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Necessary header files for input output functions
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// main() function: where the execution of
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// C++ program begins
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This statement prints &#34;Hello World&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.</p>
-<p>These are block equations:</p>
-\[a^*=x-b^*\]\[ a^*=x-b^* \]\[
-a^*=x-b^*
-\]<p>These are also block equations:</p>
-$$a^*=x-b^*$$$$ a^*=x-b^* $$$$
-a^*=x-b^*
-$$
+  <div class="post-content"><p>最近导师给我批注文章，说我的Word文档的批注行距极大，从入学到现在一直都是如此，对他造成了极大的困扰，希望我能解决这个问题。</p>
+<p>但是我自己用Word2016查看导师的批注，看不出行距极大的问题，显示完全是正常的。后来猜测导师用的是旧版的Word2010，于是在虚拟机中安装了Word2010，进行测试。</p>
+<p>经过长时间的Debug，终于发现问题所在。Word针对批注有一个默认的样式，为“<strong>批注文字（使用前隐藏）</strong>”，可以点击样式右下角的箭头，或者直接按快捷键Ctrl+Shift+Alt+S调出样式窗口。然后点击底部的管理样式就可以看到所有的样式了。有意思的是，批注文字样式默认是隐藏的，所以在下图的样式列表中是找不到这个样式的。</p>
+<p><img loading="lazy" src="/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-open-style.webp"></p>
+<p>找到批注文字样式，点击修改，在弹出的窗口中点击左下角的格式，选择段落，就可以看到批注的默认格式了。段落格式看不出什么异常，Word2016和Word2010的批注段落格式都是一样的，其中“如果定义了文档网格，则对齐到网格”都是默认选中的。</p>
+<p><img loading="lazy" src="/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-comment-style.webp"></p>
+<p>有意思的是，Word2016和Word2010对网格的默认设置却不一样。在布局、页面设置中点击右下角的箭头，打开页面设置对话框。切换到文档网格选项卡。</p>
+<p><img loading="lazy" src="/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-open-page-setting.webp"></p>
+<p>Word2016默认指定了行网格，而Word2010默认却是无网格。因为批注文字样式中选中了“<strong>如果定义了文档网格，则对齐到网格</strong>”这个选项，Word2016默认指定了行网格，所以批注文字会对齐到行网格，导致行间距太大，Word2010默认没有指定任何网格，所以其批注文字的行间距是正常。</p>
+<p><img loading="lazy" src="/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-doc-grid.webp">
+Word2016文档网格，默认指定了行网格</p>
+<p><img loading="lazy" src="/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2010-doc-grid.webp">
+Word2010文档网格，默认无网格</p>
+<p>解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。</p>
+
 
   </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/word/">Word</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%95%99%E7%A8%8B/">教程</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
     <span class="title">« Prev</span>
     <br>
-    <span>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</span>
+    <span>公告</span>
   </a>
-  <a class="next" href="http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/">
+  <a class="next" href="http://localhost:1313/posts/2018-02-18-summary-of-2017/">
     <span class="title">Next »</span>
     <br>
-    <span>Word2016批注行距太大的问题</span>
+    <span>2017年终总结</span>
   </a>
 </nav>
 

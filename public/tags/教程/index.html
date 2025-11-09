@@ -5,11 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>Categories | bitJoy</title>
+<title>教程 | bitJoy</title>
 <meta name="keywords" content="">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/categories/">
+<link rel="canonical" href="http://localhost:1313/tags/%E6%95%99%E7%A8%8B/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -18,8 +18,8 @@
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/index.xml">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E6%95%99%E7%A8%8B/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E6%95%99%E7%A8%8B/">
 <noscript>
     <style>
         #theme-toggle,
@@ -116,7 +116,7 @@
         <ul id="menu">
             <li>
                 <a href="http://localhost:1313/categories" title="Categories">
-                    <span class="active">Categories</span>
+                    <span>Categories</span>
                 </a>
             </li>
             <li>
@@ -142,34 +142,32 @@
         </ul>
     </nav>
 </header>
-<main class="main">
+<main class="main"> 
 <header class="page-header">
-    <h1>Categories</h1>
+  <h1>
+    教程
+  </h1>
 </header>
 
-<ul class="terms-tags">
-    <li>
-        <a href="http://localhost:1313/categories/0%E5%92%8C1/">0和1 <sup><strong><sup>29</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/paper-reading/">Paper Reading <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%92%8C%E6%88%91%E4%B8%80%E8%B5%B7%E6%9E%84%E5%BB%BA%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/">和我一起构建搜索引擎 <sup><strong><sup>7</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E5%9B%9E%E5%BF%86%E5%BD%95/">回忆录 <sup><strong><sup>4</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/">流水账 <sup><strong><sup>17</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E6%B8%B8%E8%AE%B0/">游记 <sup><strong><sup>4</sup></strong></sup> </a>
-    </li>
-    <li>
-        <a href="http://localhost:1313/categories/%E9%9A%8F%E6%83%B3%E5%BD%95/">随想录 <sup><strong><sup>10</sup></strong></sup> </a>
-    </li>
-</ul>
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Word2016批注行距太大的问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最近导师给我批注文章，说我的Word文档的批注行距极大，从入学到现在一直都是如此，对他造成了极大的困扰，希望我能解决这个问题。
+但是我自己用Word2016查看导师的批注，看不出行距极大的问题，显示完全是正常的。后来猜测导师用的是旧版的Word2010，于是在虚拟机中安装了Word2010，进行测试。
+经过长时间的Debug，终于发现问题所在。Word针对批注有一个默认的样式，为“批注文字（使用前隐藏）”，可以点击样式右下角的箭头，或者直接按快捷键Ctrl&#43;Shift&#43;Alt&#43;S调出样式窗口。然后点击底部的管理样式就可以看到所有的样式了。有意思的是，批注文字样式默认是隐藏的，所以在下图的样式列表中是找不到这个样式的。
+找到批注文字样式，点击修改，在弹出的窗口中点击左下角的格式，选择段落，就可以看到批注的默认格式了。段落格式看不出什么异常，Word2016和Word2010的批注段落格式都是一样的，其中“如果定义了文档网格，则对齐到网格”都是默认选中的。
+有意思的是，Word2016和Word2010对网格的默认设置却不一样。在布局、页面设置中点击右下角的箭头，打开页面设置对话框。切换到文档网格选项卡。
+Word2016默认指定了行网格，而Word2010默认却是无网格。因为批注文字样式中选中了“如果定义了文档网格，则对齐到网格”这个选项，Word2016默认指定了行网格，所以批注文字会对齐到行网格，导致行间距太大，Word2010默认没有指定任何网格，所以其批注文字的行间距是正常。
+Word2016文档网格，默认指定了行网格
+Word2010文档网格，默认无网格 解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-09-01 10:53:25 +0800 CST'>September 1, 2018</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Word2016批注行距太大的问题" href="http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/"></a>
+</article>
     </main>
     
 <footer class="footer">
