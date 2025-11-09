@@ -295,6 +295,25 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Ubuntu下使用VSCode连接Github
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>VSCode是微软开源的一个很强大的IDE，可以支持几乎所有编程语言，而且是跨平台的，Linux用户终于可以用上宇宙最强IDE了。我最近在使用VSCode编写调试Python项目，其调试功能很强大，和VS上调试C&#43;&#43;的感觉是一样的，强烈推荐。
+VSCode还可以连接Github，进行版本控制。下面以我最近学习的深度学习项目为例，介绍下怎样在Ubuntu下使用VSCode连接Github。以我fork的repo为例：https://github.com/01joy/neural-networks-and-deep-learning。
+连接Github有两种方式，一种是HTTPS，另一种三SSH，在每个repo页面的右边，有一个Clone or download按钮，可以获取到这两种连接方式的地址。HTTPS方式和网址类似，以HTTPS开头；SSH方式以git@githu.com开头。使用HTTPS连接比较简单，但是每次push的时候需要输入用户名和密码，比较麻烦，如果想记住密码，需要把用户名和密码以明文的形式保存到一个文件中，个人感觉不方便且不安全。下面以SSH连接为例进行介绍。
+首先设置Github提交时的用户名和密码，一般设置成全局的：https://help.github.com/articles/setting-your-username-in-git/、https://help.github.com/articles/setting-your-commit-email-address-in-git/ 生成一对新的SSH公钥和私钥，并添加到ssh-agent中。注意生成的时候需要输入passphrase，这个passphrase不是Github的密码，自己随便取一个记住就好。https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/ 把SSH的公钥添加到Github账号中：https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/ 测试SSH连接是否成功：https://help.github.com/articles/testing-your-ssh-connection/ （可选）修改SSH密码，即第1步设置的passphrase：https://help.github.com/articles/working-with-ssh-key-passphrases/ 到这里，本级就能通过SSH连接Github了。 如果没有安装VSCode，可以直接通过Ubuntu的终端连接Github，步骤如下：
+在本地创建一个和远程repo名称一样的空文件夹 终端cd到该文件夹内 git init # 在该文件夹内初始化 git remote add origin git@github.com:01joy/notes-on-writing.git # 使用repo的SSH地址 git pull origin master # 把远程代码拉到本地 修改代码 git add . # 在根目录执行，添加所有修改 git commit -m ‘comments’ # commit第7步添加的修改 git push origin master # 把第8步发布到远程 如果安装了VSCode，其实和直接用终端是一样的，在菜单栏的Terminal下新建一个终端，在这个终端内执行上述代码，如果在第4步出现”Enter password to unlock the private key”时，输入创建SSH时第2步的密码即可，只需一次，下次就不用再输入密码了。点击File的Open Folder打开本地repo文件夹。点击VSCode左边栏的Explorer可以在编辑器下修改代码。切换到左边栏的Source Control可以进行Git相关操作，修改的文件右边会出现一个M，点击这个M会出现diff视图；Source Control左边的右上角有三个点，点击这个按钮会出现很多Git操作，包括commit、push等，其实相当于调用上述代码，效果是一样的。
+VSCode快捷键Ctrl&#43;Shift&#43;P会出现命令窗口，在里面输入commit、push等会出现相关操作的，能起到一定的加速效果，当然也可以自定义快捷键。
+Have Fun!
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-11-13 11:09:48 +0800 CST'>November 13, 2018</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Ubuntu下使用VSCode连接Github" href="http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Word2016批注行距太大的问题
     </h2>
   </header>
@@ -306,33 +325,12 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
 有意思的是，Word2016和Word2010对网格的默认设置却不一样。在布局、页面设置中点击右下角的箭头，打开页面设置对话框。切换到文档网格选项卡。
 Word2016默认指定了行网格，而Word2010默认却是无网格。因为批注文字样式中选中了“如果定义了文档网格，则对齐到网格”这个选项，Word2016默认指定了行网格，所以批注文字会对齐到行网格，导致行间距太大，Word2010默认没有指定任何网格，所以其批注文字的行间距是正常。
 Word2016文档网格，默认指定了行网格
-Word2010文档网格，默认无网格 解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。
+Word2010文档网格，默认无网格
+解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。
 </p>
   </div>
   <footer class="entry-footer"><span title='2018-09-01 10:53:25 +0800 CST'>September 1, 2018</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to Word2016批注行距太大的问题" href="http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">2017年终总结
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>2017年是目前为止最折腾的一年。
-科研工作 今年的科研任务包括两个方面，一方面是pLink2软件的完善和发布，另一方面是完成pLink2文章初稿。软件方面，上半年忙着修改完善算法，下半年重写界面代码，修改各种bug并反复测试。最终在12月31日晚通过邮件正式发布。文章方面，元旦软件发布之后，一月份抽两周时间完成了初稿，算是自己的第一篇全英文初稿，正文加附录接近一万词。不过因为有一个实验结果不太好，还需要接着完善算法，文字也很稚嫩，需要反复修改。希望能在2018年上半年投出去。
-个人提高 上半年忙着找工作，一直在刷题看书攒面经，经过自己的不懈努力，收获了微软、百度、头条、Face&#43;&#43;等心仪的Offer。在确定自己找工作没问题之后，被李沐的博客“忽悠”，下半年华丽丽的转博了，赶在了2015级最后一次转博前夕。
-因为找工作，看了7本专业书；因为有Kindle，以及忙里偷闲，竟也看了9本非专业书。元旦完成软件发布任务之后，奖励自己去电影院连看了一整天的电影，这种休假方式也是蛮奇葩的，今年累计去电影院看的电影数已经达到16了。上半年和欣欣看了一场“OFO轻睐演唱会”，第一次参加演唱会，现场的感觉和看视频不一样，气氛很热烈，大家都很兴奋，会情不自禁跟着一起唱。国庆第一次一个人远行，去了郑州、登封和杭州，加上12月份参加厦门质谱会议，今年去的第三个城市已经达到了4个。
-运动方面。在两个师兄的帮助以及室友的陪练下，真的学会了蛙泳，今年8月份还拿到了深水证，为此贺老师每个月奖励我100块钱，简单粗暴又有效的奖励机制:-)。临近年底的时候，心血来潮，准备提高乒乓球技术，混入了所里的乒乓球圈子，拜师王老师门下，经过训练以及看视频学习，竟偶尔能赢浩哥了，今年再接再厉。
-今年约好了和哥一起回家过年，给家里买了一台55寸的乐视超级电视，给父母的红包也涨了不少。总体来说，家里在一年一年变好。
-对照年初定的目标，
-发表pLink 2文章。只完成了初稿。 至少完成毕业工作的80%。转博了。 刷完LeetCode所有简单题和中等题，找工作之前最好刷完两遍。完成。 找到一个满意的工作。完成，具体请看https://bitjoy.net/posts/2018-02-04-2018-campus-recruiting/。 读10本书。完成16：《编程珠玑》、《C&#43;&#43; Primer》、《程序员面试笔试宝典》、《STL源码剖析》、《剑指Offer》、《深度探索C&#43;&#43;对象模型》、《编程之美》、《人间失格》、《枪炮、病菌与钢铁》、《杀死一只知更鸟》、《别闹了，费曼先生》、《月亮与六便士》、《突破极限》、《解忧杂货店》、《北京折叠》、《以色列，一个国家的诞生123》。 去电影院看10场电影。完成16：《爱乐之城》、《摔跤吧！爸爸》、《银河护卫队2》、《战狼2》、《敦刻尔克》、《羞羞的铁拳》、《看不见的客人》、《东方快车谋杀案》、《寻梦环游记》、《帕丁顿熊2》、《芳华》、《解忧杂货店》、《前任3：再见前任》、《无问西东》、《南极之恋》、《太空救援》。 看一场话剧（音乐会、歌剧等都可以）。完成。2017年7月2日，北京工人体育场，OFO轻睐演唱会。 学会游泳。完成，学会蛙泳和踩水，年中拿到深水证。 去第三个城市。完成，国庆去了郑州、登封、杭州，12月份第一次坐飞机去了厦门。 总体来说，2017年的目标都完成了，而且好几项是超额完成。2018年目标如下：
-发表pLink2文章，科研的重中之重。 开展新课题，或SUMO或深度学习。 完成博士课程的学习。 读10本书。 去电影院看10场电影。 去北京公园年票范围中的19家公园。 看一场话剧（音乐会、歌剧等都可以）。 学会自由泳。 乒乓球稳赢。 去第三个城市。 机动目标，高温假带父母来北京玩。 突然发现每年的目标都差不多，读万卷书和行万里路是每年都有的保留项目。
-找工作，分手，转博，软件发布，文章写作构成了我2017年的365天，喜忧参半，在跌跌撞撞中前行。2018年要保持一如既往的冲劲，打赢转博之后的第一仗！
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-02-18 21:00:20 +0800 CST'>February 18, 2018</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 2017年终总结" href="http://localhost:1313/posts/2018-02-18-summary-of-2017/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

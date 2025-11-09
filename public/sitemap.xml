@@ -101,6 +101,18 @@
     <loc>http://localhost:1313/about/</loc>
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
+    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
+    <lastmod>2018-11-13T11:09:48+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/github/</loc>
+    <lastmod>2018-11-13T11:09:48+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/</loc>
+    <lastmod>2018-11-13T11:09:48+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/vscode/</loc>
+    <lastmod>2018-11-13T11:09:48+08:00</lastmod>
+  </url><url>
     <loc>http://localhost:1313/tags/word/</loc>
     <lastmod>2018-09-01T10:53:25+08:00</lastmod>
   </url><url>
@@ -196,9 +208,6 @@
   </url><url>
     <loc>http://localhost:1313/tags/%E9%BC%93%E6%B5%AA%E5%B1%BF/</loc>
     <lastmod>2017-12-16T10:29:58+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2017-12-05T21:20:01+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/python/</loc>
     <lastmod>2017-12-05T21:20:01+08:00</lastmod>
@@ -744,9 +753,6 @@
     <lastmod>2014-11-15T00:11:32+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/git/</loc>
-    <lastmod>2014-11-11T23:12:34+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/github/</loc>
     <lastmod>2014-11-11T23:12:34+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/posts/2014-11-11-git-notes/</loc>
