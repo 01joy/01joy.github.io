@@ -151,6 +151,28 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">调查问卷的有效性（2）相对误差
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>$$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$上一回我们讲到当\(p\)本身很小的时候，容易被5%（绝对误差）给淹没掉，导致结果的不可信。我们可以引入相对误差，把(1)式转换为如下的不等式
+$$\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$同理，我们可以用
+$$\begin{equation}\hat{p}=\frac{x_1&#43;x_2&#43;…&#43;x_n}{n}\end{equation}$$代替\(\hat{p}\)（建议先看上一篇博客），转换为
+$$\begin{equation}Pr(|X-np|\geq\delta np)\end{equation}$$类似的，\(X=x_1&#43;x_2&#43;…&#43;x_n\)，\(E(X)=\mu=np\)，所以(4)式等价为
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\end{equation}$$这个时候，因为不等号右边和均值\(\mu\)有关，不能再用切比雪夫不等式了，我们需要另外一个武器：Chernoff bound。它有两种形式：
+$$\begin{equation}Pr(X\geq (1&#43;\delta)\mu)\leq[\frac{e^\delta}{(1&#43;\delta)^{1&#43;\delta}}]^\mu\leq e^{-\frac{\mu}{3}\delta^2}\quad\forall\delta&gt;0\end{equation}$$$$\begin{equation}Pr(X\leq (1-\delta)\mu)\leq[\frac{e^{-\delta}}{(1-\delta)^{1-\delta}}]^\mu\leq e^{-\frac{\mu}{2}\delta^2}\quad\forall 0&lt;\delta&lt;1\end{equation}$$Chernoff bound的证明需要用到马尔可夫不等式，有一点技巧。以上两种形式可以统一成
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\end{equation}$$也是一个很漂亮的不等式。
+利用Chernoff bound求解(5)式：
+$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\\=2e^{-\frac{np}{3}\delta^2}\leq\epsilon\end{equation}$$解得
+$$\begin{equation}n\geq\left\lceil\frac{3ln\frac{2}{\epsilon}}{p\delta^2}\right\rceil\end{equation}$$这个结果看起来就很复杂了。也就是说，如果要设计调查问卷使满足(2)式的精度，抽样的样本数必须满足(10)式。从(10)式可知，当要求的精度越高（即\(\delta\)和\(\epsilon\)越小），所需的样本数越大。并且结果还和真实值\(p\)有关。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-07-23 16:21:54 +0800 CST'>July 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 调查问卷的有效性（2）相对误差" href="http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">调查问卷的有效性（1）绝对误差
     </h2>
   </header>
@@ -375,33 +397,6 @@ Assignment1_DandC.zip A1sol.pdf | A1sol.tex A1sol_supplement.pdf | A1sol_supplem
   </div>
   <footer class="entry-footer"><span title='2016-01-09 23:52:13 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（七）总结展望" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">和我一起构建搜索引擎（六）系统展示
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。
-我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。
-这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。
-图1. 搜索页面
-图2. 新闻详情页面
-由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。
-完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
-以下是系列博客：
-和我一起构建搜索引擎（一）简介
-和我一起构建搜索引擎（二）网络爬虫
-和我一起构建搜索引擎（三）构建索引
-和我一起构建搜索引擎（四）检索模型
-和我一起构建搜索引擎（五）推荐阅读
-和我一起构建搜索引擎（六）系统展示
-和我一起构建搜索引擎（七）总结展望
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-09 23:32:10 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（六）系统展示" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
