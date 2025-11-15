@@ -151,6 +151,33 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">和我一起构建搜索引擎（六）系统展示
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。
+我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。
+这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。
+图1. 搜索页面
+图2. 新闻详情页面
+由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。
+完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
+以下是系列博客：
+和我一起构建搜索引擎（一）简介
+和我一起构建搜索引擎（二）网络爬虫
+和我一起构建搜索引擎（三）构建索引
+和我一起构建搜索引擎（四）检索模型
+和我一起构建搜索引擎（五）推荐阅读
+和我一起构建搜索引擎（六）系统展示
+和我一起构建搜索引擎（七）总结展望
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-01-09 23:32:10 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（六）系统展示" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">和我一起构建搜索引擎（五）推荐阅读
     </h2>
   </header>
@@ -371,23 +398,12 @@ $$ \begin{cases} dp[i][j]=1\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\text
   <footer class="entry-footer"><span title='2014-11-15 00:11:32 +0800 CST'>November 15, 2014</span>&nbsp;·&nbsp;2 min</footer>
   <a class="entry-link" aria-label="post link to 从一个数字序列中取若干个数字使得和为某个数，问共有多少种取数方案？" href="http://localhost:1313/posts/2014-11-15-subset-sum-problem/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Git相关笔记
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>一、第一次使用Github的步骤： 在这个页面中填写Repo名称 不要勾选Initialize this repository with a README 点击Create repository 在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令： 1 2 3 4 5 6 git init touch README.md #optional git add . git commit -m &#39;your comment&#39; git remote add origin https://github.com/UserName/RepoName git push origin master 如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地 关于Git命令中的fetch和pull的区别，请看这篇博文 关于Git bash和Github的连接，请看这篇博文 二、Git命令中fetch和pull的区别（转载） Git中从远程的分支获取最新的版本到本地有这样2个命令：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2014-11-11 23:12:34 +0800 CST'>November 11, 2014</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to Git相关笔记" href="http://localhost:1313/posts/2014-11-11-git-notes/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/categories/0%E5%92%8C1/page/2/">
-      «&nbsp;Prev&nbsp;2/3
+      «&nbsp;Prev&nbsp;2/4
+    </a>
+    <a class="next" href="http://localhost:1313/categories/0%E5%92%8C1/page/4/">Next&nbsp;4/4&nbsp;»
     </a>
   </nav>
 </footer>

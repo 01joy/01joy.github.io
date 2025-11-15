@@ -151,6 +151,25 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Ubuntu下使用VSCode连接Github
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>VSCode是微软开源的一个很强大的IDE，可以支持几乎所有编程语言，而且是跨平台的，Linux用户终于可以用上宇宙最强IDE了。我最近在使用VSCode编写调试Python项目，其调试功能很强大，和VS上调试C&#43;&#43;的感觉是一样的，强烈推荐。
+VSCode还可以连接Github，进行版本控制。下面以我最近学习的深度学习项目为例，介绍下怎样在Ubuntu下使用VSCode连接Github。以我fork的repo为例：https://github.com/01joy/neural-networks-and-deep-learning。
+连接Github有两种方式，一种是HTTPS，另一种是SSH，在每个repo页面的右边，有一个Clone or download按钮，可以获取到这两种连接方式的地址。HTTPS方式和网址类似，以HTTPS开头；SSH方式以git@githu.com开头。使用HTTPS连接比较简单，但是每次push的时候需要输入用户名和密码，比较麻烦，如果想记住密码，需要把用户名和密码以明文的形式保存到一个文件中，个人感觉不方便且不安全。下面以SSH连接为例进行介绍。
+首先设置Github提交时的用户名和密码，一般设置成全局的：https://help.github.com/articles/setting-your-username-in-git/、https://help.github.com/articles/setting-your-commit-email-address-in-git/ 生成一对新的SSH公钥和私钥，并添加到ssh-agent中。注意生成的时候需要输入passphrase，这个passphrase不是Github的密码，自己随便取一个记住就好。https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/ 把SSH的公钥添加到Github账号中：https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/ 测试SSH连接是否成功：https://help.github.com/articles/testing-your-ssh-connection/ （可选）修改SSH密码，即第1步设置的passphrase：https://help.github.com/articles/working-with-ssh-key-passphrases/ 到这里，本级就能通过SSH连接Github了。 如果没有安装VSCode，可以直接通过Ubuntu的终端连接Github，步骤如下：
+在本地创建一个和远程repo名称一样的空文件夹 终端cd到该文件夹内 git init # 在该文件夹内初始化 git remote add origin git@github.com:01joy/notes-on-writing.git # 使用repo的SSH地址 git pull origin master # 把远程代码拉到本地 修改代码 git add . # 在根目录执行，添加所有修改 git commit -m ‘comments’ # commit第7步添加的修改 git push origin master # 把第8步发布到远程 如果安装了VSCode，其实和直接用终端是一样的，在菜单栏的Terminal下新建一个终端，在这个终端内执行上述代码，如果在第4步出现”Enter password to unlock the private key”时，输入创建SSH时第2步的密码即可，只需一次，下次就不用再输入密码了。点击File的Open Folder打开本地repo文件夹。点击VSCode左边栏的Explorer可以在编辑器下修改代码。切换到左边栏的Source Control可以进行Git相关操作，修改的文件右边会出现一个M，点击这个M会出现diff视图；Source Control左边的右上角有三个点，点击这个按钮会出现很多Git操作，包括commit、push等，其实相当于调用上述代码，效果是一样的。
+VSCode快捷键Ctrl&#43;Shift&#43;P会出现命令窗口，在里面输入commit、push等会出现相关操作的，能起到一定的加速效果，当然也可以自定义快捷键。
+Have Fun!
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-11-13 11:09:48 +0800 CST'>November 13, 2018</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Ubuntu下使用VSCode连接Github" href="http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Word2016批注行距太大的问题
     </h2>
   </header>
@@ -425,22 +444,6 @@ http://www.cnblogs.com/sparkwen/p/3441197.html https://tech.meituan.com/intro_to
   </div>
   <footer class="entry-footer"><span title='2017-02-07 23:21:41 +0800 CST'>February 7, 2017</span>&nbsp;·&nbsp;3 min</footer>
   <a class="entry-link" aria-label="post link to Gperftools性能分析工具使用教程" href="http://localhost:1313/posts/2017-02-07-gperftools-tutorial/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Linux性能分析工具简介
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>这半年一直在研究pLink 2的加速策略，了解了相关的性能分析工具，现记录如下。
-对软件进行加速的技术路线一般为：首先对代码进行性能分析（ performance analysis，也称为 profiling），然后针对性能瓶颈提出优化方案，最后在大数据集上评测加速效果。所以进行性能优化的前提就是准确地测量代码中各个模块的时间消耗。听起来很简单，不就是测量每行代码的运行时间吗，直接用time_t t=clock();不就好了，但是事情并没有那么简单。如果只进行粗粒度的性能分析，比如测量几个大的模块的运行时间，clock()还比较准确，但是如果测量的是运算量比较小的函数调用，而且有大量的小函数调用，clock()就不太准确了。
-比如下面的一段代码，我最开始的性能分析方法是在fun1()~fun3()前后添加time_t t=clock()，然后作差求和的。但是3个fun()加起来的时间居然不等于整个while循环的时间，有将近50%的时间不翼而飞了！
-1 2 3 4 5 6 7 8 9 10 11 while (true) { if (fun1()) { for (int i = 0; i &lt; k; &#43;&#43;k) { if (flag1) { fun2(); } } } else { fun3(); } } 一种可能是while循环以及内部的for循环本身占用了较多的时间，但是好像不太可能呀。还有一种可能是clock()测量有误，time_t只能精确到秒，clock_t只能精确到毫秒，如果一次fun*()的时间太短，导致一次测量几乎为0，那么多次的while和for循环调用累加的时间也几乎为0，导致实际测量到的fun*()时间远小于真实时间。所以自己用代码进行性能分析可能会有较大的误差，最好借助已有的性能分析工具。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2017-02-07 19:15:56 +0800 CST'>February 7, 2017</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to Linux性能分析工具简介" href="http://localhost:1313/posts/2017-02-07-introduction-to-performance-analysis-tools-in-linux/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

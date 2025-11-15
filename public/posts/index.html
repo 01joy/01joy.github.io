@@ -155,7 +155,14 @@
     </h2>
   </header>
   <div class="entry-content">
-    <p>xxx
+    <p>本博客使用的评论系统是Giscus，日常使用没啥问题，但是当博客内容很长的时候，就会出现URI_TOO_LONG的问题：
+An error occurred URI_TOO_LONG hkg1:: 例如下面两篇博客：
+2017年国庆旅行——郑州、杭州 伪·2018届校招面经 正常Giscus评论 异常Giscus评论 针对这个问题，网上搜URI_TOO_LONG说的都是网页请求的URI太长导致的，但都没找到和Giscus相关的内容。
+后来在Giscus的Github Issue里找到一个相同的问题：https://github.com/giscus/giscus/issues/1340，里面一个人提到和Hugo所用的主题有关，另一个人提到和博客的meta name=&#34;description&#34;内容太长有关。但都蜻蜓点水，说的不是很详细，也没有给出一个通用的解决办法。
+后来怀疑这个报错可能是在加载Giscus评论系统的时候，发起的URI请求太长有关。因此针对出问题的博客，通过Chrome右键检查，找到Giscus模块出现的URI链接，如下图所示。
+光这么看看不出来这个URI的长度，可以把这个URI拷贝出来，粘贴到Word中，你会发现这个URI真的非常非常长，而且包含了完整的博客正文！进一步分析发现是URI中的description字段非常长，包含完整的博客正文。
+定位到问题之后，解决办法就很简单了，目标就是如何缩短博客html代码中的description字段长度。这里有很多种方法，最简单的方法就是，在每篇博客的头信息区域，增加自定义配置的description内容，简短一点就行，我就直接复用了博客标题。通过这种方法就缩短了Giscus发起URI中的description字段长度了。
+此外，还可以在主题中搜一下meta name=&#34;description&#34;出现的位置，把里面的代码改掉或者注释掉，都能解决这个问题。
 </p>
   </div>
   <footer class="entry-footer"><span title='2025-11-09 13:08:18 +0800 CST'>November 9, 2025</span>&nbsp;·&nbsp;1 min</footer>
@@ -308,21 +315,27 @@ VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">Ubuntu下使用VSCode连接Github
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（一）MNIST数据集介绍
     </h2>
   </header>
   <div class="entry-content">
-    <p>VSCode是微软开源的一个很强大的IDE，可以支持几乎所有编程语言，而且是跨平台的，Linux用户终于可以用上宇宙最强IDE了。我最近在使用VSCode编写调试Python项目，其调试功能很强大，和VS上调试C&#43;&#43;的感觉是一样的，强烈推荐。
-VSCode还可以连接Github，进行版本控制。下面以我最近学习的深度学习项目为例，介绍下怎样在Ubuntu下使用VSCode连接Github。以我fork的repo为例：https://github.com/01joy/neural-networks-and-deep-learning。
-连接Github有两种方式，一种是HTTPS，另一种是SSH，在每个repo页面的右边，有一个Clone or download按钮，可以获取到这两种连接方式的地址。HTTPS方式和网址类似，以HTTPS开头；SSH方式以git@githu.com开头。使用HTTPS连接比较简单，但是每次push的时候需要输入用户名和密码，比较麻烦，如果想记住密码，需要把用户名和密码以明文的形式保存到一个文件中，个人感觉不方便且不安全。下面以SSH连接为例进行介绍。
-首先设置Github提交时的用户名和密码，一般设置成全局的：https://help.github.com/articles/setting-your-username-in-git/、https://help.github.com/articles/setting-your-commit-email-address-in-git/ 生成一对新的SSH公钥和私钥，并添加到ssh-agent中。注意生成的时候需要输入passphrase，这个passphrase不是Github的密码，自己随便取一个记住就好。https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/ 把SSH的公钥添加到Github账号中：https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/ 测试SSH连接是否成功：https://help.github.com/articles/testing-your-ssh-connection/ （可选）修改SSH密码，即第1步设置的passphrase：https://help.github.com/articles/working-with-ssh-key-passphrases/ 到这里，本级就能通过SSH连接Github了。 如果没有安装VSCode，可以直接通过Ubuntu的终端连接Github，步骤如下：
-在本地创建一个和远程repo名称一样的空文件夹 终端cd到该文件夹内 git init # 在该文件夹内初始化 git remote add origin git@github.com:01joy/notes-on-writing.git # 使用repo的SSH地址 git pull origin master # 把远程代码拉到本地 修改代码 git add . # 在根目录执行，添加所有修改 git commit -m ‘comments’ # commit第7步添加的修改 git push origin master # 把第8步发布到远程 如果安装了VSCode，其实和直接用终端是一样的，在菜单栏的Terminal下新建一个终端，在这个终端内执行上述代码，如果在第4步出现”Enter password to unlock the private key”时，输入创建SSH时第2步的密码即可，只需一次，下次就不用再输入密码了。点击File的Open Folder打开本地repo文件夹。点击VSCode左边栏的Explorer可以在编辑器下修改代码。切换到左边栏的Source Control可以进行Git相关操作，修改的文件右边会出现一个M，点击这个M会出现diff视图；Source Control左边的右上角有三个点，点击这个按钮会出现很多Git操作，包括commit、push等，其实相当于调用上述代码，效果是一样的。
-VSCode快捷键Ctrl&#43;Shift&#43;P会出现命令窗口，在里面输入commit、push等会出现相关操作的，能起到一定的加速效果，当然也可以自定义快捷键。
-Have Fun!
-</p>
+    <p>最近开始学习神经网络和深度学习，使用的是网上教程：http://neuralnetworksanddeeplearning.com/，这是学习心得第一讲，介绍经典的MNIST手写数字图片数据集。
+MNIST（Modified National Institute of Standards and Technology database）数据集改编自美国国家标准与技术研究所收集的更大的NIST数据集，该数据集来自250个不同人手写的数字图片，一半是人口普查局的工作人员，一半是高中生。该数据集包括60000张训练集图片和10000张测试集图片，训练集和测试集都提供了正确答案。每张图片都是28×28=784大小的灰度图片，也就是一个28×28的矩阵，里面每个值是一个像素点，值在[0,1]之间，0表示白色，1表示黑色，(0,1)之间表示不同的灰度。下面是该数据集中的一些手写数字图片，可以有一个感性的认识。
+MNIST数据集可以在Yann LeCun的网站上下载到：http://yann.lecun.com/exdb/mnist/，但是他提供的MNIST数据集格式比较复杂，需要自己写代码进行解析。目前很多深度学习框架都自带了MNIST数据集，比较流行的是转换为pkl格式的版本：http://deeplearning.net/data/mnist/mnist.pkl.gz，该版本把原始的60000张训练集进一步划分成了50000张小训练集和10000张验证集，下面以这个版本为例进行介绍。
+pkl是python内置的一种格式，可以将python的各种数据结构序列化存储到磁盘中，需要时又可以读取并反序列化到内存中。mnist.pkl.gz做了两次操作，先pkl序列化，再gz压缩存储，所以要读取该文件，需要先解压再反序列化，在python3中，读取mnist.pkl.gz的方式如下：
+[python] import pickle import gzip f = gzip.open(‘../data/mnist.pkl.gz’, ‘rb’) training_data, validation_data, test_data = pickle.load(f, encoding=’bytes’) f.close() [/python]
+这样就得到了训练集、验证集和测试集。将数据集序列化到文件中的方法也很简单，需要注意的是pickle在序列化和反序列化时有不同的协议，可以用protocol参数进行设置。
+[python] dataset=[training_data, validation_data, test_data] f=gzip.open(‘../data/mnist3.pkl.gz’,’wb’) pickle.dump(dataset,f,protocol=3) f.close() [/python]
+我们从mnist.pkl.gz读取到的training_data, validation_data, test_data这三个数据的结构是一样的，每个都是一个二维的tuple。以training_data为例，training_data[0]是训练样本，是一个50000×784的矩阵，表示有50000个训练样本，每个训练样本是一个784的一维数组，784就是把一张28×28的图片展开reshape成的一维数组；training_data[1]是训练样本对应的类标号，大小为50000的一维数组，每个值为0~9中的某个数，表示对应样本的数字标号。
+对于第一次接触MNIST数据集的同学来说，以压缩的pkl格式存储的手写数字图片往往不利于他们感性直观的认识这个问题，下面介绍怎样将MNIST数据集打印成常见的png格式图片，也就是博客开头的真正的“图片”。
+就像上面介绍的一样，training_data, validation_data, test_data这三个数据的结构都是一个二维的tuple，下标0存储了n张图片数据，下标1存储了这n张图片对应的答案。现在我们把validation_data的第一张图片打印出来看看，代码如下：
+[python] def plot_digit(X, y): np.savetxt(‘../fig/%d.csv’%y, X, delimiter=’,’)
+import matplotlib.pyplot as plt plt.imshow(X, cmap=’Greys’) # or ‘Greys_r’ plt.savefig(‘../fig/%d.png’%y) plt.show()
+training_data, validation_data, test_data = load_data() X=np.reshape(validation_data[0][0], (28, 28)) y=validation_data[1][0] plot_digit(X, y) [/python]
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2018-11-13 11:09:48 +0800 CST'>November 13, 2018</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to Ubuntu下使用VSCode连接Github" href="http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/"></a>
+  <footer class="entry-footer"><span title='2018-11-25 11:33:45 +0800 CST'>November 25, 2018</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（一）MNIST数据集介绍" href="http://localhost:1313/posts/2018-11-25-neutral-networks-and-deep-learning-1-mnist-dataset/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
