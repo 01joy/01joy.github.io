@@ -479,26 +479,73 @@ hkg1::
 This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
     </item>
     <item>
+      <title>Neural Networks and Deep Learning（六）深度学习</title>
+      <link>http://localhost:1313/posts/2019-05-04-neural-networks-and-deep-learning-6-dl/</link>
+      <pubDate>Sat, 04 May 2019 19:35:01 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-05-04-neural-networks-and-deep-learning-6-dl/</guid>
+      <description>&lt;p&gt;今天我们终于进入到了本书的重头戏——深度学习。其实，这一章的深度学习主要介绍的是卷积神经网络，即CNN。&lt;/p&gt;
+&lt;p&gt;本书之前的章节介绍的都是如下图的全连接网络，虽然全连接网络已经能够在MNIST数据集上取得98%以上的测试准确率，但有两个比较大的缺点：1. 训练参数太多，容易过拟合；2. 难以捕捉图片的局部信息。第一点很好理解，参数一多，网络就难以训练，难以加深。对于第二点，因为全连接的每个神经元都和上一层的所有神经元相连，无论距离远近，也就是说网络不会捕捉图片的局部信息和空间结构信息。&lt;/p&gt;
+&lt;p&gt;本章要介绍的卷积神经网络，相对于全连接网络，有如下三个特点：1. 局部感知local receptive fields 2. 权值共享shared weights 3. 池化pooling，下面分别介绍这三部分内容。&lt;/p&gt;
+&lt;p&gt;局部感知&lt;/p&gt;
+&lt;p&gt;对于MNIST的一张28&lt;em&gt;28灰度图片，全连接网络的输入把图片展开成一个维度为784的向量，这就天然丢失了图片的空间结构信息。而CNN的输入保持了图片28&lt;/em&gt;28的二维空间结构信息，相应的，CNN的中间层也是二维的。这就涉及到输入层的二维图片和隐藏层的二维图片如何对应的问题。&lt;/p&gt;
+&lt;p&gt;CNN使用一个被称为“卷积核”的东西，把输入图片转换为隐藏层的特征图（feature map），如下图所示，假设卷积核大小为5&lt;em&gt;5，则输入图片每5&lt;/em&gt;5的一个小区域被转换为隐藏层的一个神经元（像素），这个小区域就称为局部感受野。&lt;/p&gt;
+&lt;p&gt;当卷积核不断的在输入图片中移动时，假设每次移动一格（stride=1），则原来28&lt;em&gt;28的图片，经过一次卷积后，得到的feature map大小为24&lt;/em&gt;24，相比输入图片小了一圈。&lt;/p&gt;
+&lt;p&gt;权值共享&lt;/p&gt;
+&lt;p&gt;那么，这个卷积操作具体是怎样执行的呢，非常简单。5&lt;em&gt;5的卷积核本质是一个5&lt;/em&gt;5的矩阵，矩阵中的每个值相当于这个卷积核的参数，或者说权值w。每次卷积时，5&lt;em&gt;5的矩阵和输入图片中5&lt;/em&gt;5的感受野对应位相乘再相加得到隐藏层的一个值。&lt;/p&gt;
+&lt;p&gt;下图是一个缩小版的动图例子，左图的绿色大图相当于输入的5&lt;em&gt;5图片，移动的黄色小图相当于当前卷积的感受野，大小为3&lt;/em&gt;3。在这个3&lt;em&gt;3的感受野中，每个单元格居中的数字是输入图片的像素值，右下角的红色小字表示卷积核的权值。每次卷积操作，感受野内的图片像素和卷积核权值相乘再相加，得到右图红色小图中的一个单元格的值，这就完成了一次卷积。当黄色感受野不断在输入图片中移动时，右边的feature map也不断被填充，直到一轮卷积完成。整个过程进行了9次卷积，feature map的大小为3&lt;/em&gt;3=9卷积次数。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59&#34;&gt;https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59&lt;/a&gt;
+这里又涉及到CNN的第二个特点——权值共享。注意到，对于上图的一轮卷积操作，不同感受野内右下角的权值矩阵是一样的，也就是说9次卷积的卷积核权值是一样的。权值共享有两个好处，一是特征位置无关，二是参数量大大下降。&lt;/p&gt;
+&lt;p&gt;对于特征位置无关 。这个3*3的卷积核相当于一个特征提取器或者说滤波器，比如这个特征提取器能够提取“猫”这个特征，则无论猫在输入图片的左上角还是右下角，“猫”这个特征都能被提取出来，因为卷积核在小范围移动，无论“猫”位于图片的哪个区域，当卷积核移动到这个区域时，卷积得到的输出比较大，被激活，得到“猫”这个特征。所以CNN对位置不敏感，这对图像处理尤其有利。正因为这个特点，经过卷积核卷积操作之后的小图片（上图右边的红色图片）被称为特征图（feature map），因为它就是用卷积核提取出来的符合这个卷积核描述的一个特征。&lt;/p&gt;
+&lt;p&gt;对于参数量大大下降。事实上，一次卷积操作除了上面动图显示的卷积核与感受野内的图片相乘再相加之外，还会对加和之后的值做一个激活输出。回到我们的MNIST例子，一次卷积操作用公式来表示就是：&lt;/p&gt;
+$$\begin{eqnarray}\sigma\left(b + \sum_{l=0}^4 \sum_{m=0}^4 w_{l,m} a_{j+l, k+m} \right).\tag{1}\end{eqnarray}$$$$w$$&lt;p&gt;表示卷积核权值矩阵，&lt;/p&gt;
+$$a$$&lt;p&gt;表示感受野内的输入图片，两个累加&lt;/p&gt;
+$$\sum$$&lt;p&gt;就是上面动图显示的相乘相加过程，得到和之后，还会加上一个偏移量&lt;/p&gt;
+$$b$$&lt;p&gt;，最后进行激活输出&lt;/p&gt;
+$$\sigma$$&lt;p&gt;。所以一个5&lt;em&gt;5的卷积核，参数量为5&lt;/em&gt;5+1=26。如果有20个卷积核，参数总量为20&lt;em&gt;26=520。但如果是全连接网络，假设隐藏层有30个，则参数量为784&lt;/em&gt;30+30=23550。所以仅考虑隐藏层的参数量，CNN就比全连接网络少了45倍的参数，参数量少了，就能加快训练，网页也有可能加深。&lt;/p&gt;
+&lt;p&gt;池化&lt;/p&gt;
+&lt;p&gt;池化就很好理解了，对于卷积得到的feature map，再画一个框（类似于卷积层的感受野），把框内的最大值取出来作为池化之后的值，这就是max-pooling。池化的目的是用来简化信息的，相当于降维。池化的框也可以称为核kernel，如果kernel的大小是2&lt;em&gt;2的，则一个24&lt;/em&gt;24的feature map，经过max-pooling之后就变成了12*12了，维度瞬间降了一半， 把原来的feature map变成了一个紧凑的feature map。&lt;/p&gt;
+&lt;p&gt;池化层往往跟在卷积层的后面，下图表示一张28&lt;em&gt;28的图片，使用3个5&lt;/em&gt;5的卷积核之后，得到了3个24&lt;em&gt;24的feature map，再经过2&lt;/em&gt;2的max-pooling，得到3个12*12的feature map。&lt;/p&gt;
+&lt;p&gt;到这里，CNN的三大特点就介绍完毕了。对于上图，三个卷积核相当于提取了三种特征，我们还需要完成最终的分类任务，这时候还得把全连接网络请过来。经过max-pooling之后，我们再接一个包含10个神经元的全连接层，作为输出层，完整的网络结果如下：&lt;/p&gt;
+&lt;p&gt;最后的全连接层和我们前面介绍的全连接网络是完全一样的，只不过全连接的输入是3个经过max-pooling之后的feature map，在和输出层相连时，可以想象成先把3个12&lt;em&gt;12的feature map展开并首尾相连，得到一个3&lt;/em&gt;12*12=432的向量，再和输出层的10个神经元进行全连接。这就是一个非常简单的CNN网络，包含一个输入层、一个卷积层、一个池化层和一个输出层。&lt;/p&gt;
+&lt;p&gt;本文的代码示例network3.py中，构建了一个和上图类似的简单的CNN网络，如下图所示，使用了20个卷积核，相当于提取了20种特征；max-pooling之后使用了两个全连接层，前一层包含100个隐藏神经元，使用sigmoid激活；后一层包含10个神经元，使用softmax激活，作为输出层。就是这么一个简单的CNN网络，其在测试集上的准确率达到了98.78%，超过了本文之前构建的所有的全连接网络。&lt;/p&gt;
+&lt;p&gt;由于原文使用的是已经不再维护的Theano，本博客不打算详细介绍其代码实现，我将在稍后的博文中分享Pytorch的CNN代码。不过我还是把原文对CNN的优化过程总结如下，用测试集的准确率作为性能指标：&lt;/p&gt;
+&lt;p&gt;上图简单的CNN网络，98.78%
+增加一个卷积层，且把激活函数换成ReLU，99.23%
+数据增强，把原有的5000张图片，上下左右各平移一个像素，增加了4倍数据，99.37%
+增加一个全连接层，且全连接层神经元增加为1000个，使用dropout=0.5，epoch相应减少到40个，99.6%。因为卷积层有权值共享，天然参数少防止过拟合，所以dropout一般只用于全连接层
+模型融合ensemble，5个上述模型，采用majority vote，99.67%，已接近人类水平
+虽然经过上述5步，准确率没有达到100%，但那些分类错误的图片，真的很难说分错了，因为图片看起来就不是它标注的结果（右上角），就应该是分错的结果（右下角）。总的来说，我觉得已经非常不错了。&lt;/p&gt;
+&lt;p&gt;稍微解释两个问题。&lt;/p&gt;
+&lt;p&gt;一、为什么ReLU比Sigmoid性能好，目前还没有一个令人信服的答案，只是很多人在很多标准数据集上测试，发现ReLU性能比Sigmoid好，这个消息传开之后，大家都开始用ReLU了。通常的解释是ReLU的max(0,z)在z很大时，梯度依然为1，不存在梯度消失的问题；而Sigmoid在z很大时，&lt;/p&gt;
+$$\sigma&#39;(z)$$&lt;p&gt;梯度几乎为0，存在梯度消失的问题。&lt;/p&gt;
+&lt;p&gt;二、为什么CNN可以做深？怎样解决上一章提到的梯度消失或者梯度爆炸问？事实上，CNN并没有解决上一章的问题，而是绕过了这个问题：1) 卷积层大大减少了模型参数，使得网络更加简单，可以训练得更快；2）强大的正则减少过拟合：dropout和卷积层；3）使用ReLU而不是sigmoid，可以加速训练过程3~5倍；4）使用GPU，并且愿意训练更长的时间，因为sigmoid的梯度消失只不过是梯度很小更新很慢，如果训练时间足够长的话，应该也能收敛。而如果用GPU的话，训练速度加快了，相同时间就可以训练更多的epoch。组合3和4，相当于比之前的网络训练时长增加了30倍，收敛效果自然会更好。&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Neural Networks and Deep Learning（五）为什么深度神经网络难以训练</title>
       <link>http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/</link>
       <pubDate>Sun, 14 Apr 2019 19:09:46 +0800</pubDate>
       <guid>http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/</guid>
       <description>&lt;p&gt;本章我们将分析一下为什么深度神经网络难以训练的问题。&lt;/p&gt;
 &lt;p&gt;首先来看问题：如果神经网络的层次不断加深，则在BP误差反向传播的过程中，网络前几层的梯度更新会非常慢，导致前几层的权重无法学习到比较好的值，这就是梯度消失问题（The vanishing gradient problem）。&lt;/p&gt;
-&lt;p&gt;以我们在第三章学习的network2.py为例（交叉熵损失函数+Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量$b$的偏导$\partial C/ \partial b$，根据第二章BP网络的知识，$\partial C/ \partial b$也是$\partial C/ \partial w$的一部分（BP3和BP4的关系），所以如果$\partial C/ \partial b$的绝对值大，则说明梯度大，在误差反向传播的时候，$b$和$w$更新就快。&lt;/p&gt;
-&lt;p&gt;假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的$\partial C/ \partial b$的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？&lt;/p&gt;
-&lt;p&gt;既然梯度出现了层与层的差异，则可以定义第$l$层的梯度（如不加说明，则默认是误差$C$对偏移量$b$的梯度）向量的长度为$| \delta^l |$，比如$| \delta^1 |$表示第一个隐藏层中每个神经元的$\partial C/ \partial b$的绝对值之和，就是一范数，如果$| \delta^l |$越大，则说明这一层权重的更新越快。&lt;/p&gt;
-&lt;p&gt;由此，我们可以画出当有两个隐藏层时，$| \delta^l |$随epoch的变化情况：&lt;/p&gt;
+&lt;p&gt;以我们在&lt;a href=&#34;https://bitjoy.net/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/&#34;&gt;第三章学习的network2.py&lt;/a&gt;为例（交叉熵损失函数+Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量\(b\)的偏导\(\partial C/ \partial b\)，根据&lt;a href=&#34;https://bitjoy.net/posts/2018-12-14-neutral-networks-and-deep-learning-2-bp/&#34;&gt;第二章BP网络&lt;/a&gt;的知识，\(\partial C/ \partial b\)也是\(\partial C/ \partial w\)的一部分（BP3和BP4的关系），所以如果\(\partial C/ \partial b\)的绝对值大，则说明梯度大，在误差反向传播的时候，\(b\)和\(w\)更新就快。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/tikz21.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的\(\partial C/ \partial b\)的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/ch5.1.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;既然梯度出现了层与层的差异，则可以定义第\(l\)层的梯度（如不加说明，则默认是误差\(C\)对偏移量\(b\)的梯度）向量的长度为\(\| \delta^l \|\)，比如\(\| \delta^1 \|\)表示第一个隐藏层中每个神经元的\(\partial C/ \partial b\)的绝对值之和，就是一范数，如果\(\| \delta^l \|\)越大，则说明这一层权重的更新越快。&lt;/p&gt;
+&lt;p&gt;由此，我们可以画出当有两个隐藏层时，\(\| \delta^l \|\)随epoch的变化情况：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/training_speed_2_layers.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;当有三个隐藏层时：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/training_speed_3_layers.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;当有四个隐藏层时：&lt;/p&gt;
-&lt;p&gt;我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，$| \delta^l |$越大，即梯度更新越快；越靠近输入层的隐藏层，$| \delta^l |$越小，即梯度更新越慢。&lt;/p&gt;
-&lt;p&gt;这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差反向传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/training_speed_4_layers.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，\(\| \delta^l \|\)越大，即梯度更新越快；越靠近输入层的隐藏层，\(\| \delta^l \|\)越小，即梯度更新越慢。&lt;/p&gt;
+&lt;p&gt;这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差&lt;strong&gt;反向&lt;/strong&gt;传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。&lt;/p&gt;
 &lt;p&gt;所以，对于同样的network2，其他参数都不变，只是单纯增加网络层数，验证集上的准确率反而会下降！按理说网络层数增加，验证集上的准确率会上升，或者不变，至少不应该下降啊，因为最不济增加的网络层什么都不做，准确率应该一样才对，为什么反而下降了呢。虽然层数增加了，但因为上述梯度消失问题，靠近输入层的权重反而没学好，因为权重是随机初始化的，所以验证集上的准确率反而下降了。&lt;/p&gt;
 &lt;p&gt;那么，为什么层数增加会导致梯度消失问题呢，我们可以从BP的更新公式中一探究竟。&lt;/p&gt;
 &lt;p&gt;为了简化问题，假设我们的网络每一层只有一个神经元：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/tikz37.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;则根据BP的更新公式，可以计算得到&lt;/p&gt;
-&lt;p&gt;$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&amp;rsquo;(z_1) , w_2 \sigma&amp;rsquo;(z_2) ,w_3 \sigma&amp;rsquo;(z_3) , w_4 \sigma&amp;rsquo;(z_4) , \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$&lt;/p&gt;
-&lt;p&gt;计算过程其实很简单，对照本博客开头的那张图，$\sigma&amp;rsquo;(z_4) , \frac{\partial C}{\partial a_4}$就是(BP1)，把(BP1)带入(BP2)，就是不断乘以$w^{l+1} \sigma&amp;rsquo;(z^l)$，然后就能得到下图的公式。&lt;/p&gt;</description>
+$$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&#39;(z_1) \, w_2 \sigma&#39;(z_2) \,w_3 \sigma&#39;(z_3) \, w_4 \sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$$&lt;p&gt;计算过程其实很简单，对照本博客开头的那张图，\(\sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}\)就是(BP1)，把(BP1)带入(BP2)，就是不断乘以\(w^{l+1} \sigma&#39;(z^l)\)，然后就能得到下图的公式。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数</title>

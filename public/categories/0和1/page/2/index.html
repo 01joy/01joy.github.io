@@ -151,6 +151,47 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">初探逻辑回归
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最近实验室在组织学习NG的机器学习视频，我也跟进了一下。讲到逻辑回归那一课，一直想不明白，逻辑回归到底是怎样分类的？逻辑回归的分类面在哪里？逻辑回归有像SVM的max margin那样清晰的推导过程吗？为什么需要Sigmoid函数？今天就让我们来一窥逻辑回归的始末。
+假设有一堆学生样本，为了简单起见，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。可视化如下图，黑点表示y=1即被录取，红点表示y=0即未被录取，可以看到黑点处在score1和score2都比较高的区域。我们的任务就是给定这些训练样本，需要确定一个分类面来划分这两类数据。
+分类面的实质就是\(y=\mathbf{w^T x}&#43;b\)，其中\(\mathbf{w}\)和\(\mathbf{x}\)都是向量，对应到本例中，展开为\(y=w_1x_1&#43;w_2x_2&#43;b\)。所以，寻找分类面的过程就是寻找倾斜度\(\mathbf{w}\)和截距\(b\)。
+因为分类的结果是离散的，只有0或者1，可以用感知机来分类。即
+但是怎样找这里的\(\mathbf{w}\)和\(b\)使得分类结果最好呢，我们需要定义一个优化的目标函数或者说损失函数。这里只能定义为分类错误的个数，只能一点点挪动超平面来找分类错误最少的超平面了，即只能用暴力枚举的方法来找\(\mathbf{w}\)和\(b\)。
+另一种方法是令我们的分类面算出来的值和真实标号越接近越好，即最小化误差\((\mathbf{w^T}x^{(i)}&#43;b-y^{(i)})^2\)，然后通过梯度下降求解\(\mathbf{w}\)和\(b\)。
+但是这会有一个问题，对于上图数据，可以求到一个比较好的分类面，如下左图。但是如果数据中出现了如下右图右边的一个离群点或者噪声，为了最小化这个点的误差，即\((\mathbf{w^T}x^{(i)}&#43;b-1)^2\)，导致分类面往右偏了，这一偏直接导致很多y=1的样本分类错误。所以这种最小化误差的方法对离群点很敏感。
+假设分类超平面还是\(f(\mathbf{x})=\mathbf{w^T x}&#43;b\)，我们希望的分类效果是这样的：\(f(\mathbf{x})=0\)是分类面；\(f(\mathbf{x})&gt;0\)分类为1，且不管\(f(\mathbf{x})\)多大，都分为1；\(f(\mathbf{x})&lt;0\)分类为0，且不管\(f(\mathbf{x})\)多小，都分为0。
+因为类标号是离散的{0,1}，所以想到把\(f(\mathbf{x})\)映射到[0,1]之间，即\(g(f(\mathbf{x}))\)。为了满足上述条件，\(g(f(\mathbf{x}))\)需要满足：
+\(g(0)=0.5\)，即在分类面上无法判断类标号是0还是1 当\(f(\mathbf{x})&gt;0\)时，\(g(f(\mathbf{x}))&gt;0.5\) 当\(f(\mathbf{x})\rightarrow&#43;\infty\)，\(g(f(\mathbf{x}))\rightarrow 1\)，且\(g&#39;(f(\mathbf{x}))\rightarrow 0\)，即对于上右图右边的离群点，分类为1，且导数趋近于0，表示对其不敏感 当\(f(\mathbf{x})&lt;0\)时，\(g(f(\mathbf{x}))&lt;0.5\) 当\(f(\mathbf{x})\rightarrow-\infty\)，\(g(f(\mathbf{x}))\rightarrow 0\)，且\(g&#39;(f(\mathbf{x}))\rightarrow 0\)，和第3点类似 满足上述性质的函数之一就是Sigmoid函数，其定义域为\([-\infty,&#43;\infty]\)，值域为[0,1]，正好把原始的函数结果\(f(\mathbf{x})\)映射到了[0,1]，而概率的取值范围正好是[0,1]，所以Sigmoid函数正好可以作为分类为1的概率。
+所以逻辑回归最终的形式就是：
+$$g(\mathbf{x})=\frac{1}{1&#43;e^{-(\mathbf{w^T x}&#43;b)}}$$分类面依然还是\(f(\mathbf{x})=\mathbf{w^T x}&#43;b=0\)，因为\(f(\mathbf{x})=0\)时，\(g(\mathbf{x})=0.5\)，正好满足上述条件1。
+Sigmoid函数的另一个优点是，它把原始函数值映射到了概率空间，这样就可以用极大似然的方法求解参数\(\mathbf{w}\)和\(b\)。下面用参数\(\mathbf{\theta}\)代表参数\(\mathbf{w}\)和\(b\)，用\(h_{\mathbf{\theta}}(\mathbf{x})\)代表\(g(f(\mathbf{x}))\)。则有：
+$$P(y=1|\mathbf{x};\mathbf{\theta})=h_{\mathbf{\theta}}(\mathbf{x})$$$$P(y=0|\mathbf{x};\mathbf{\theta})=1-h_{\mathbf{\theta}}(\mathbf{x})$$合并成一个式子就是：
+$$P(y|\mathbf{x};\mathbf{\theta})=h_{\mathbf{\theta}}(\mathbf{x})^y(1-h_{\mathbf{\theta}}(\mathbf{x}))^{1-y}$$由于所有样本独立同分布（I.I.D.），似然函数就是
+$$L(\mathbf{\theta})=P(\mathbf{y}|X;\mathbf{\theta})=\prod\limits_{i}P(y^{(i)}|\mathbf{x}^{(i)};\mathbf{\theta})=\prod\limits_{i}h_{\mathbf{\theta}}(\mathbf{x}^{(i)})^{y^{(i)}}(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))^{1-y^{(i)}}$$最大化似然的含义就是，在给定样本\(X\)的情况下，我们想找一个参数\(\mathbf{\theta}\)，使得观测到类标号\(\mathbf{y}\)的概率最大。
+最大化似然等价于最大化log似然，log展开之后就是：
+$$l(\mathbf{\theta})=logL(\mathbf{\theta})=\sum\limits_{i}y^{(i)}logh_{\mathbf{\theta}}(\mathbf{x}^{(i)})&#43;(1-y^{(i)})log(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))$$而很巧的是，最大化log似然，其实等效于最小化log对数损失。对于单个样本，损失为：
+$$cost(h_{\theta}(\mathbf{x}),y) = \begin{cases}-log(h_{\theta}(\mathbf{x})) &amp; \text {if y=1} \\ -log(1-h_{\theta}(\mathbf{x})) &amp; \text{if y=0} \end{cases}$$即如果正确类标号是1，但算出来的\(h_{\theta}(\mathbf{x})\)很接近0的话，则损失\(-log(h_{\theta}(\mathbf{x}))\)就会很大。类标号为0的情况类似。把这两种情况合成一个式子就是：
+$$cost(h_{\theta}(\mathbf{x}),y) = -ylog(h_{\theta}(\mathbf{x})) – (1-y)log(1-h_{\theta}(\mathbf{x}))$$所有样本的损失之和就是：
+$$J(\mathbf{\theta})=cost(h_{\theta}(X),\mathbf{y}) = \sum\limits_{i}-y^{(i)}logh_{\mathbf{\theta}}(\mathbf{x}^{(i)})-(1-y^{(i)})log(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))$$所以最大化对数似然\(\max l(\mathbf{\theta})\)和最小化对数损失\(\min J(\mathbf{\theta})\)是等效的！最优化求解的方法用梯度下降和牛顿法都可以。
+和Sigmoid很像的函数还有很多，比如y=arctan(x)也可以，不过Sigmoid有一个很好的特点，即它的导数可以由自身算出来，\(f&#39;(x)=f(x)(1-f(x))\)。
+传统的逻辑回归只能处理二分类问题，那么怎样将其扩展到解决多分类问题呢？有两种方法，一种方法是建立k个二元分类器，比如类标号有A,B,C，则建立3个二元分类器，分别是1）A和非A；2）B和非B；3）C和非C。训练每个2元分类器时，都对所有的数据重新标号为0或1，这样共需要训练k个二元分类器。
+还有一种方法是直接将二元逻辑回归推广到多元回归，即Softmax回归，有关Softmax回归的内容，请参考此博客，非常详细。简单来说，二元逻辑回归的假设函数是：多元Softmax回归的假设函数在形式上有所不同：其中是模型的参数。请注意这一项对概率分布进行归一化，使得所有概率之和为1。
+Softmax回归的损失函数如下，其实就是logistic回归损失函数的推广：
+二元逻辑回归是多元Softmax回归在k=2时的特例，令k=2并利用Softmax回归参数冗余的特点，可以得到一般形式的二元逻辑回归假设函数，具体可以看原博客。
+面对一个多元分类问题，是选择Softmax回归还是k个二元分类器呢，这取决于你的类别之间是否互斥，如果互斥，可以用Softmax回归，否则，请用k个二元分类器。
+这就是逻辑回归的理论知识，下一篇博客将介绍逻辑回归在Python中的应用。
+参考：
+http://www.cnblogs.com/sparkwen/p/3441197.html https://tech.meituan.com/intro_to_logistic_regression.html http://blog.csdn.net/bitcarmanlee/article/details/51165444 http://ufldl.stanford.edu/wiki/index.php/Softmax%E5%9B%9E%E5%BD%92 </p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-26 18:54:44 +0800 CST'>November 26, 2017</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 初探逻辑回归" href="http://localhost:1313/posts/2017-11-26-introduction-to-logistic-regression/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Gperftools性能分析工具使用教程
     </h2>
   </header>
@@ -337,43 +378,6 @@ HMM在实际中主要有3个方面的应用，分别是：
   </div>
   <footer class="entry-footer"><span title='2016-08-18 09:54:55 +0800 CST'>August 18, 2016</span>&nbsp;·&nbsp;3 min</footer>
   <a class="entry-link" aria-label="post link to Huffman编码压缩算法及其实现" href="http://localhost:1313/posts/2016-08-18-the-implementation-of-huffman-code/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">还原谷歌PageRank算法真相
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>之前写了七篇博客详细介绍了搜索引擎的工作原理。彼时的搜索引擎主要讲查询和网页的相关性匹配，是动态的、在线的、实时的。相关性匹配有一个问题，网页很容易作弊，比如可以在一个网页中写满诸如“免费”、“美容”之类的垃圾关键词，进而提升查询相关性。但是用户在查询时，一定希望返回的网页比较权威可信，比如同样搜索“苹果电脑”，排名第一的应该是Apple的官网，而不应该是中关村在线之类的第三方网站。
-权威性是一个静态的（或者说变化较慢的）衡量网页重要性的指标。但是应该怎样度量权威性呢，HITS算法使用authority来度量，即指向自身的网页数量越多，则自身的authority值越大。谷歌的PageRank算法是用PageRank值来衡量权威性的。HITS和PageRank一个比较大的区别是HITS和查询有关，而PageRank和查询无关，所以PageRank可以离线计算。下面主要介绍PageRank算法。
-PageRank’s thesis is that a webpage is important if it is pointed to by other important pages.
-我先不加解释的给出PageRank的公式，然后带领大家一步步推导出这个公式。
-$$\pi^T=\pi^T(\alpha S&#43;(1-\alpha)E)$$我们首先明确目标：PageRank计算的是网页的静态权威度（PR值），也就是如果给定了一个网络结构，则每个网页的PR值就可以通过PageRank算法计算出。假设网页\(P_i\)的PR值为\(r(P_i)\)，则\(r(P_i)\)等于所有指向\(P_i\)的网页的PR值之和，即
-$$\begin{equation}r(P_i)=\sum\limits_{P_j\in B_{P_i}}\frac{r(P_j)}{|P_j|}\end{equation}$$其中\(B_{P_i}\)为指向\(P_i\)的网页集合，\(|P_j|\)为\(P_j\)的出边的数量。这个式子很好理解，包括两方面内容：1）\(\sum\limits_{P_j\in B_{P_i}}\)表示如果指向\(P_i\)的网页数量越多，说明网页\(P_i\)越重要；2）\(\frac{r(P_j)}{|P_j|}\)表示如果\(P_j\)指向的页面数量越少，但有一个指向了\(P_i\)，说明网页\(P_i\)越重要（如果一个大牛写了很多推荐信（\(|P_j|\)大），则这些推荐信的效力就下降了，如果大牛只给你写了推荐信（\(|P_j|=1\)），则这封推荐信的效力一定很高）。
-(1)式有一个问题，初始给定一个网络结构时，并不知道\(r(P_i), r(P_j)\)，如何计算呢？Brin和Page利用递归的思想求解，初始假设所有网页的PR值相等，都为\(\frac{1}{n}\)，其中\(n\)为网络中网页的数量。则第\(k&#43;1\)轮的PR计算公式为：
-$$\begin{equation}r_{k&#43;1}(P_i)=\sum\limits_{P_j\in B_{P_i}}\frac{r_k(P_j)}{|P_j|}\end{equation}$$初始对所有网页\(P_i\)有\(r_0(P_i)=\frac{1}{n}\)，迭代\(k\)步之后，可以计算出所有网页的PR值，然后按PR值从大到小排序，就可以知道每个网页的重要性了。
-对于上图的小网络，我们可以计算出其每一步的PR值：
-可以看到经过2次迭代之后，节点4的PR值最大，从图中也可以看出，节点4的出入边较多，它可能比较重要。
-注意到对于(2)式，当\(i,j\)之间有边时，\(\frac{1}{|P_j|}\)相当于对\(P_j\)出度的归一化，设矩阵\(H\)为图的邻接矩阵的行归一化矩阵，对于上图，为
-设行向量\(\pi^{(k)T}\)为第\(k\)轮迭代时所有网页的PR值，则式(2)可以转换为如下的矩阵形式：
-$$\begin{equation}\pi^{(k&#43;1)T}=\pi^{(k)T}H\end{equation}$$初始有\(\pi^{(0)T}=\frac{1}{n}e^T\)，\(e^T\)为全1的行向量。我们可以从(3)式观测出几点信息：
-(3)式的每一轮计算涉及到向量和矩阵的乘法，复杂度为\(O(n^2)\)，\(n\)为矩阵\(H\)的大小 \(H\)是一个稀疏矩阵，因为大部分网页只和很少的网页有链接关系，所以上述向量和矩阵的乘法复杂度还可以降低 \(H\)有点像马尔科夫链中的随机转移矩阵，但又不完全是，因为如果有dangling nodes，则这一行就是全0，所以\(H\)被称为substochastic matrix 上图中的节点3就是一个dangling node，它只有入边，没有出边，也就是说，每一轮迭代，PR值只会流入3号节点，不会从3号节点流出，久而久之，3就像一个水槽(sink)一样，吸走了大部分的PR，导致PR值虚高。
-所以问题随之而来，怎样保证(3)式一定能够收敛到一个平稳概率分布\(\pi^T\)，\(\pi^T\)和\(\pi^{(0)T}\)有关吗，怎样解决dangling nodes问题，等等。此时需要引入一点马尔科夫链理论的知识。
-在马尔科夫理论呢中，如果一个矩阵\(P\)是随机的（stochastic）、不可约的（irreducible）和非周期的（aperiodic），则对于任意的起始向量，都能收敛到一个唯一的平稳正向量。所以如果PageRank矩阵\(H\)满足上述三个条件，则可以用幂法（Power Method）找到一个平稳概率分布\(\pi^T\)。幂法是用来计算最大特征值的特征向量。因为\(H\)的最大特征值为1，所以可以用幂法找到稳态时（\(\pi^T=\pi^TH\)）的概率分布\(\pi^T\)。
-下面我们就将矩阵\(H\)调整为随机的（stochastic）、不可约的（irreducible）和非周期的（aperiodic）。
-行随机矩阵是指行和为1的非负矩阵。如果图中含有dangling nodes，则\(H\)不是随机的，比如上面的例子，第二行为全0。所以第一个调整是对于所有dangling nodes，都加上一个随机跳转向量\(e^T/n\)，含义就是如果进入死胡同（dangling nodes），则随机跳转到网络中的任意一个网页。定义向量\(a\)：
-$$\begin{equation}a_i=\begin{cases}1\quad\text{if page}~i\text{ is a dangling node}\\0\quad\text{otherwise}\end{cases}\end{equation}$$则新的Google矩阵为：
-$$\begin{equation}S=H&#43;a\frac{1}{n}e^T\end{equation}$$新矩阵\(S\)就是一个行随机矩阵了。对于上图的例子，有
-为了保证矩阵\(S\)满足不可约性（irreducible）和非周期性（aperiodic），必须使\(S\)对应的图是强连通的且每个节点有自回路。所以再次调整为：
-$$\begin{equation}G=\alpha S&#43;(1-\alpha)\frac{1}{n}ee^T\end{equation}$$令
-$$\begin{equation}E=\frac{1}{n}ee^T\end{equation}$$则得到本博客开头的Google矩阵公式：
-$$\begin{equation}G=\alpha S&#43;(1-\alpha)E\end{equation}$$\(E\)即为随机平均游走矩阵。矩阵\(G\)也很好解释，大家上网的时候以\(\alpha\)的概率沿着某个网页里面的链接一步步深入进去（\(S\)），当沿着链接走累的时候，以\(1-\alpha\)的概率在地址栏输入一个新地址，随机跳走了（\(E\)）。
-此时的矩阵\(G\)满足随机性（stochastic）、不可约性（irreducible）和非周期性（aperiodic），所以可以根据幂法（Power Method）找到一个平稳概率分布\(\pi^T\)，\(\pi^T_i\)就衡量了网页\(P_i\)的重要性或者权威性。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-08-04 16:38:33 +0800 CST'>August 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 还原谷歌PageRank算法真相" href="http://localhost:1313/posts/2016-08-04-googles-pagerank-and-beyond/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
