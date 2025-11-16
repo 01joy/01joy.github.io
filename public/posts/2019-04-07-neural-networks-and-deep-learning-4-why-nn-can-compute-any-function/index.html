@@ -5,48 +5,35 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex, nofollow">
-<title>公告 | bitJoy</title>
-<meta name="keywords" content="">
-<meta name="description" content="博客数据恢复中，敬请期待！
-测试图片：
+<title>Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数 | bitJoy</title>
+<meta name="keywords" content="神经网络, 深度学习">
+<meta name="description" content="我们应该都听说过神经网络强大到能拟合任意一个函数，但细究起来很少有人能论证这个观点，这一章就用通俗易懂的图解方式来证明神经网络为什么能拟合任意一个函数。
+开始介绍之前，有两点需要注意：
 
-测试代码：
+并不是说神经网络可以精确计算任意一个函数\(f(x)\)，而是说当隐藏层神经元增加时，可以无限逼近\(f(x)\)，比如对于任何一个输入\(x\)，网络的输出\(g(x)\)和正确值\(f(x)\)的差小于某个阈值，\(|g(x) – f(x)| &lt; \epsilon\)；
+神经网络拟合的是连续函数，而不是那种不连续、离散、急剧变化的函数。
 
+假设给定一个下图的连续函数，函数形式未知，本章将用图解的方式来证明，一个单隐层的神经网络就可以很好的拟合这个未知函数。
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-10
-11
-12
-13
+首先，假设我们的隐藏层只有两个神经元，激活函数使用Sigmoid，并且我们暂时只关注上面那个神经元的参数和输出。则通过调整该神经元的\(w\)和\(b\)，可以得到不同形状的Sigmoid函数形式。
 
+极端情况下，如果\(w\)很大而\(b\)很小，则可以用Sigmoid函数模拟阶梯函数：
 
-// Necessary header files for input output functions
-#include &lt;iostream&gt;
-using namespace std;
+如果令\(s = -b/w\)，则只用一个\(s\)就可以确定Sigmoid的函数图像：
 
-// main() function: where the execution of
-// C&#43;&#43; program begins
-int main() {
-  
-    // This statement prints &#34;Hello World&#34;
-    cout &lt;&lt; &#34;Hello World&#34;;
+如果把隐藏层下面那个神经元也考虑进来，并且令隐藏层的两个神经元和输出层的神经元的连接权重互为相反数，则输出层未激活值\(z=w_1 a_1 &#43; w_2 a_2\)的函数图像变成了一个神奇的鼓包，这个鼓包就是我们后续拟合任意函数的基本单元。根据严格的函数形式，还可以知道\(w_1\)和\(w_2\)的绝对值控制着鼓包的高度，\(s_1\)和\(s_2\)的值控制着鼓包的位置和宽度。大家可以去原始网页上体验一下作者给出的可交互版本，很有意思。
 
-    return 0;
-}
+有了这个基本单元之后，我们可以通过增加隐藏层神经元的个数来增加鼓包的个数，比如再增加一对隐层神经元，可增加一个鼓包。虽然下图的例子中两个鼓包相互独立，但通过调整4个\(s\)，可以让两个鼓包相连甚至交错，大家可以去原网页试一试。
 
+继续增加隐层神经元个数，则可以继续增加鼓包的数量，如下图所示。
 
-测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.">
+到这里想必大家马上知道了为什么神经网络能拟合任何一个函数了，如果隐层神经元足够多，则右图的小鼓包可以足够密，通过调整每个鼓包的高度，则无穷多个鼓包的顶点连线可以拟合任意一个函数。这和我们求函数积分（函数下方面积）时使用多个小矩形近似是一个道理！
+所以对于本章开头的未知函数，我们通过调整不同鼓包的高度，可以使得小矩形面积之和与真实积分的差在\( \epsilon=0.4\)以内。如果无限增加隐层神经元个数，则可以无限逼近真实值。这就说明神经网络确实可以拟合任意一个函数。
+
+上述推导稍微需要注意的一点是，右图的输出是未激活函数值\(\sum_j w_j a_j\)，而网络真正的输出是激活值\(\sigma(\sum_j w_j a_j &#43; b)\)。这没有太大的关系，因为上面已经说明未激活输出能拟合任意函数，激活函数也是一个函数。增加激活函数就要求右图需要拟合激活函数和真实函数的嵌套函数。既然未激活输出能拟合任意函数，肯定能拟合这个嵌套函数\(\sigma^{-1} \circ f(x)\)，再用激活函数作用一下\(\sigma\circ\sigma^{-1} \circ f(x)\)，激活函数抵消了，正好得到\(f(x)\)。
+如果输入是多维，或者输出是多维，都是类似的道理。这就说明神经网络确实可以拟合任意函数，真的很强大哦。">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="canonical" href="http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
 <link rel="icon" href="http://localhost:1313/favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
@@ -55,7 +42,7 @@ This is an inline \(a^*=x-b^*\) equation.">
 <link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-08-15-announcement/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/">
 <noscript>
     <style>
         #theme-toggle,
@@ -184,74 +171,57 @@ This is an inline \(a^*=x-b^*\) equation.">
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      公告
+      Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数
     </h1>
-    <div class="post-meta"><span title='2025-08-15 22:03:06 +0800 CST'>August 15, 2025</span>&nbsp;·&nbsp;1 min
+    <div class="post-meta"><span title='2019-04-07 18:34:01 +0800 CST'>April 7, 2019</span>&nbsp;·&nbsp;1 min
 
 </div>
   </header> 
 
-  <div class="post-content"><p>博客数据恢复中，敬请期待！</p>
-<p>测试图片：
-<img alt="这是图片" loading="lazy" src="/posts/2025-08-15-announcement/myimg.png"></p>
-<p>测试代码：</p>
-<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-</span></code></pre></td>
-<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// Necessary header files for input output functions
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// main() function: where the execution of
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// C++ program begins
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
-</span></span><span style="display:flex;"><span>  
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This statement prints &#34;Hello World&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World&#34;</span>;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>测试数学公式：
-This is an inline \(a^*=x-b^*\) equation.</p>
-<p>These are block equations:</p>
-\[a^*=x-b^*\]\[ a^*=x-b^* \]\[
-a^*=x-b^*
-\]<p>These are also block equations:</p>
-$$a^*=x-b^*$$$$ a^*=x-b^* $$$$
-a^*=x-b^*
-$$
+  <div class="post-content"><p>我们应该都听说过神经网络强大到能拟合任意一个函数，但细究起来很少有人能论证这个观点，这一章就用通俗易懂的图解方式来证明神经网络为什么能拟合任意一个函数。</p>
+<p>开始介绍之前，有两点需要注意：</p>
+<ol>
+<li>并不是说神经网络可以精确计算任意一个函数\(f(x)\)，而是说当隐藏层神经元增加时，可以无限逼近\(f(x)\)，比如对于任何一个输入\(x\)，网络的输出\(g(x)\)和正确值\(f(x)\)的差小于某个阈值，\(|g(x) – f(x)| < \epsilon\)；</li>
+<li>神经网络拟合的是连续函数，而不是那种不连续、离散、急剧变化的函数。</li>
+</ol>
+<p>假设给定一个下图的连续函数，函数形式未知，本章将用图解的方式来证明，一个单隐层的神经网络就可以很好的拟合这个未知函数。</p>
+<p><img loading="lazy" src="/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.1.png"></p>
+<p>首先，假设我们的隐藏层只有两个神经元，激活函数使用Sigmoid，并且我们暂时只关注上面那个神经元的参数和输出。则通过调整该神经元的\(w\)和\(b\)，可以得到不同形状的Sigmoid函数形式。</p>
+<p><img loading="lazy" src="/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.2.png"></p>
+<p>极端情况下，如果\(w\)很大而\(b\)很小，则可以用Sigmoid函数模拟阶梯函数：</p>
+<p><img loading="lazy" src="https://i0.wp.com/neuralnetworksanddeeplearning.com/images/high_weight_function.jpg"></p>
+<p>如果令\(s = -b/w\)，则只用一个\(s\)就可以确定Sigmoid的函数图像：</p>
+<p><img loading="lazy" src="/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.3.png"></p>
+<p>如果把隐藏层下面那个神经元也考虑进来，并且令隐藏层的两个神经元和输出层的神经元的连接权重互为相反数，则输出层未激活值\(z=w_1 a_1 + w_2 a_2\)的函数图像变成了一个神奇的鼓包，这个鼓包就是我们后续拟合任意函数的基本单元。根据严格的函数形式，还可以知道\(w_1\)和\(w_2\)的绝对值控制着鼓包的高度，\(s_1\)和\(s_2\)的值控制着鼓包的位置和宽度。<a href="http://neuralnetworksanddeeplearning.com/chap4.html#bump_fn">大家可以去原始网页上体验一下作者给出的可交互版本，很有意思</a>。</p>
+<p><img loading="lazy" src="https://i0.wp.com/neuralnetworksanddeeplearning.com/images/bump_function.jpg"></p>
+<p>有了这个基本单元之后，我们可以通过增加隐藏层神经元的个数来增加鼓包的个数，比如再增加一对隐层神经元，可增加一个鼓包。虽然下图的例子中两个鼓包相互独立，但通过调整4个\(s\)，可以让两个鼓包相连甚至交错，<a href="http://neuralnetworksanddeeplearning.com/chap4.html#double_bump">大家可以去原网页试一试</a>。</p>
+<p><img loading="lazy" src="/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.4.png"></p>
+<p>继续增加隐层神经元个数，则可以继续增加鼓包的数量，如下图所示。</p>
+<p><img loading="lazy" src="/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.5.png"></p>
+<p>到这里想必大家马上知道了为什么神经网络能拟合任何一个函数了，如果隐层神经元足够多，则右图的小鼓包可以足够密，通过调整每个鼓包的高度，则无穷多个鼓包的顶点连线可以拟合任意一个函数。这和我们求函数积分（函数下方面积）时使用多个小矩形近似是一个道理！</p>
+<p>所以对于本章开头的未知函数，我们通过调整不同鼓包的高度，可以使得小矩形面积之和与真实积分的差在\( \epsilon=0.4\)以内。如果无限增加隐层神经元个数，则可以无限逼近真实值。这就说明神经网络确实可以拟合任意一个函数。</p>
+<p><img loading="lazy" src="/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.6.png"></p>
+<p>上述推导稍微需要注意的一点是，右图的输出是未激活函数值\(\sum_j w_j a_j\)，而网络真正的输出是激活值\(\sigma(\sum_j w_j a_j + b)\)。这没有太大的关系，因为上面已经说明未激活输出能拟合任意函数，激活函数也是一个函数。增加激活函数就要求右图需要拟合激活函数和真实函数的嵌套函数。既然未激活输出能拟合任意函数，肯定能拟合这个嵌套函数\(\sigma^{-1} \circ f(x)\)，再用激活函数作用一下\(\sigma\circ\sigma^{-1} \circ f(x)\)，激活函数抵消了，正好得到\(f(x)\)。</p>
+<p>如果输入是多维，或者输出是多维，都是类似的道理。这就说明神经网络确实可以拟合任意函数，真的很强大哦。</p>
+
 
   </div>
 
   <footer class="post-footer">
     <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">神经网络</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></li>
     </ul>
 <nav class="paginav">
-  <a class="prev" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
     <span class="title">« Prev</span>
     <br>
-    <span>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</span>
+    <span>公告</span>
   </a>
-  <a class="next" href="http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/">
+  <a class="next" href="http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/">
     <span class="title">Next »</span>
     <br>
-    <span>Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数</span>
+    <span>Neural Networks and Deep Learning（三·三）权重初始化及其他</span>
   </a>
 </nav>
 
