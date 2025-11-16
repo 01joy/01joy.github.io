@@ -15,20 +15,25 @@
       <guid>http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/</guid>
       <description>&lt;p&gt;本章我们将分析一下为什么深度神经网络难以训练的问题。&lt;/p&gt;
 &lt;p&gt;首先来看问题：如果神经网络的层次不断加深，则在BP误差反向传播的过程中，网络前几层的梯度更新会非常慢，导致前几层的权重无法学习到比较好的值，这就是梯度消失问题（The vanishing gradient problem）。&lt;/p&gt;
-&lt;p&gt;以我们在第三章学习的network2.py为例（交叉熵损失函数+Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量$b$的偏导$\partial C/ \partial b$，根据第二章BP网络的知识，$\partial C/ \partial b$也是$\partial C/ \partial w$的一部分（BP3和BP4的关系），所以如果$\partial C/ \partial b$的绝对值大，则说明梯度大，在误差反向传播的时候，$b$和$w$更新就快。&lt;/p&gt;
-&lt;p&gt;假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的$\partial C/ \partial b$的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？&lt;/p&gt;
-&lt;p&gt;既然梯度出现了层与层的差异，则可以定义第$l$层的梯度（如不加说明，则默认是误差$C$对偏移量$b$的梯度）向量的长度为$| \delta^l |$，比如$| \delta^1 |$表示第一个隐藏层中每个神经元的$\partial C/ \partial b$的绝对值之和，就是一范数，如果$| \delta^l |$越大，则说明这一层权重的更新越快。&lt;/p&gt;
-&lt;p&gt;由此，我们可以画出当有两个隐藏层时，$| \delta^l |$随epoch的变化情况：&lt;/p&gt;
+&lt;p&gt;以我们在&lt;a href=&#34;https://bitjoy.net/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/&#34;&gt;第三章学习的network2.py&lt;/a&gt;为例（交叉熵损失函数+Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量\(b\)的偏导\(\partial C/ \partial b\)，根据&lt;a href=&#34;https://bitjoy.net/posts/2018-12-14-neutral-networks-and-deep-learning-2-bp/&#34;&gt;第二章BP网络&lt;/a&gt;的知识，\(\partial C/ \partial b\)也是\(\partial C/ \partial w\)的一部分（BP3和BP4的关系），所以如果\(\partial C/ \partial b\)的绝对值大，则说明梯度大，在误差反向传播的时候，\(b\)和\(w\)更新就快。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/tikz21.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的\(\partial C/ \partial b\)的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/ch5.1.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;既然梯度出现了层与层的差异，则可以定义第\(l\)层的梯度（如不加说明，则默认是误差\(C\)对偏移量\(b\)的梯度）向量的长度为\(\| \delta^l \|\)，比如\(\| \delta^1 \|\)表示第一个隐藏层中每个神经元的\(\partial C/ \partial b\)的绝对值之和，就是一范数，如果\(\| \delta^l \|\)越大，则说明这一层权重的更新越快。&lt;/p&gt;
+&lt;p&gt;由此，我们可以画出当有两个隐藏层时，\(\| \delta^l \|\)随epoch的变化情况：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/training_speed_2_layers.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;当有三个隐藏层时：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/training_speed_3_layers.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;当有四个隐藏层时：&lt;/p&gt;
-&lt;p&gt;我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，$| \delta^l |$越大，即梯度更新越快；越靠近输入层的隐藏层，$| \delta^l |$越小，即梯度更新越慢。&lt;/p&gt;
-&lt;p&gt;这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差反向传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/training_speed_4_layers.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，\(\| \delta^l \|\)越大，即梯度更新越快；越靠近输入层的隐藏层，\(\| \delta^l \|\)越小，即梯度更新越慢。&lt;/p&gt;
+&lt;p&gt;这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差&lt;strong&gt;反向&lt;/strong&gt;传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。&lt;/p&gt;
 &lt;p&gt;所以，对于同样的network2，其他参数都不变，只是单纯增加网络层数，验证集上的准确率反而会下降！按理说网络层数增加，验证集上的准确率会上升，或者不变，至少不应该下降啊，因为最不济增加的网络层什么都不做，准确率应该一样才对，为什么反而下降了呢。虽然层数增加了，但因为上述梯度消失问题，靠近输入层的权重反而没学好，因为权重是随机初始化的，所以验证集上的准确率反而下降了。&lt;/p&gt;
 &lt;p&gt;那么，为什么层数增加会导致梯度消失问题呢，我们可以从BP的更新公式中一探究竟。&lt;/p&gt;
 &lt;p&gt;为了简化问题，假设我们的网络每一层只有一个神经元：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/tikz37.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;则根据BP的更新公式，可以计算得到&lt;/p&gt;
-&lt;p&gt;$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&amp;rsquo;(z_1) , w_2 \sigma&amp;rsquo;(z_2) ,w_3 \sigma&amp;rsquo;(z_3) , w_4 \sigma&amp;rsquo;(z_4) , \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$&lt;/p&gt;
-&lt;p&gt;计算过程其实很简单，对照本博客开头的那张图，$\sigma&amp;rsquo;(z_4) , \frac{\partial C}{\partial a_4}$就是(BP1)，把(BP1)带入(BP2)，就是不断乘以$w^{l+1} \sigma&amp;rsquo;(z^l)$，然后就能得到下图的公式。&lt;/p&gt;</description>
+$$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&#39;(z_1) \, w_2 \sigma&#39;(z_2) \,w_3 \sigma&#39;(z_3) \, w_4 \sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$$&lt;p&gt;计算过程其实很简单，对照本博客开头的那张图，\(\sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}\)就是(BP1)，把(BP1)带入(BP2)，就是不断乘以\(w^{l+1} \sigma&#39;(z^l)\)，然后就能得到下图的公式。&lt;/p&gt;</description>
     </item>
     <item>
       <title>Neural Networks and Deep Learning（三·一）梯度消失</title>

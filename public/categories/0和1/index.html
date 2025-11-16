@@ -151,26 +151,67 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（六）深度学习
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>今天我们终于进入到了本书的重头戏——深度学习。其实，这一章的深度学习主要介绍的是卷积神经网络，即CNN。
+本书之前的章节介绍的都是如下图的全连接网络，虽然全连接网络已经能够在MNIST数据集上取得98%以上的测试准确率，但有两个比较大的缺点：1. 训练参数太多，容易过拟合；2. 难以捕捉图片的局部信息。第一点很好理解，参数一多，网络就难以训练，难以加深。对于第二点，因为全连接的每个神经元都和上一层的所有神经元相连，无论距离远近，也就是说网络不会捕捉图片的局部信息和空间结构信息。
+本章要介绍的卷积神经网络，相对于全连接网络，有如下三个特点：1. 局部感知local receptive fields 2. 权值共享shared weights 3. 池化pooling，下面分别介绍这三部分内容。
+局部感知
+对于MNIST的一张2828灰度图片，全连接网络的输入把图片展开成一个维度为784的向量，这就天然丢失了图片的空间结构信息。而CNN的输入保持了图片2828的二维空间结构信息，相应的，CNN的中间层也是二维的。这就涉及到输入层的二维图片和隐藏层的二维图片如何对应的问题。
+CNN使用一个被称为“卷积核”的东西，把输入图片转换为隐藏层的特征图（feature map），如下图所示，假设卷积核大小为55，则输入图片每55的一个小区域被转换为隐藏层的一个神经元（像素），这个小区域就称为局部感受野。
+当卷积核不断的在输入图片中移动时，假设每次移动一格（stride=1），则原来2828的图片，经过一次卷积后，得到的feature map大小为2424，相比输入图片小了一圈。
+权值共享
+那么，这个卷积操作具体是怎样执行的呢，非常简单。55的卷积核本质是一个55的矩阵，矩阵中的每个值相当于这个卷积核的参数，或者说权值w。每次卷积时，55的矩阵和输入图片中55的感受野对应位相乘再相加得到隐藏层的一个值。
+下图是一个缩小版的动图例子，左图的绿色大图相当于输入的55图片，移动的黄色小图相当于当前卷积的感受野，大小为33。在这个33的感受野中，每个单元格居中的数字是输入图片的像素值，右下角的红色小字表示卷积核的权值。每次卷积操作，感受野内的图片像素和卷积核权值相乘再相加，得到右图红色小图中的一个单元格的值，这就完成了一次卷积。当黄色感受野不断在输入图片中移动时，右边的feature map也不断被填充，直到一轮卷积完成。整个过程进行了9次卷积，feature map的大小为33=9卷积次数。
+https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59 这里又涉及到CNN的第二个特点——权值共享。注意到，对于上图的一轮卷积操作，不同感受野内右下角的权值矩阵是一样的，也就是说9次卷积的卷积核权值是一样的。权值共享有两个好处，一是特征位置无关，二是参数量大大下降。
+对于特征位置无关 。这个3*3的卷积核相当于一个特征提取器或者说滤波器，比如这个特征提取器能够提取“猫”这个特征，则无论猫在输入图片的左上角还是右下角，“猫”这个特征都能被提取出来，因为卷积核在小范围移动，无论“猫”位于图片的哪个区域，当卷积核移动到这个区域时，卷积得到的输出比较大，被激活，得到“猫”这个特征。所以CNN对位置不敏感，这对图像处理尤其有利。正因为这个特点，经过卷积核卷积操作之后的小图片（上图右边的红色图片）被称为特征图（feature map），因为它就是用卷积核提取出来的符合这个卷积核描述的一个特征。
+对于参数量大大下降。事实上，一次卷积操作除了上面动图显示的卷积核与感受野内的图片相乘再相加之外，还会对加和之后的值做一个激活输出。回到我们的MNIST例子，一次卷积操作用公式来表示就是：
+$$\begin{eqnarray}\sigma\left(b &#43; \sum_{l=0}^4 \sum_{m=0}^4 w_{l,m} a_{j&#43;l, k&#43;m} \right).\tag{1}\end{eqnarray}$$$$w$$表示卷积核权值矩阵，
+$$a$$表示感受野内的输入图片，两个累加
+$$\sum$$就是上面动图显示的相乘相加过程，得到和之后，还会加上一个偏移量
+$$b$$，最后进行激活输出
+$$\sigma$$。所以一个55的卷积核，参数量为55&#43;1=26。如果有20个卷积核，参数总量为2026=520。但如果是全连接网络，假设隐藏层有30个，则参数量为78430&#43;30=23550。所以仅考虑隐藏层的参数量，CNN就比全连接网络少了45倍的参数，参数量少了，就能加快训练，网页也有可能加深。
+池化
+池化就很好理解了，对于卷积得到的feature map，再画一个框（类似于卷积层的感受野），把框内的最大值取出来作为池化之后的值，这就是max-pooling。池化的目的是用来简化信息的，相当于降维。池化的框也可以称为核kernel，如果kernel的大小是22的，则一个2424的feature map，经过max-pooling之后就变成了12*12了，维度瞬间降了一半， 把原来的feature map变成了一个紧凑的feature map。
+池化层往往跟在卷积层的后面，下图表示一张2828的图片，使用3个55的卷积核之后，得到了3个2424的feature map，再经过22的max-pooling，得到3个12*12的feature map。
+到这里，CNN的三大特点就介绍完毕了。对于上图，三个卷积核相当于提取了三种特征，我们还需要完成最终的分类任务，这时候还得把全连接网络请过来。经过max-pooling之后，我们再接一个包含10个神经元的全连接层，作为输出层，完整的网络结果如下：
+最后的全连接层和我们前面介绍的全连接网络是完全一样的，只不过全连接的输入是3个经过max-pooling之后的feature map，在和输出层相连时，可以想象成先把3个1212的feature map展开并首尾相连，得到一个312*12=432的向量，再和输出层的10个神经元进行全连接。这就是一个非常简单的CNN网络，包含一个输入层、一个卷积层、一个池化层和一个输出层。
+本文的代码示例network3.py中，构建了一个和上图类似的简单的CNN网络，如下图所示，使用了20个卷积核，相当于提取了20种特征；max-pooling之后使用了两个全连接层，前一层包含100个隐藏神经元，使用sigmoid激活；后一层包含10个神经元，使用softmax激活，作为输出层。就是这么一个简单的CNN网络，其在测试集上的准确率达到了98.78%，超过了本文之前构建的所有的全连接网络。
+由于原文使用的是已经不再维护的Theano，本博客不打算详细介绍其代码实现，我将在稍后的博文中分享Pytorch的CNN代码。不过我还是把原文对CNN的优化过程总结如下，用测试集的准确率作为性能指标：
+上图简单的CNN网络，98.78% 增加一个卷积层，且把激活函数换成ReLU，99.23% 数据增强，把原有的5000张图片，上下左右各平移一个像素，增加了4倍数据，99.37% 增加一个全连接层，且全连接层神经元增加为1000个，使用dropout=0.5，epoch相应减少到40个，99.6%。因为卷积层有权值共享，天然参数少防止过拟合，所以dropout一般只用于全连接层 模型融合ensemble，5个上述模型，采用majority vote，99.67%，已接近人类水平 虽然经过上述5步，准确率没有达到100%，但那些分类错误的图片，真的很难说分错了，因为图片看起来就不是它标注的结果（右上角），就应该是分错的结果（右下角）。总的来说，我觉得已经非常不错了。
+稍微解释两个问题。
+一、为什么ReLU比Sigmoid性能好，目前还没有一个令人信服的答案，只是很多人在很多标准数据集上测试，发现ReLU性能比Sigmoid好，这个消息传开之后，大家都开始用ReLU了。通常的解释是ReLU的max(0,z)在z很大时，梯度依然为1，不存在梯度消失的问题；而Sigmoid在z很大时，
+$$\sigma&#39;(z)$$梯度几乎为0，存在梯度消失的问题。
+二、为什么CNN可以做深？怎样解决上一章提到的梯度消失或者梯度爆炸问？事实上，CNN并没有解决上一章的问题，而是绕过了这个问题：1) 卷积层大大减少了模型参数，使得网络更加简单，可以训练得更快；2）强大的正则减少过拟合：dropout和卷积层；3）使用ReLU而不是sigmoid，可以加速训练过程3~5倍；4）使用GPU，并且愿意训练更长的时间，因为sigmoid的梯度消失只不过是梯度很小更新很慢，如果训练时间足够长的话，应该也能收敛。而如果用GPU的话，训练速度加快了，相同时间就可以训练更多的epoch。组合3和4，相当于比之前的网络训练时长增加了30倍，收敛效果自然会更好。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-05-04 19:35:01 +0800 CST'>May 4, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（六）深度学习" href="http://localhost:1313/posts/2019-05-04-neural-networks-and-deep-learning-6-dl/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Neural Networks and Deep Learning（五）为什么深度神经网络难以训练
     </h2>
   </header>
   <div class="entry-content">
     <p>本章我们将分析一下为什么深度神经网络难以训练的问题。
 首先来看问题：如果神经网络的层次不断加深，则在BP误差反向传播的过程中，网络前几层的梯度更新会非常慢，导致前几层的权重无法学习到比较好的值，这就是梯度消失问题（The vanishing gradient problem）。
-以我们在第三章学习的network2.py为例（交叉熵损失函数&#43;Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量$b$的偏导$\partial C/ \partial b$，根据第二章BP网络的知识，$\partial C/ \partial b$也是$\partial C/ \partial w$的一部分（BP3和BP4的关系），所以如果$\partial C/ \partial b$的绝对值大，则说明梯度大，在误差反向传播的时候，$b$和$w$更新就快。
-假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的$\partial C/ \partial b$的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？
-既然梯度出现了层与层的差异，则可以定义第$l$层的梯度（如不加说明，则默认是误差$C$对偏移量$b$的梯度）向量的长度为$| \delta^l |$，比如$| \delta^1 |$表示第一个隐藏层中每个神经元的$\partial C/ \partial b$的绝对值之和，就是一范数，如果$| \delta^l |$越大，则说明这一层权重的更新越快。
-由此，我们可以画出当有两个隐藏层时，$| \delta^l |$随epoch的变化情况：
+以我们在第三章学习的network2.py为例（交叉熵损失函数&#43;Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量\(b\)的偏导\(\partial C/ \partial b\)，根据第二章BP网络的知识，\(\partial C/ \partial b\)也是\(\partial C/ \partial w\)的一部分（BP3和BP4的关系），所以如果\(\partial C/ \partial b\)的绝对值大，则说明梯度大，在误差反向传播的时候，\(b\)和\(w\)更新就快。
+假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的\(\partial C/ \partial b\)的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？
+既然梯度出现了层与层的差异，则可以定义第\(l\)层的梯度（如不加说明，则默认是误差\(C\)对偏移量\(b\)的梯度）向量的长度为\(\| \delta^l \|\)，比如\(\| \delta^1 \|\)表示第一个隐藏层中每个神经元的\(\partial C/ \partial b\)的绝对值之和，就是一范数，如果\(\| \delta^l \|\)越大，则说明这一层权重的更新越快。
+由此，我们可以画出当有两个隐藏层时，\(\| \delta^l \|\)随epoch的变化情况：
 当有三个隐藏层时：
 当有四个隐藏层时：
-我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，$| \delta^l |$越大，即梯度更新越快；越靠近输入层的隐藏层，$| \delta^l |$越小，即梯度更新越慢。
+我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，\(\| \delta^l \|\)越大，即梯度更新越快；越靠近输入层的隐藏层，\(\| \delta^l \|\)越小，即梯度更新越慢。
 这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差反向传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。
 所以，对于同样的network2，其他参数都不变，只是单纯增加网络层数，验证集上的准确率反而会下降！按理说网络层数增加，验证集上的准确率会上升，或者不变，至少不应该下降啊，因为最不济增加的网络层什么都不做，准确率应该一样才对，为什么反而下降了呢。虽然层数增加了，但因为上述梯度消失问题，靠近输入层的权重反而没学好，因为权重是随机初始化的，所以验证集上的准确率反而下降了。
 那么，为什么层数增加会导致梯度消失问题呢，我们可以从BP的更新公式中一探究竟。
 为了简化问题，假设我们的网络每一层只有一个神经元：
 则根据BP的更新公式，可以计算得到
-$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma’(z_1) , w_2 \sigma’(z_2) ,w_3 \sigma’(z_3) , w_4 \sigma’(z_4) , \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$
-计算过程其实很简单，对照本博客开头的那张图，$\sigma’(z_4) , \frac{\partial C}{\partial a_4}$就是(BP1)，把(BP1)带入(BP2)，就是不断乘以$w^{l&#43;1} \sigma’(z^l)$，然后就能得到下图的公式。
+$$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&#39;(z_1) \, w_2 \sigma&#39;(z_2) \,w_3 \sigma&#39;(z_3) \, w_4 \sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$$计算过程其实很简单，对照本博客开头的那张图，\(\sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}\)就是(BP1)，把(BP1)带入(BP2)，就是不断乘以\(w^{l&#43;1} \sigma&#39;(z^l)\)，然后就能得到下图的公式。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2019-04-14 19:09:46 +0800 CST'>April 14, 2019</span>&nbsp;·&nbsp;1 min</footer>
@@ -357,47 +398,6 @@ Have Fun!
   </div>
   <footer class="entry-footer"><span title='2017-12-05 21:20:01 +0800 CST'>December 5, 2017</span>&nbsp;·&nbsp;4 min</footer>
   <a class="entry-link" aria-label="post link to 逻辑回归之Python应用实例" href="http://localhost:1313/posts/2017-12-05-logistic-regression-in-python/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">初探逻辑回归
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>最近实验室在组织学习NG的机器学习视频，我也跟进了一下。讲到逻辑回归那一课，一直想不明白，逻辑回归到底是怎样分类的？逻辑回归的分类面在哪里？逻辑回归有像SVM的max margin那样清晰的推导过程吗？为什么需要Sigmoid函数？今天就让我们来一窥逻辑回归的始末。
-假设有一堆学生样本，为了简单起见，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。可视化如下图，黑点表示y=1即被录取，红点表示y=0即未被录取，可以看到黑点处在score1和score2都比较高的区域。我们的任务就是给定这些训练样本，需要确定一个分类面来划分这两类数据。
-分类面的实质就是\(y=\mathbf{w^T x}&#43;b\)，其中\(\mathbf{w}\)和\(\mathbf{x}\)都是向量，对应到本例中，展开为\(y=w_1x_1&#43;w_2x_2&#43;b\)。所以，寻找分类面的过程就是寻找倾斜度\(\mathbf{w}\)和截距\(b\)。
-因为分类的结果是离散的，只有0或者1，可以用感知机来分类。即
-但是怎样找这里的\(\mathbf{w}\)和\(b\)使得分类结果最好呢，我们需要定义一个优化的目标函数或者说损失函数。这里只能定义为分类错误的个数，只能一点点挪动超平面来找分类错误最少的超平面了，即只能用暴力枚举的方法来找\(\mathbf{w}\)和\(b\)。
-另一种方法是令我们的分类面算出来的值和真实标号越接近越好，即最小化误差\((\mathbf{w^T}x^{(i)}&#43;b-y^{(i)})^2\)，然后通过梯度下降求解\(\mathbf{w}\)和\(b\)。
-但是这会有一个问题，对于上图数据，可以求到一个比较好的分类面，如下左图。但是如果数据中出现了如下右图右边的一个离群点或者噪声，为了最小化这个点的误差，即\((\mathbf{w^T}x^{(i)}&#43;b-1)^2\)，导致分类面往右偏了，这一偏直接导致很多y=1的样本分类错误。所以这种最小化误差的方法对离群点很敏感。
-假设分类超平面还是\(f(\mathbf{x})=\mathbf{w^T x}&#43;b\)，我们希望的分类效果是这样的：\(f(\mathbf{x})=0\)是分类面；\(f(\mathbf{x})&gt;0\)分类为1，且不管\(f(\mathbf{x})\)多大，都分为1；\(f(\mathbf{x})&lt;0\)分类为0，且不管\(f(\mathbf{x})\)多小，都分为0。
-因为类标号是离散的{0,1}，所以想到把\(f(\mathbf{x})\)映射到[0,1]之间，即\(g(f(\mathbf{x}))\)。为了满足上述条件，\(g(f(\mathbf{x}))\)需要满足：
-\(g(0)=0.5\)，即在分类面上无法判断类标号是0还是1 当\(f(\mathbf{x})&gt;0\)时，\(g(f(\mathbf{x}))&gt;0.5\) 当\(f(\mathbf{x})\rightarrow&#43;\infty\)，\(g(f(\mathbf{x}))\rightarrow 1\)，且\(g&#39;(f(\mathbf{x}))\rightarrow 0\)，即对于上右图右边的离群点，分类为1，且导数趋近于0，表示对其不敏感 当\(f(\mathbf{x})&lt;0\)时，\(g(f(\mathbf{x}))&lt;0.5\) 当\(f(\mathbf{x})\rightarrow-\infty\)，\(g(f(\mathbf{x}))\rightarrow 0\)，且\(g&#39;(f(\mathbf{x}))\rightarrow 0\)，和第3点类似 满足上述性质的函数之一就是Sigmoid函数，其定义域为\([-\infty,&#43;\infty]\)，值域为[0,1]，正好把原始的函数结果\(f(\mathbf{x})\)映射到了[0,1]，而概率的取值范围正好是[0,1]，所以Sigmoid函数正好可以作为分类为1的概率。
-所以逻辑回归最终的形式就是：
-$$g(\mathbf{x})=\frac{1}{1&#43;e^{-(\mathbf{w^T x}&#43;b)}}$$分类面依然还是\(f(\mathbf{x})=\mathbf{w^T x}&#43;b=0\)，因为\(f(\mathbf{x})=0\)时，\(g(\mathbf{x})=0.5\)，正好满足上述条件1。
-Sigmoid函数的另一个优点是，它把原始函数值映射到了概率空间，这样就可以用极大似然的方法求解参数\(\mathbf{w}\)和\(b\)。下面用参数\(\mathbf{\theta}\)代表参数\(\mathbf{w}\)和\(b\)，用\(h_{\mathbf{\theta}}(\mathbf{x})\)代表\(g(f(\mathbf{x}))\)。则有：
-$$P(y=1|\mathbf{x};\mathbf{\theta})=h_{\mathbf{\theta}}(\mathbf{x})$$$$P(y=0|\mathbf{x};\mathbf{\theta})=1-h_{\mathbf{\theta}}(\mathbf{x})$$合并成一个式子就是：
-$$P(y|\mathbf{x};\mathbf{\theta})=h_{\mathbf{\theta}}(\mathbf{x})^y(1-h_{\mathbf{\theta}}(\mathbf{x}))^{1-y}$$由于所有样本独立同分布（I.I.D.），似然函数就是
-$$L(\mathbf{\theta})=P(\mathbf{y}|X;\mathbf{\theta})=\prod\limits_{i}P(y^{(i)}|\mathbf{x}^{(i)};\mathbf{\theta})=\prod\limits_{i}h_{\mathbf{\theta}}(\mathbf{x}^{(i)})^{y^{(i)}}(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))^{1-y^{(i)}}$$最大化似然的含义就是，在给定样本\(X\)的情况下，我们想找一个参数\(\mathbf{\theta}\)，使得观测到类标号\(\mathbf{y}\)的概率最大。
-最大化似然等价于最大化log似然，log展开之后就是：
-$$l(\mathbf{\theta})=logL(\mathbf{\theta})=\sum\limits_{i}y^{(i)}logh_{\mathbf{\theta}}(\mathbf{x}^{(i)})&#43;(1-y^{(i)})log(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))$$而很巧的是，最大化log似然，其实等效于最小化log对数损失。对于单个样本，损失为：
-$$cost(h_{\theta}(\mathbf{x}),y) = \begin{cases}-log(h_{\theta}(\mathbf{x})) &amp; \text {if y=1} \\ -log(1-h_{\theta}(\mathbf{x})) &amp; \text{if y=0} \end{cases}$$即如果正确类标号是1，但算出来的\(h_{\theta}(\mathbf{x})\)很接近0的话，则损失\(-log(h_{\theta}(\mathbf{x}))\)就会很大。类标号为0的情况类似。把这两种情况合成一个式子就是：
-$$cost(h_{\theta}(\mathbf{x}),y) = -ylog(h_{\theta}(\mathbf{x})) – (1-y)log(1-h_{\theta}(\mathbf{x}))$$所有样本的损失之和就是：
-$$J(\mathbf{\theta})=cost(h_{\theta}(X),\mathbf{y}) = \sum\limits_{i}-y^{(i)}logh_{\mathbf{\theta}}(\mathbf{x}^{(i)})-(1-y^{(i)})log(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))$$所以最大化对数似然\(\max l(\mathbf{\theta})\)和最小化对数损失\(\min J(\mathbf{\theta})\)是等效的！最优化求解的方法用梯度下降和牛顿法都可以。
-和Sigmoid很像的函数还有很多，比如y=arctan(x)也可以，不过Sigmoid有一个很好的特点，即它的导数可以由自身算出来，\(f&#39;(x)=f(x)(1-f(x))\)。
-传统的逻辑回归只能处理二分类问题，那么怎样将其扩展到解决多分类问题呢？有两种方法，一种方法是建立k个二元分类器，比如类标号有A,B,C，则建立3个二元分类器，分别是1）A和非A；2）B和非B；3）C和非C。训练每个2元分类器时，都对所有的数据重新标号为0或1，这样共需要训练k个二元分类器。
-还有一种方法是直接将二元逻辑回归推广到多元回归，即Softmax回归，有关Softmax回归的内容，请参考此博客，非常详细。简单来说，二元逻辑回归的假设函数是：多元Softmax回归的假设函数在形式上有所不同：其中是模型的参数。请注意这一项对概率分布进行归一化，使得所有概率之和为1。
-Softmax回归的损失函数如下，其实就是logistic回归损失函数的推广：
-二元逻辑回归是多元Softmax回归在k=2时的特例，令k=2并利用Softmax回归参数冗余的特点，可以得到一般形式的二元逻辑回归假设函数，具体可以看原博客。
-面对一个多元分类问题，是选择Softmax回归还是k个二元分类器呢，这取决于你的类别之间是否互斥，如果互斥，可以用Softmax回归，否则，请用k个二元分类器。
-这就是逻辑回归的理论知识，下一篇博客将介绍逻辑回归在Python中的应用。
-参考：
-http://www.cnblogs.com/sparkwen/p/3441197.html https://tech.meituan.com/intro_to_logistic_regression.html http://blog.csdn.net/bitcarmanlee/article/details/51165444 http://ufldl.stanford.edu/wiki/index.php/Softmax%E5%9B%9E%E5%BD%92 </p>
-  </div>
-  <footer class="entry-footer"><span title='2017-11-26 18:54:44 +0800 CST'>November 26, 2017</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 初探逻辑回归" href="http://localhost:1313/posts/2017-11-26-introduction-to-logistic-regression/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
