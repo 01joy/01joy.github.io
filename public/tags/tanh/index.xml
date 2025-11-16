@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tanh on bitJoy</title>
+    <link>http://localhost:1313/tags/tanh/</link>
+    <description>Recent content in Tanh on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 06 Apr 2019 17:52:56 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/tanh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Neural Networks and Deep Learning（三·三）权重初始化及其他</title>
+      <link>http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/</link>
+      <pubDate>Sat, 06 Apr 2019 17:52:56 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/</guid>
+      <description>&lt;p&gt;权重初始化&lt;/p&gt;
+&lt;p&gt;在之前的章节中，我们都是用一个标准正态分布&lt;/p&gt;
+$$N(0,1^2)$$&lt;p&gt;初始化所有的参数&lt;/p&gt;
+$$w$$&lt;p&gt;和&lt;/p&gt;
+$$b$$&lt;p&gt;，但是当神经元数量比较多时，会出现意想不到的问题。&lt;/p&gt;
+&lt;p&gt;假设一个神经网络的输入层有1000个神经元，且某个样本的1000维输入中，恰好有500维是0，另500维是1。我们目前考察隐藏层的第一个神经元，则该神经元为激活的输出为&lt;/p&gt;
+$$z = \sum_j w_j x_j+b$$&lt;p&gt;，因为输入中的500维是0，所以&lt;/p&gt;
+$$z$$&lt;p&gt;相当于有501个来自&lt;/p&gt;
+$$N(0,1^2)$$&lt;p&gt;的随机变量相加。因为&lt;/p&gt;
+$$w_j$$&lt;p&gt;和&lt;/p&gt;
+$$b$$&lt;p&gt;的初始化都是独立同分布的，所以&lt;/p&gt;
+$$z$$&lt;p&gt;也是一个正态分布，均值为0，但方差变成了&lt;/p&gt;
+$$\sqrt{501} \approx 22.4$$&lt;p&gt;，即&lt;/p&gt;
+$$z\sim N(0,\sqrt{501}^2)$$&lt;p&gt;。我们知道对于正态分布，如果方差越小，则分布的形状是高廋型的；如果方差越大，则分布的形状是矮胖型的。所以&lt;/p&gt;
+$$z$$&lt;p&gt;有很大的概率取值会远大于1或远小于-1。又因为激活函数是sigmoid，当&lt;/p&gt;
+$$z$$&lt;p&gt;远大于1或远小于-1时，&lt;/p&gt;
+$$\sigma (z)$$&lt;p&gt;趋近于1或者0，且导数趋于0，变化缓慢，导致梯度消失。&lt;/p&gt;
+&lt;p&gt;请注意，这里的梯度消失和之前介绍得梯度消失稍有不同，之前是说在误差反向传播过程中，损失函数对权重的导数中包含梯度消失项，所以可以通过更换损失函数来解决。但是这里的梯度消失并不是在误差反向传播过程中产生的，而是在正向传播产生的，跟损失函数没关系。&lt;/p&gt;
+&lt;p&gt;解决这个问题的方法很简单，根据上面的分析，如果输入&lt;/p&gt;
+$$x_j$$&lt;p&gt;全为1，&lt;/p&gt;
+$$w$$&lt;p&gt;和&lt;/p&gt;
+$$b$$&lt;p&gt;都来自&lt;/p&gt;
+$$N(0,1^2)$$&lt;p&gt;，则&lt;/p&gt;
+$$z\sim N(0, \sqrt{n+1}^2)$$&lt;p&gt;，其中&lt;/p&gt;
+$$n$$&lt;p&gt;为输入样本的维度。要减小&lt;/p&gt;
+$$z$$&lt;p&gt;的方差，减小&lt;/p&gt;
+$$w$$&lt;p&gt;和&lt;/p&gt;
+$$b$$&lt;p&gt;的方差就可以了。因为&lt;/p&gt;
+$$b$$&lt;p&gt;只有一个，对整体的影响不大，可以不修改&lt;/p&gt;
+$$b$$&lt;p&gt;的分布，&lt;/p&gt;
+$$b$$&lt;p&gt;依然来自&lt;/p&gt;
+$$N(0,1^2)$$&lt;p&gt;。把&lt;/p&gt;
+$$w_j$$&lt;p&gt;的分布修改为&lt;/p&gt;
+$$N(0, (\frac{1}{\sqrt{n}})^2)$$&lt;p&gt;，此时&lt;/p&gt;
+$$z\sim N(0, \sqrt{2}^2)$$&lt;p&gt;，&lt;/p&gt;
+$$\sqrt{2}=1.414$$&lt;p&gt;就非常接近1了，&lt;/p&gt;
+$$z$$&lt;p&gt;的分布也变成了一个高廋型的，梯度消失问题也就不存在了。&lt;/p&gt;
+&lt;p&gt;如果是开头的例子，输入维度为1000，其中500为0，500为1，&lt;/p&gt;
+$$w_j\sim N(0, (\frac{1}{\sqrt{1000}})^2)$$&lt;p&gt;，&lt;/p&gt;
+$$b\sim N(0,1^2)$$&lt;p&gt;，则&lt;/p&gt;
+$$z\sim N(0, \sqrt{\frac{3}{2}}^2)$$&lt;p&gt;，&lt;/p&gt;
+$$\sqrt{3/2} = 1.22\ldots$$&lt;p&gt;也是高廋型的，不会有梯度消失的问题。&lt;/p&gt;
+&lt;p&gt;由下图可知，在新的权重初始化策略下，网络很快就收敛了，比之前的方法快很多。&lt;/p&gt;
+&lt;p&gt;怎样选择超参数&lt;/p&gt;
+&lt;p&gt;大原则：在网络优化的前期，尽量使网络结构、问题简单，以便快速得实验结果，不断尝试超参数取值，当找到正确的优化方向后，再慢慢把网络和问题变复杂，精细调整超参数。比如MNIST问题，开始可以减少训练数据，只取0和1的图片，做二分类；同时可以减少网络层数，验证集大小等，以便快速得到网络输出，判断网络性能变化。这样可以快速尝试新的超参数。&lt;/p&gt;
+&lt;p&gt;学习率&lt;/p&gt;
+$$\eta$$&lt;p&gt;在误差反向传播中，学习率太大，虽然可以加速学习，但在后期可能导致网络震荡，无法收敛；学习率太小，导致学习速度太慢，训练时间过长。&lt;/p&gt;
+&lt;p&gt;确定学习率的方法是：首先随便选定一个值，比如0.01，然后不断增大10倍：0.1, 1, 10, 100…如果发现cost曲线在震荡，说明选大了，要降低，直到找到一个比较合适的值。这个过程只要找到合适的数量级就可以了，不一定要非常精确。比如发现0.1是比较合适的，那么可以再尝试0.2,0.3…，如果发现0.5不错，可以设学习率为0.5的一半0.25，这样可以使得在后续epoch中，不容易发生震荡。最好的方法是可变学习率，即前期学习率稍大（0.5），后期学习率稍小（0.1）之类的。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -156,6 +156,20 @@
       <description></description>
     </item>
     <item>
+      <title>ReLU</title>
+      <link>http://localhost:1313/tags/relu/</link>
+      <pubDate>Sat, 06 Apr 2019 17:52:56 +0800</pubDate>
+      <guid>http://localhost:1313/tags/relu/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tanh</title>
+      <link>http://localhost:1313/tags/tanh/</link>
+      <pubDate>Sat, 06 Apr 2019 17:52:56 +0800</pubDate>
+      <guid>http://localhost:1313/tags/tanh/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>Dropout</title>
       <link>http://localhost:1313/tags/dropout/</link>
       <pubDate>Sun, 24 Mar 2019 12:14:22 +0800</pubDate>
