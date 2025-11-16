@@ -151,6 +151,30 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">马尔可夫聚类算法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>马尔可夫聚类算法（The Markov Cluster Algorithm, MCL）是一种快速可扩展的基于图的聚类算法。它的基本思想为：在一个稀疏图G中，如果某个区域A是稠密的（是一个聚类），则在A中随机游走k步，还在A内的概率很大，也就是说，A内的k步路径（k-length path）很多。所以我们可以在图中随机游走k步，如果某个区域连通的概率很大，则该区域是一个聚类。随机游走的下一步只和当前所处节点有关，也就是说这是一个马尔可夫的随机游走过程。
+我们用一个例子来演示马尔可夫聚类算法的过程。
+上图是一个很小的网络，我们用肉眼大概能看出有三个聚类，分别是左边的{1,6,7,10}，中间的{2,3,5}和右边的{4,8,9,11,12}。我们用MCL看看结果如何。
+为了随机游走，我们常用邻接矩阵来表示图，如果i,j有边，则N[i][j]=1，否则N[i][j]=0。又随机游走可能有自回路，所以加上单位矩阵I，得到矩阵N&#43;I。
+MCL有两个关键的步骤，分别是Expansion和Inflation。
+Expansion就是不断对矩阵进行幂次运算，相当于随机游走。假设随机游走了2步，则得到如下图的关联矩阵\((N&#43;I)^2\)，第1行第10列为4，说明1到10的2-length path有4条：1→6→10，1→7→10，1→1→10，1→10→10。随机游走k步之后，\((N&#43;I)^k[i][j]\)越大，说明\(i\)和\(j\)之间的连通性越强。
+$$\begin{equation}Expand(M)=M^k\end{equation}$$
+Inflation是为了增强更强的连接，减弱更弱的连接，只有这样才能得到边界比较明确的聚类。MCL的做法是对元素做幂次运算，然后按列归一化，公式为：
+$$\begin{equation}(\Gamma_rM)_{pq}=\frac{(M_{pq})^r}{\sum_{i=1}^k(M_{iq})^r}\end{equation}$$参数经验值是\(k=r=2\)。不断做Expansion和Inflation操作，直到算法收敛，得到若干个聚类。中间过程请点此查看，下图为最终结果。
+从图中可以看出，和1有边的只剩下6,7,10了，所以得到聚类{1,6,7,10}，同理能得到聚类{2,3,5}和{4,8,9,11,12} ，和我们肉眼得到的结果是一致的。
+MCL算法的原理很简单，得到的聚类效果也不错。下面总结一下MCL的算法过程：
+给定无向图G，Expansion和Inflation的参数\(k\)和\(r\) 生成G的邻接矩阵\(N\) 添加自回路，得到矩阵\(N&#43;I\) 循环对\(N&#43;I\)做Expansion和Inflation操作，即计算公式(1)和(2)，直到收敛 根据最终得到的矩阵，进行划分聚类 此算法是我在上《生物信息学中的算法设计》课上是学到的，当时觉得这个算法真是神奇，如此简单，但又如此有效，实在高明。查阅文献得知，此为Stijn van Dongen的博士论文，本博客的图片均来自其博士论文，想深入了解图聚类算法，请下载他的论文。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-22 18:41:45 +0800 CST'>August 22, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 马尔可夫聚类算法" href="http://localhost:1313/posts/2016-08-22-the-markov-cluster-algorithm/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">隐马尔可夫模型及其应用（2）学习问题&amp;识别问题
     </h2>
   </header>
@@ -387,28 +411,6 @@ LaTeXDemo.tex
   </div>
   <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">SVM之序列最小最优化算法（SMO算法）
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>SVM回顾 支持向量机（SVM）的一大特点是最大化间距（max margin）。对于如上图的二分类问题，虽然有很多线可以将左右两部分分开，但是只有中间的红线效果是最好的，因为它的可活动范围（margin）是最大的，从直观上来说很好理解。
-对于线性二分类问题，假设分类面为
-$$\begin{equation} u=\vec w \cdot \vec x-b \end{equation}$$则margin为
-$$\begin{equation} m=\frac{1}{||w||_2} \end{equation}$$根据max margin规则和约束条件，得到如下优化问题，我们要求的就是参数\(\vec w\)和\(b\)：
-$$\begin{equation} \min\limits_{\vec w,b}\frac{1}{2}||\vec w||^2 \quad\text{subject to}\quad y_i(\vec w\cdot \vec x_i-b) \geq 1, \forall i,\end{equation}$$对于正样本，类标号\(y_i\)为&#43;1，反之则为-1。根据拉格朗日对偶，(3)可以转换为如下的二次规划（QP）问题，其中\(\alpha_i\)为拉格朗日乘子。
-$$\begin{equation} \min\limits_{\vec \alpha}\Psi(\vec\alpha)=\min\limits_{\vec \alpha}\frac{1}{2}\sum_{i=1}^N\sum_{j=1}^Ny_iy_j(\vec x_i\cdot\vec x_j)\alpha_i\alpha_j-\sum_{i=1}^N\alpha_i,\end{equation}$$其中N为样本数量。上式还需满足如下两个约束条件：
-$$\begin{equation} \alpha_i\geq 0, \forall i,\end{equation}$$$$\begin{equation} \sum_{i=1}^Ny_i\alpha_i=0.\end{equation}$$一旦求解出所有的拉格朗日乘子，则我们可以通过如下的公式得到分类面参数\(\vec w\)和\(b\)。
-$$\begin{equation}\vec w=\sum_{i=1}^Ny_i\alpha_i\vec x_i,\quad b=\vec w\cdot\vec x_k-y_k\quad\text{for some}\quad\alpha_k&gt;0.\end{equation}$$当然并不是所有的数据都可以完美的线性划分，可能有少量数据就是混在对方阵营，这时可以通过引入松弛变量\(\xi_i\)得到软间隔形式的SVM：
-$$\begin{equation} \min\limits_{\vec w,b,\vec\xi}\frac{1}{2}||\vec w||^2&#43;C\sum_{i=1}^N\xi_i \quad\text{subject to}\quad y_i(\vec w\cdot \vec x_i-b) \geq 1-\xi_i, \forall i,\end{equation}$$其中的\(\xi_i\)为松弛变量，能假装把错的样本分对，\(C\)对max margin和margin failures的trades off。对于这个新的优化问题，约束变成了一个box constraint：
-$$\begin{equation}0\leq\alpha_i \leq C,\forall i.\end{equation}$$而松弛变量\(\xi_i\)不再出现在对偶公式中了。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-05-02 15:12:39 +0800 CST'>May 2, 2016</span>&nbsp;·&nbsp;5 min</footer>
-  <a class="entry-link" aria-label="post link to SVM之序列最小最优化算法（SMO算法）" href="http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

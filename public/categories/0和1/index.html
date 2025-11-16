@@ -151,6 +151,32 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·一）梯度消失
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>原文的第三章内容较多，本博客将分三个部分进行介绍：梯度消失、过拟合与正则化、权重初始化及其他，首先介绍梯度消失问题。
+为简单起见，假设网络只包含一个输入和一个神经元，网络的损失是均方误差损失MSE，激活函数是Sigmoid函数。则该网络的参数只包含权重$w$和偏移量$b$。我们想训练这个网络，使得当输入为1时，输出0。
+假设我们随机初始化$w_0=0.6$，$b_0=0.9$，则网络的损失随着训练的epoch变化曲线如下，看起来挺好的，一开始损失下降很快，随着epoch增加，损失下降逐渐平缓，直至收敛。
+但是，如果随机初始化$w_0=2.0$，$b_0=2.0$，则网络的损失一开始下降得很缓慢，要训练到快200个epoch时，损失才快速下降。可以看到同样是300个epoch，由于初始化权重的差别，损失下降的趋势完全不一样，而且对于下面这种情况，到300个epoch时，损失还有下降的空间，所以期望的output不如上面的接近目标值0。
+为什么同样的网络，只是因为初始化权重的差异，损失的变化曲线却相差这么多呢，这和我们选择的损失函数与激活函数有关。
+回顾一下，我们在上一讲的末尾介绍到如果损失函数是MSE且激活函数是Sigmoid时，有$\delta^L = (a^L-y) \odot {\sigma(z^L)(1-\sigma(z^L))}$，又因为网络只有一个神经元，所以梯度如下：
+$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; (a-y)\sigma&#39;(z) x = a \sigma&#39;(z),\tag{1}\\\frac{\partial C}{\partial b} &amp; = &amp; (a-y)\sigma&#39;(z) = a \sigma&#39;(z)\tag{2}\end{eqnarray}$$其中第二个等号是把$x=1$和$y=0$带入得到的。由此可见，误差对两个参数$w$和$b$的梯度都和激活函数的导数有关，因为激活函数是Sigmoid，当神经元的输出接近0或1时，梯度几乎为0，误差反向传播就会非常慢，导致上图出现损失下降非常慢的现象。这就是梯度消失的原因。
+为了解决这个问题，我们可以采取两种策略，一是替换损失函数，一是替换激活函数。
+第一种方法是将MSE的损失函数替换为交叉熵损失函数，激活函数依然是Sigmoid。我们考虑一个比本文开头更复杂的网络，仍然是一个输出神经元，但包含多个输入神经元。
+此时，交叉熵损失函数定义如下，其中的$n$表示训练样本数，$\frac{1}{n}\sum_x$表示对所有输入样本$x$的交叉熵损失求均值。
+$$\begin{eqnarray}C = -\frac{1}{n} \sum_x \left[y \ln a &#43; (1-y ) \ln (1-a) \right]\tag{3}\end{eqnarray}$$我们首先考察为什么(3)可以是一个损失函数，损失函数需要满足如下两个条件：
+非负； 当网络输出和目标答案越接近，损失越小；反之损失越大。 简单代入几组不同的样本很容易验证交叉熵满足上述两个条件 ，所以交叉熵可以作为一个损失函数。
+下面我们再考察一下为什么交叉熵损失函数&#43;Sigmoid激活函数可以解决梯度消失的问题。首先推导交叉熵损失$C$对权重$w_j$和$b$的梯度：
+$$\begin{eqnarray}\frac{\partial C}{\partial w_j} &amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y }{\sigma(z)} -\frac{(1-y)}{1-\sigma(z)} \right)\frac{\partial \sigma}{\partial w_j} \tag{4}\\&amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y}{\sigma(z)}-\frac{(1-y)}{1-\sigma(z)} \right)\sigma&#39;(z) x_j\tag{5}\\&amp; = &amp; \frac{1}{n}\sum_x \frac{\sigma&#39;(z) x_j}{\sigma(z) (1-\sigma(z))}(\sigma(z)-y).\tag{6}\end{eqnarray}$$上式分子Sigmoid的导数正好可以和分母抵消，得到：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-03-18 10:33:32 +0800 CST'>March 18, 2019</span>&nbsp;·&nbsp;2 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·一）梯度消失" href="http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Neural Networks and Deep Learning（二）BP网络
     </h2>
   </header>
@@ -162,10 +188,10 @@
 每个神经元执行的操作非常简单，就是把跟它连接的每个输入乘以边上的权重，然后累加起来。
 比如上面的一个神经元，它的输出就是：
 $$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll}0 &amp; \mbox{if} \sum_j w_j x_j \leq \mbox{ threshold} \\1 &amp; \mbox{if} \sum_j w_j x_j &gt; \mbox{threshold}\end{array}\right.\tag{1}\end{eqnarray}$$其中的threshold就是该神经元激活的阈值，如果累加值超过threshold，则该神经元被激活，输出为1，否则为0。这就是最原始的感知机网络。感知机网络也可以写成如下的向量形式，用激活阈值b代替threshold，然后移到左边。神经网络中，每条边具有权重w，每个神经元具有激活阈值b。
-$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll} 0 &amp; \mbox{if } w\cdot x &#43; b \leq 0 \\1 &amp; \mbox{if } w\cdot x &#43; b &gt; 0\end{array}\right.\tag{2}\end{eqnarray}$$但是感知机网络的这种激活方式不够灵活，它在threshold左右有一个突变，如果输入或者某个边上的权重稍微有一点变化，输出结果可能就千差万别了。于是后来人们提出了用sigmoid函数来当激活函数，它在0附近的斜率较大，在两边的斜率较小，能达到和阶梯函数类似的效果，而且函数光滑可导。sigmoid的函数形式如下，其中$z\equiv w \cdot x &#43; b$为神经元激活之前的值。
+$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll} 0 &amp; \mbox{if } w\cdot x &#43; b \leq 0 \\1 &amp; \mbox{if } w\cdot x &#43; b &gt; 0\end{array}\right.\tag{2}\end{eqnarray}$$ 但是感知机网络的这种激活方式不够灵活，它在threshold左右有一个突变，如果输入或者某个边上的权重稍微有一点变化，输出结果可能就千差万别了。于是后来人们提出了用sigmoid函数来当激活函数，它在0附近的斜率较大，在两边的斜率较小，能达到和阶梯函数类似的效果，而且函数光滑可导。sigmoid的函数形式如下，其中\(z\equiv w \cdot x &#43; b\)为神经元激活之前的值。
 $$\begin{eqnarray} \sigma(z) \equiv \frac{1}{1&#43;e^{-z}}\tag{3}\end{eqnarray}$$sigmmoid函数还有一个优点就是它的导数很好计算，可以用它本身来表示：
-$$\begin{eqnarray}\sigma&#39;(z)=\sigma(z)(1-\sigma(z))\tag{4}\end{eqnarray}$$BP网络的参数就是所有连线上的权重w和所有神经元中的激活阈值b，如果知道这些参数，给定一个输入x，则可以很容易的通过正向传播（feedforward）的方法计算到输出，即不断的执行$w \cdot x &#43; b$操作，然后用sigmoid激活，再把上一层的输出传递给下一层作为输入，直到最后一层。
-[python] def feedforward(self, a): “““Return the output of the network if a is input.””” for b, w in zip(self.biases, self.weights): a = sigmoid(np.dot(w, a)&#43;b) return a [/python] 同时，网络的误差可以用均方误差（mean squared error, MSE）表示，即网络在最后一层的激活值（即网络的输出值）$a$和对应训练集输入$x$的正确答案$y(x)$的差的平方。有$n$个输入则误差取平均，$\dfrac{1}{2}$是为了后续求导方便。
+$$\begin{eqnarray}\sigma&#39;(z)=\sigma(z)(1-\sigma(z))\tag{4}\end{eqnarray}$$BP网络的参数就是所有连线上的权重w和所有神经元中的激活阈值b，如果知道这些参数，给定一个输入x，则可以很容易的通过正向传播（feedforward）的方法计算到输出，即不断的执行\(w \cdot x &#43; b\)操作，然后用sigmoid激活，再把上一层的输出传递给下一层作为输入，直到最后一层。
+1 2 3 4 5 def feedforward(self, a): &#34;&#34;&#34;Return the output of the network if ``a`` is input.&#34;&#34;&#34; for b, w in zip(self.biases, self.weights): a = sigmoid(np.dot(w, a)&#43;b) return a 同时，网络的误差可以用均方误差（mean squared error, MSE）表示，即网络在最后一层的激活值（即网络的输出值）\(a\)和对应训练集输入\(x\)的正确答案\(y(x)\)的差的平方。有\(n\)个输入则误差取平均，\(\dfrac{1}{2}\)是为了后续求导方便。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2018-12-14 12:18:07 +0800 CST'>December 14, 2018</span>&nbsp;·&nbsp;2 min</footer>
@@ -336,30 +362,6 @@ $$ \begin{equation} \begin{array} \displaystyle{2\sum_{i &lt; j}}a_{ij}x_ix_j &a
   </div>
   <footer class="entry-footer"><span title='2016-08-23 18:59:57 +0800 CST'>August 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 随机矩阵及其特征值" href="http://localhost:1313/posts/2016-08-23-the-eigenvalue-of-stochastic-matrix/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">马尔可夫聚类算法
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>马尔可夫聚类算法（The Markov Cluster Algorithm, MCL）是一种快速可扩展的基于图的聚类算法。它的基本思想为：在一个稀疏图G中，如果某个区域A是稠密的（是一个聚类），则在A中随机游走k步，还在A内的概率很大，也就是说，A内的k步路径（k-length path）很多。所以我们可以在图中随机游走k步，如果某个区域连通的概率很大，则该区域是一个聚类。随机游走的下一步只和当前所处节点有关，也就是说这是一个马尔可夫的随机游走过程。
-我们用一个例子来演示马尔可夫聚类算法的过程。
-上图是一个很小的网络，我们用肉眼大概能看出有三个聚类，分别是左边的{1,6,7,10}，中间的{2,3,5}和右边的{4,8,9,11,12}。我们用MCL看看结果如何。
-为了随机游走，我们常用邻接矩阵来表示图，如果i,j有边，则N[i][j]=1，否则N[i][j]=0。又随机游走可能有自回路，所以加上单位矩阵I，得到矩阵N&#43;I。
-MCL有两个关键的步骤，分别是Expansion和Inflation。
-Expansion就是不断对矩阵进行幂次运算，相当于随机游走。假设随机游走了2步，则得到如下图的关联矩阵\((N&#43;I)^2\)，第1行第10列为4，说明1到10的2-length path有4条：1→6→10，1→7→10，1→1→10，1→10→10。随机游走k步之后，\((N&#43;I)^k[i][j]\)越大，说明\(i\)和\(j\)之间的连通性越强。
-$$\begin{equation}Expand(M)=M^k\end{equation}$$
-Inflation是为了增强更强的连接，减弱更弱的连接，只有这样才能得到边界比较明确的聚类。MCL的做法是对元素做幂次运算，然后按列归一化，公式为：
-$$\begin{equation}(\Gamma_rM)_{pq}=\frac{(M_{pq})^r}{\sum_{i=1}^k(M_{iq})^r}\end{equation}$$参数经验值是\(k=r=2\)。不断做Expansion和Inflation操作，直到算法收敛，得到若干个聚类。中间过程请点此查看，下图为最终结果。
-从图中可以看出，和1有边的只剩下6,7,10了，所以得到聚类{1,6,7,10}，同理能得到聚类{2,3,5}和{4,8,9,11,12} ，和我们肉眼得到的结果是一致的。
-MCL算法的原理很简单，得到的聚类效果也不错。下面总结一下MCL的算法过程：
-给定无向图G，Expansion和Inflation的参数\(k\)和\(r\) 生成G的邻接矩阵\(N\) 添加自回路，得到矩阵\(N&#43;I\) 循环对\(N&#43;I\)做Expansion和Inflation操作，即计算公式(1)和(2)，直到收敛 根据最终得到的矩阵，进行划分聚类 此算法是我在上《生物信息学中的算法设计》课上是学到的，当时觉得这个算法真是神奇，如此简单，但又如此有效，实在高明。查阅文献得知，此为Stijn van Dongen的博士论文，本博客的图片均来自其博士论文，想深入了解图聚类算法，请下载他的论文。
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-08-22 18:41:45 +0800 CST'>August 22, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 马尔可夫聚类算法" href="http://localhost:1313/posts/2016-08-22-the-markov-cluster-algorithm/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
