@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>过拟合 | bitJoy</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/tags/%E8%BF%87%E6%8B%9F%E5%90%88/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E8%BF%87%E6%8B%9F%E5%90%88/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E8%BF%87%E6%8B%9F%E5%90%88/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    过拟合
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·二）过拟合与正则化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>首先介绍一下神经网络中不同数据集的功能，包括训练集、验证集和测试集。
+训练集是用来训练网络参数的。当觉得在训练集上训练得差不多时，就可以在验证集上进行测试，如果验证集上的性能不好，则需要调整网络结构或者超参数，重新在训练集上训练。所以本质上验证集指导训练过程，也参与了训练和调参。为了防止网络对验证集过拟合，当网络在训练集和验证集上表现都不错时，就可以在测试集上进行测试了。测试集上的性能代表了模型的最终性能。
+当然如果发现网络在测试集上性能不好，可能还会反过来去优化网络，重新训练和验证，这么说测试集最终也变相参与了调优。如果一直这么推下去的话，就没完没了了，所以一般还是认为用验证集对模型进行优化，用测试集对模型性能进行测试。
+过拟合的含义就是网络在训练集上性能很好，但是在验证集（或者测试集）上的性能较差，这说明网络在训练集上训练过头了，对训练集产生了过拟合。为了便于叙述，本文没有验证集，直接使用测试集作为验证集对模型进行调优，所以主要考察网络在训练集和测试集上的性能表现。
+判断网络是否过拟合的方法就是观察网络在训练集和测试集上的accuracy和loss的变化曲线。对于accuracy，如果训练集的accuracy很高接近100%且收敛了，但测试集上的accuracy和训练集上的accuracy相差较大也收敛了（如下图收敛到82%左右），说明网络过拟合了。对于loss，如果训练集的loss一直在下降，但测试集的loss先下降后又上升，也说明网络过拟合了。这两种现象，虽然指标不同，但含义是一样的，即网络在训练集上的性能一直在提高甚至到完美水平，但在测试集上的性能提高到一定水平后不再变化甚至下降了。
+不过下面几张图反应的过拟合epoch时间可能不一样，比如对于测试集上的accuracy，可能在280左右过拟合，但是对于测试集上的loss，在15和280左右都可以认为是过拟合了，尤其是15，loss最低，之后loss反升，可以认为是一个合理的过拟合的点。具体哪个epoch之后过拟合，取决于问题本身关注哪个指标，比如MNIST分类问题，可能关注分类accuracy，所以可重点关注测试集上的accuracy那个图，认为是280左右过拟合，因为200~280的accuracy还一直有提升，虽然提升很有限。
+应对过拟合最好的方法就是增加训练数据，如果能把所有可能的数据都收集到，对所有数据产生过拟合，那相当于对所有数据都能预测得很好，那问题本质上已经解决了。
+但是，在实际应用场景中，不可能收集到所有数据，而且数据往往是严重不足的，此时，应对过拟合主要有三种方法：正则化、Dropout和数据增强，下面分别介绍这三个部分。
+正则化
+正则化的思路就是修改损失函数，使损失函数考虑模型复杂度。考虑正则化的损失函数的通用公式如下：
+$$\begin{eqnarray} C = C_0(w,x,y) &#43; \lambda\Omega(w)\tag{1}\end{eqnarray}$$其中$C_0$为原始的没有正则化项的损失函数，比如MSE或者交叉熵损失等，$\Omega(w)$表示正则化项，即用来惩罚模型复杂度的，$\lambda$表示正则化参数，用来平衡$C_0$和$\Omega(w)$的重要性。
+正则化又分为L2正则和L1正则，它们很类似，先详细介绍下L2正则。
+举个例子，L2正则化后的损失函数如下：
+$$\begin{eqnarray} C = C_0 &#43; \frac{\lambda}{2n}\sum_w w^2,\tag{2}\end{eqnarray}$$前半部分就是普通的损失函数（比如MSE或者交叉熵损失），后半部分就是L2正则。L2正则是对网络中的所有权重$w$求平方和（$\vec w$的L2范数，所以叫L2正则），然后除以$2n$，其中$n$是训练样本数，除以2应该是为了后面求导方便。
+(2)式的直观含义是，$\min C$的过程中，我不但希望损失函数本身$C_0$足够小，还希望网络的权重$w$也比较小，最好不要出现很大的$w$。如果$\lambda$越大，表示正则化越厉害，对大的$w$惩罚越严重。
+加入L2正则后的梯度也很容易计算，如下：
+$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; \frac{\partial C_0}{\partial w} &#43; \frac{\lambda}{n} w \tag{3}\\ \frac{\partial C}{\partial b} &amp; = &amp; \frac{\partial C_0}{\partial b}.\tag{4}\end{eqnarray}$$对应的参数更新公式如下：
+$$\begin{eqnarray}b &amp; \rightarrow &amp; b -\eta \frac{\partial C_0}{\partial b}.\tag{5}\end{eqnarray}$$$$\begin{eqnarray} w &amp; \rightarrow &amp; w-\eta \frac{\partial C_0}{\partial w}-\frac{\eta \lambda}{n} w \tag{6}\\ &amp; = &amp; \left(1-\frac{\eta \lambda}{n}\right) w -\eta \frac{\partial C_0}{\partial w}. \tag{7}\end{eqnarray}$$由(5)可知，偏移量$b$的梯度更新和没有正则化时是一样的，因为正则化并没有惩罚$b$，这个后面会解释为什么。由(7)可知，对$w$的梯度更新和没有正则化时很类似，只不过需要先对$w$进行缩放，缩放因子为$1-\frac{\eta\lambda}{n}$，因为训练样本$n$往往很大，所以缩放因子在(0,1)，即先对$w$进行缩小，然后正常梯度下降，这种操作也被称为权值衰减。$\lambda$最好根据$n$的大小进行调整，如果$n$非常大的话，$\lambda$最好也大一些，否则权值衰减因子就会很小，正则化效果就不明显。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-03-24 12:14:22 +0800 CST'>March 24, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·二）过拟合与正则化" href="http://localhost:1313/posts/2019-03-24-neural-networks-and-deep-learning-3-2-overfitting-and-regularization/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
