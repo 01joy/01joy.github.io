@@ -156,6 +156,27 @@
       <description></description>
     </item>
     <item>
+      <title>Softmax</title>
+      <link>http://localhost:1313/tags/softmax/</link>
+      <pubDate>Mon, 18 Mar 2019 10:33:32 +0800</pubDate>
+      <guid>http://localhost:1313/tags/softmax/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>交叉熵</title>
+      <link>http://localhost:1313/tags/%E4%BA%A4%E5%8F%89%E7%86%B5/</link>
+      <pubDate>Mon, 18 Mar 2019 10:33:32 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E4%BA%A4%E5%8F%89%E7%86%B5/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>深度学习</title>
+      <link>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Mon, 18 Mar 2019 10:33:32 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</guid>
+      <description></description>
+    </item>
+    <item>
       <title>BP</title>
       <link>http://localhost:1313/tags/bp/</link>
       <pubDate>Fri, 14 Dec 2018 12:18:07 +0800</pubDate>
@@ -174,13 +195,6 @@
       <link>http://localhost:1313/tags/sgd/</link>
       <pubDate>Fri, 14 Dec 2018 12:18:07 +0800</pubDate>
       <guid>http://localhost:1313/tags/sgd/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>深度学习</title>
-      <link>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
-      <pubDate>Fri, 14 Dec 2018 12:18:07 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</guid>
       <description></description>
     </item>
     <item>

@@ -114,7 +114,22 @@
     <lastmod>2025-08-15T22:03:06+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/categories/0%E5%92%8C1/</loc>
-    <lastmod>2018-12-14T12:18:07+08:00</lastmod>
+    <lastmod>2019-03-18T10:33:32+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/</loc>
+    <lastmod>2019-03-18T10:33:32+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/categories/neuralnetworksanddeeplearning.com/</loc>
+    <lastmod>2019-03-18T10:33:32+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/softmax/</loc>
+    <lastmod>2019-03-18T10:33:32+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E4%BA%A4%E5%8F%89%E7%86%B5/</loc>
+    <lastmod>2019-03-18T10:33:32+08:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
+    <lastmod>2019-03-18T10:33:32+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/bp/</loc>
     <lastmod>2018-12-14T12:18:07+08:00</lastmod>
@@ -125,13 +140,7 @@
     <loc>http://localhost:1313/posts/2018-12-14-neutral-networks-and-deep-learning-2-bp/</loc>
     <lastmod>2018-12-14T12:18:07+08:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/categories/neuralnetworksanddeeplearning.com/</loc>
-    <lastmod>2018-12-14T12:18:07+08:00</lastmod>
-  </url><url>
     <loc>http://localhost:1313/tags/sgd/</loc>
-    <lastmod>2018-12-14T12:18:07+08:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</loc>
     <lastmod>2018-12-14T12:18:07+08:00</lastmod>
   </url><url>
     <loc>http://localhost:1313/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/</loc>

@@ -162,10 +162,10 @@
 每个神经元执行的操作非常简单，就是把跟它连接的每个输入乘以边上的权重，然后累加起来。
 比如上面的一个神经元，它的输出就是：
 $$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll}0 &amp; \mbox{if} \sum_j w_j x_j \leq \mbox{ threshold} \\1 &amp; \mbox{if} \sum_j w_j x_j &gt; \mbox{threshold}\end{array}\right.\tag{1}\end{eqnarray}$$其中的threshold就是该神经元激活的阈值，如果累加值超过threshold，则该神经元被激活，输出为1，否则为0。这就是最原始的感知机网络。感知机网络也可以写成如下的向量形式，用激活阈值b代替threshold，然后移到左边。神经网络中，每条边具有权重w，每个神经元具有激活阈值b。
-$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll} 0 &amp; \mbox{if } w\cdot x &#43; b \leq 0 \\1 &amp; \mbox{if } w\cdot x &#43; b &gt; 0\end{array}\right.\tag{2}\end{eqnarray}$$但是感知机网络的这种激活方式不够灵活，它在threshold左右有一个突变，如果输入或者某个边上的权重稍微有一点变化，输出结果可能就千差万别了。于是后来人们提出了用sigmoid函数来当激活函数，它在0附近的斜率较大，在两边的斜率较小，能达到和阶梯函数类似的效果，而且函数光滑可导。sigmoid的函数形式如下，其中$z\equiv w \cdot x &#43; b$为神经元激活之前的值。
+$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll} 0 &amp; \mbox{if } w\cdot x &#43; b \leq 0 \\1 &amp; \mbox{if } w\cdot x &#43; b &gt; 0\end{array}\right.\tag{2}\end{eqnarray}$$ 但是感知机网络的这种激活方式不够灵活，它在threshold左右有一个突变，如果输入或者某个边上的权重稍微有一点变化，输出结果可能就千差万别了。于是后来人们提出了用sigmoid函数来当激活函数，它在0附近的斜率较大，在两边的斜率较小，能达到和阶梯函数类似的效果，而且函数光滑可导。sigmoid的函数形式如下，其中\(z\equiv w \cdot x &#43; b\)为神经元激活之前的值。
 $$\begin{eqnarray} \sigma(z) \equiv \frac{1}{1&#43;e^{-z}}\tag{3}\end{eqnarray}$$sigmmoid函数还有一个优点就是它的导数很好计算，可以用它本身来表示：
-$$\begin{eqnarray}\sigma&#39;(z)=\sigma(z)(1-\sigma(z))\tag{4}\end{eqnarray}$$BP网络的参数就是所有连线上的权重w和所有神经元中的激活阈值b，如果知道这些参数，给定一个输入x，则可以很容易的通过正向传播（feedforward）的方法计算到输出，即不断的执行$w \cdot x &#43; b$操作，然后用sigmoid激活，再把上一层的输出传递给下一层作为输入，直到最后一层。
-[python] def feedforward(self, a): “““Return the output of the network if a is input.””” for b, w in zip(self.biases, self.weights): a = sigmoid(np.dot(w, a)&#43;b) return a [/python] 同时，网络的误差可以用均方误差（mean squared error, MSE）表示，即网络在最后一层的激活值（即网络的输出值）$a$和对应训练集输入$x$的正确答案$y(x)$的差的平方。有$n$个输入则误差取平均，$\dfrac{1}{2}$是为了后续求导方便。
+$$\begin{eqnarray}\sigma&#39;(z)=\sigma(z)(1-\sigma(z))\tag{4}\end{eqnarray}$$BP网络的参数就是所有连线上的权重w和所有神经元中的激活阈值b，如果知道这些参数，给定一个输入x，则可以很容易的通过正向传播（feedforward）的方法计算到输出，即不断的执行\(w \cdot x &#43; b\)操作，然后用sigmoid激活，再把上一层的输出传递给下一层作为输入，直到最后一层。
+1 2 3 4 5 def feedforward(self, a): &#34;&#34;&#34;Return the output of the network if ``a`` is input.&#34;&#34;&#34; for b, w in zip(self.biases, self.weights): a = sigmoid(np.dot(w, a)&#43;b) return a 同时，网络的误差可以用均方误差（mean squared error, MSE）表示，即网络在最后一层的激活值（即网络的输出值）\(a\)和对应训练集输入\(x\)的正确答案\(y(x)\)的差的平方。有\(n\)个输入则误差取平均，\(\dfrac{1}{2}\)是为了后续求导方便。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2018-12-14 12:18:07 +0800 CST'>December 14, 2018</span>&nbsp;·&nbsp;2 min</footer>

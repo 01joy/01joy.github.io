@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Softmax on bitJoy</title>
+    <link>http://localhost:1313/tags/softmax/</link>
+    <description>Recent content in Softmax on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 18 Mar 2019 10:33:32 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/softmax/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Neural Networks and Deep Learning（三·一）梯度消失</title>
+      <link>http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/</link>
+      <pubDate>Mon, 18 Mar 2019 10:33:32 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/</guid>
+      <description>&lt;p&gt;原文的第三章内容较多，本博客将分三个部分进行介绍：梯度消失、过拟合与正则化、权重初始化及其他，首先介绍梯度消失问题。&lt;/p&gt;
+&lt;p&gt;为简单起见，假设网络只包含一个输入和一个神经元，网络的损失是均方误差损失MSE，激活函数是Sigmoid函数。则该网络的参数只包含权重$w$和偏移量$b$。我们想训练这个网络，使得当输入为1时，输出0。&lt;/p&gt;
+&lt;p&gt;假设我们随机初始化$w_0=0.6$，$b_0=0.9$，则网络的损失随着训练的epoch变化曲线如下，看起来挺好的，一开始损失下降很快，随着epoch增加，损失下降逐渐平缓，直至收敛。&lt;/p&gt;
+&lt;p&gt;但是，如果随机初始化$w_0=2.0$，$b_0=2.0$，则网络的损失一开始下降得很缓慢，要训练到快200个epoch时，损失才快速下降。可以看到同样是300个epoch，由于初始化权重的差别，损失下降的趋势完全不一样，而且对于下面这种情况，到300个epoch时，损失还有下降的空间，所以期望的output不如上面的接近目标值0。&lt;/p&gt;
+&lt;p&gt;为什么同样的网络，只是因为初始化权重的差异，损失的变化曲线却相差这么多呢，这和我们选择的损失函数与激活函数有关。&lt;/p&gt;
+&lt;p&gt;回顾一下，我们在上一讲的末尾介绍到如果损失函数是MSE且激活函数是Sigmoid时，有$\delta^L = (a^L-y) \odot {\sigma(z^L)(1-\sigma(z^L))}$，又因为网络只有一个神经元，所以梯度如下：&lt;/p&gt;
+$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; (a-y)\sigma&#39;(z) x = a \sigma&#39;(z),\tag{1}\\\frac{\partial C}{\partial b} &amp; = &amp; (a-y)\sigma&#39;(z) = a \sigma&#39;(z)\tag{2}\end{eqnarray}$$&lt;p&gt;其中第二个等号是把$x=1$和$y=0$带入得到的。由此可见，误差对两个参数$w$和$b$的梯度都和激活函数的导数有关，因为激活函数是Sigmoid，当神经元的输出接近0或1时，梯度几乎为0，误差反向传播就会非常慢，导致上图出现损失下降非常慢的现象。这就是梯度消失的原因。&lt;/p&gt;
+&lt;p&gt;为了解决这个问题，我们可以采取两种策略，一是替换损失函数，一是替换激活函数。&lt;/p&gt;
+&lt;p&gt;第一种方法是将MSE的损失函数替换为交叉熵损失函数，激活函数依然是Sigmoid。我们考虑一个比本文开头更复杂的网络，仍然是一个输出神经元，但包含多个输入神经元。&lt;/p&gt;
+&lt;p&gt;此时，交叉熵损失函数定义如下，其中的$n$表示训练样本数，$\frac{1}{n}\sum_x$表示对所有输入样本$x$的交叉熵损失求均值。&lt;/p&gt;
+$$\begin{eqnarray}C = -\frac{1}{n} \sum_x \left[y \ln a + (1-y ) \ln (1-a) \right]\tag{3}\end{eqnarray}$$&lt;p&gt;我们首先考察为什么(3)可以是一个损失函数，损失函数需要满足如下两个条件：&lt;/p&gt;
+&lt;p&gt;非负；
+当网络输出和目标答案越接近，损失越小；反之损失越大。
+简单代入几组不同的样本很容易验证交叉熵满足上述两个条件 ，所以交叉熵可以作为一个损失函数。&lt;/p&gt;
+&lt;p&gt;下面我们再考察一下为什么交叉熵损失函数+Sigmoid激活函数可以解决梯度消失的问题。首先推导交叉熵损失$C$对权重$w_j$和$b$的梯度：&lt;/p&gt;
+$$\begin{eqnarray}\frac{\partial C}{\partial w_j} &amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y }{\sigma(z)} -\frac{(1-y)}{1-\sigma(z)} \right)\frac{\partial \sigma}{\partial w_j} \tag{4}\\&amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y}{\sigma(z)}-\frac{(1-y)}{1-\sigma(z)} \right)\sigma&#39;(z) x_j\tag{5}\\&amp; = &amp; \frac{1}{n}\sum_x \frac{\sigma&#39;(z) x_j}{\sigma(z) (1-\sigma(z))}(\sigma(z)-y).\tag{6}\end{eqnarray}$$&lt;p&gt;上式分子Sigmoid的导数正好可以和分母抵消，得到：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
