@@ -151,6 +151,21 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Gperftools性能分析工具使用教程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>上一篇博客简单介绍了Linux平台下不同性能分析工具的特点，最后是Google出品的gperftools胜出。今天我们将举一个用gperftools对链接库进行性能分析的例子。
+假设我们创建了一个TestGperftools项目，其中包括一个动态链接库模块complex和主程序main，build文件夹用于存放动态链接库和可执行程序，文件结构如下所示。
+1 2 3 4 5 6 7 8 9 10 11 12 13 czl@ubuntu:~/czl/TestGperftools$ tree . ├── build ├── complex │ ├── complex.cpp │ ├── complex.h │ └── Makefile ├── main │ ├── main.cpp │ └── Makefile └── Makefile 3 directories, 6 files 其中complex借用了这篇博客的第三个公式计算圆周率π，主要用来模拟一个很耗时的操作。该模块会生成一个libcomplex.so动态链接库供外部调用。其complex.cpp函数如下：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-02-07 23:21:41 +0800 CST'>February 7, 2017</span>&nbsp;·&nbsp;3 min</footer>
+  <a class="entry-link" aria-label="post link to Gperftools性能分析工具使用教程" href="http://localhost:1313/posts/2017-02-07-gperftools-tutorial/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Linux性能分析工具简介
     </h2>
   </header>
@@ -359,28 +374,6 @@ $$\begin{equation}G=\alpha S&#43;(1-\alpha)E\end{equation}$$\(E\)即为随机平
   </div>
   <footer class="entry-footer"><span title='2016-08-04 16:38:33 +0800 CST'>August 4, 2016</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 还原谷歌PageRank算法真相" href="http://localhost:1313/posts/2016-08-04-googles-pagerank-and-beyond/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">调查问卷的有效性（2）相对误差
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>$$\begin{equation}Pr(|\hat{p}-p|\geq 5\%)\leq 5\%\end{equation}$$上一回我们讲到当\(p\)本身很小的时候，容易被5%（绝对误差）给淹没掉，导致结果的不可信。我们可以引入相对误差，把(1)式转换为如下的不等式
-$$\begin{equation}Pr(|\hat{p}-p|\geq\delta p)\leq\epsilon\end{equation}$$同理，我们可以用
-$$\begin{equation}\hat{p}=\frac{x_1&#43;x_2&#43;…&#43;x_n}{n}\end{equation}$$代替\(\hat{p}\)（建议先看上一篇博客），转换为
-$$\begin{equation}Pr(|X-np|\geq\delta np)\end{equation}$$类似的，\(X=x_1&#43;x_2&#43;…&#43;x_n\)，\(E(X)=\mu=np\)，所以(4)式等价为
-$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\end{equation}$$这个时候，因为不等号右边和均值\(\mu\)有关，不能再用切比雪夫不等式了，我们需要另外一个武器：Chernoff bound。它有两种形式：
-$$\begin{equation}Pr(X\geq (1&#43;\delta)\mu)\leq[\frac{e^\delta}{(1&#43;\delta)^{1&#43;\delta}}]^\mu\leq e^{-\frac{\mu}{3}\delta^2}\quad\forall\delta&gt;0\end{equation}$$$$\begin{equation}Pr(X\leq (1-\delta)\mu)\leq[\frac{e^{-\delta}}{(1-\delta)^{1-\delta}}]^\mu\leq e^{-\frac{\mu}{2}\delta^2}\quad\forall 0&lt;\delta&lt;1\end{equation}$$Chernoff bound的证明需要用到马尔可夫不等式，有一点技巧。以上两种形式可以统一成
-$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\end{equation}$$也是一个很漂亮的不等式。
-利用Chernoff bound求解(5)式：
-$$\begin{equation}Pr(|X-\mu|\geq\delta\mu)\leq 2e^{-\frac{\mu}{3}\delta^2}\\=2e^{-\frac{np}{3}\delta^2}\leq\epsilon\end{equation}$$解得
-$$\begin{equation}n\geq\left\lceil\frac{3ln\frac{2}{\epsilon}}{p\delta^2}\right\rceil\end{equation}$$这个结果看起来就很复杂了。也就是说，如果要设计调查问卷使满足(2)式的精度，抽样的样本数必须满足(10)式。从(10)式可知，当要求的精度越高（即\(\delta\)和\(\epsilon\)越小），所需的样本数越大。并且结果还和真实值\(p\)有关。
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-07-23 16:21:54 +0800 CST'>July 23, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 调查问卷的有效性（2）相对误差" href="http://localhost:1313/posts/2016-07-23-the-validity-of-the-questionnaire-2/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
