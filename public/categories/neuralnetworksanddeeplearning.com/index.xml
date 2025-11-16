@@ -6,8 +6,30 @@
     <description>Recent content in Neuralnetworksanddeeplearning.com on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 07 Apr 2019 18:34:01 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 19:09:46 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/categories/neuralnetworksanddeeplearning.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Neural Networks and Deep Learning（五）为什么深度神经网络难以训练</title>
+      <link>http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/</link>
+      <pubDate>Sun, 14 Apr 2019 19:09:46 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/</guid>
+      <description>&lt;p&gt;本章我们将分析一下为什么深度神经网络难以训练的问题。&lt;/p&gt;
+&lt;p&gt;首先来看问题：如果神经网络的层次不断加深，则在BP误差反向传播的过程中，网络前几层的梯度更新会非常慢，导致前几层的权重无法学习到比较好的值，这就是梯度消失问题（The vanishing gradient problem）。&lt;/p&gt;
+&lt;p&gt;以我们在第三章学习的network2.py为例（交叉熵损失函数+Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量$b$的偏导$\partial C/ \partial b$，根据第二章BP网络的知识，$\partial C/ \partial b$也是$\partial C/ \partial w$的一部分（BP3和BP4的关系），所以如果$\partial C/ \partial b$的绝对值大，则说明梯度大，在误差反向传播的时候，$b$和$w$更新就快。&lt;/p&gt;
+&lt;p&gt;假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的$\partial C/ \partial b$的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？&lt;/p&gt;
+&lt;p&gt;既然梯度出现了层与层的差异，则可以定义第$l$层的梯度（如不加说明，则默认是误差$C$对偏移量$b$的梯度）向量的长度为$| \delta^l |$，比如$| \delta^1 |$表示第一个隐藏层中每个神经元的$\partial C/ \partial b$的绝对值之和，就是一范数，如果$| \delta^l |$越大，则说明这一层权重的更新越快。&lt;/p&gt;
+&lt;p&gt;由此，我们可以画出当有两个隐藏层时，$| \delta^l |$随epoch的变化情况：&lt;/p&gt;
+&lt;p&gt;当有三个隐藏层时：&lt;/p&gt;
+&lt;p&gt;当有四个隐藏层时：&lt;/p&gt;
+&lt;p&gt;我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，$| \delta^l |$越大，即梯度更新越快；越靠近输入层的隐藏层，$| \delta^l |$越小，即梯度更新越慢。&lt;/p&gt;
+&lt;p&gt;这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差反向传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。&lt;/p&gt;
+&lt;p&gt;所以，对于同样的network2，其他参数都不变，只是单纯增加网络层数，验证集上的准确率反而会下降！按理说网络层数增加，验证集上的准确率会上升，或者不变，至少不应该下降啊，因为最不济增加的网络层什么都不做，准确率应该一样才对，为什么反而下降了呢。虽然层数增加了，但因为上述梯度消失问题，靠近输入层的权重反而没学好，因为权重是随机初始化的，所以验证集上的准确率反而下降了。&lt;/p&gt;
+&lt;p&gt;那么，为什么层数增加会导致梯度消失问题呢，我们可以从BP的更新公式中一探究竟。&lt;/p&gt;
+&lt;p&gt;为了简化问题，假设我们的网络每一层只有一个神经元：&lt;/p&gt;
+&lt;p&gt;则根据BP的更新公式，可以计算得到&lt;/p&gt;
+&lt;p&gt;$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&amp;rsquo;(z_1) , w_2 \sigma&amp;rsquo;(z_2) ,w_3 \sigma&amp;rsquo;(z_3) , w_4 \sigma&amp;rsquo;(z_4) , \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$&lt;/p&gt;
+&lt;p&gt;计算过程其实很简单，对照本博客开头的那张图，$\sigma&amp;rsquo;(z_4) , \frac{\partial C}{\partial a_4}$就是(BP1)，把(BP1)带入(BP2)，就是不断乘以$w^{l+1} \sigma&amp;rsquo;(z^l)$，然后就能得到下图的公式。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数</title>
       <link>http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/</link>
@@ -15,42 +37,28 @@
       <guid>http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/</guid>
       <description>&lt;p&gt;我们应该都听说过神经网络强大到能拟合任意一个函数，但细究起来很少有人能论证这个观点，这一章就用通俗易懂的图解方式来证明神经网络为什么能拟合任意一个函数。&lt;/p&gt;
 &lt;p&gt;开始介绍之前，有两点需要注意：&lt;/p&gt;
-&lt;p&gt;并不是说神经网络可以精确计算任意一个函数&lt;/p&gt;
-$$f(x)$$&lt;p&gt;，而是说当隐藏层神经元增加时，可以无限逼近&lt;/p&gt;
-$$f(x)$$&lt;p&gt;，比如对于任何一个输入&lt;/p&gt;
-$$x$$&lt;p&gt;，网络的输出&lt;/p&gt;
-$$g(x)$$&lt;p&gt;和正确值&lt;/p&gt;
-$$f(x)$$&lt;p&gt;的差小于某个阈值，&lt;/p&gt;
-$$|g(x) – f(x)| &lt; \epsilon$$&lt;p&gt;；
-神经网络拟合的是连续函数，而不是那种不连续、离散、急剧变化的函数。
-假设给定一个下图的连续函数，函数形式未知，本章将用图解的方式来证明，一个单隐层的神经网络就可以很好的拟合这个未知函数。&lt;/p&gt;
-&lt;p&gt;首先，假设我们的隐藏层只有两个神经元，激活函数使用Sigmoid，并且我们暂时只关注上面那个神经元的参数和输出。则通过调整该神经元的&lt;/p&gt;
-$$w$$&lt;p&gt;和&lt;/p&gt;
-$$b$$&lt;p&gt;，可以得到不同形状的Sigmoid函数形式。&lt;/p&gt;
-&lt;p&gt;极端情况下，如果&lt;/p&gt;
-$$w$$&lt;p&gt;很大而&lt;/p&gt;
-$$b$$&lt;p&gt;很小，则可以用Sigmoid函数模拟阶梯函数：&lt;/p&gt;
-&lt;p&gt;如果令&lt;/p&gt;
-$$s = -b/w$$&lt;p&gt;，则只用一个&lt;/p&gt;
-$$s$$&lt;p&gt;就可以确定Sigmoid的函数图像：&lt;/p&gt;
-&lt;p&gt;如果把隐藏层下面那个神经元也考虑进来，并且令隐藏层的两个神经元和输出层的神经元的连接权重互为相反数，则输出层未激活值&lt;/p&gt;
-$$z=w_1 a_1 + w_2 a_2$$&lt;p&gt;的函数图像变成了一个神奇的鼓包，这个鼓包就是我们后续拟合任意函数的基本单元。根据严格的函数形式，还可以知道&lt;/p&gt;
-$$w_1$$&lt;p&gt;和&lt;/p&gt;
-$$w_2$$&lt;p&gt;的绝对值控制着鼓包的高度，&lt;/p&gt;
-$$s_1$$&lt;p&gt;和&lt;/p&gt;
-$$s_2$$&lt;p&gt;的值控制着鼓包的位置和宽度。大家可以去原始网页上体验一下作者给出的可交互版本，很有意思。&lt;/p&gt;
-&lt;p&gt;有了这个基本单元之后，我们可以通过增加隐藏层神经元的个数来增加鼓包的个数，比如再增加一对隐层神经元，可增加一个鼓包。虽然下图的例子中两个鼓包相互独立，但通过调整4个&lt;/p&gt;
-$$s$$&lt;p&gt;，可以让两个鼓包相连甚至交错，大家可以去原网页试一试。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;并不是说神经网络可以精确计算任意一个函数\(f(x)\)，而是说当隐藏层神经元增加时，可以无限逼近\(f(x)\)，比如对于任何一个输入\(x\)，网络的输出\(g(x)\)和正确值\(f(x)\)的差小于某个阈值，\(|g(x) – f(x)| &lt; \epsilon\)；&lt;/li&gt;
+&lt;li&gt;神经网络拟合的是连续函数，而不是那种不连续、离散、急剧变化的函数。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;假设给定一个下图的连续函数，函数形式未知，本章将用图解的方式来证明，一个单隐层的神经网络就可以很好的拟合这个未知函数。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.1.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;首先，假设我们的隐藏层只有两个神经元，激活函数使用Sigmoid，并且我们暂时只关注上面那个神经元的参数和输出。则通过调整该神经元的\(w\)和\(b\)，可以得到不同形状的Sigmoid函数形式。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.2.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;极端情况下，如果\(w\)很大而\(b\)很小，则可以用Sigmoid函数模拟阶梯函数：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/high_weight_function.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果令\(s = -b/w\)，则只用一个\(s\)就可以确定Sigmoid的函数图像：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.3.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;如果把隐藏层下面那个神经元也考虑进来，并且令隐藏层的两个神经元和输出层的神经元的连接权重互为相反数，则输出层未激活值\(z=w_1 a_1 + w_2 a_2\)的函数图像变成了一个神奇的鼓包，这个鼓包就是我们后续拟合任意函数的基本单元。根据严格的函数形式，还可以知道\(w_1\)和\(w_2\)的绝对值控制着鼓包的高度，\(s_1\)和\(s_2\)的值控制着鼓包的位置和宽度。&lt;a href=&#34;http://neuralnetworksanddeeplearning.com/chap4.html#bump_fn&#34;&gt;大家可以去原始网页上体验一下作者给出的可交互版本，很有意思&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/bump_function.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;有了这个基本单元之后，我们可以通过增加隐藏层神经元的个数来增加鼓包的个数，比如再增加一对隐层神经元，可增加一个鼓包。虽然下图的例子中两个鼓包相互独立，但通过调整4个\(s\)，可以让两个鼓包相连甚至交错，&lt;a href=&#34;http://neuralnetworksanddeeplearning.com/chap4.html#double_bump&#34;&gt;大家可以去原网页试一试&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.4.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;继续增加隐层神经元个数，则可以继续增加鼓包的数量，如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.5.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;到这里想必大家马上知道了为什么神经网络能拟合任何一个函数了，如果隐层神经元足够多，则右图的小鼓包可以足够密，通过调整每个鼓包的高度，则无穷多个鼓包的顶点连线可以拟合任意一个函数。这和我们求函数积分（函数下方面积）时使用多个小矩形近似是一个道理！&lt;/p&gt;
-&lt;p&gt;所以对于本章开头的未知函数，我们通过调整不同鼓包的高度，可以使得小矩形面积之和与真实积分的差在&lt;/p&gt;
-$$ \epsilon=0.4$$&lt;p&gt;以内。如果无限增加隐层神经元个数，则可以无限逼近真实值。这就说明神经网络确实可以拟合任意一个函数。&lt;/p&gt;
-&lt;p&gt;上述推导稍微需要注意的一点是，右图的输出是未激活函数值&lt;/p&gt;
-$$\sum_j w_j a_j$$&lt;p&gt;，而网络真正的输出是激活值&lt;/p&gt;
-$$\sigma(\sum_j w_j a_j + b)$$&lt;p&gt;。这没有太大的关系，因为上面已经说明未激活输出能拟合任意函数，激活函数也是一个函数。增加激活函数就要求右图需要拟合激活函数和真实函数的嵌套函数。既然未激活输出能拟合任意函数，肯定能拟合这个嵌套函数&lt;/p&gt;
-$$\sigma^{-1} \circ f(x)$$&lt;p&gt;，再用激活函数作用一下&lt;/p&gt;
-$$\sigma\circ\sigma^{-1} \circ f(x)$$&lt;p&gt;，激活函数抵消了，正好得到&lt;/p&gt;
-$$f(x)$$&lt;p&gt;。&lt;/p&gt;
+&lt;p&gt;所以对于本章开头的未知函数，我们通过调整不同鼓包的高度，可以使得小矩形面积之和与真实积分的差在\( \epsilon=0.4\)以内。如果无限增加隐层神经元个数，则可以无限逼近真实值。这就说明神经网络确实可以拟合任意一个函数。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/ch4.6.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上述推导稍微需要注意的一点是，右图的输出是未激活函数值\(\sum_j w_j a_j\)，而网络真正的输出是激活值\(\sigma(\sum_j w_j a_j + b)\)。这没有太大的关系，因为上面已经说明未激活输出能拟合任意函数，激活函数也是一个函数。增加激活函数就要求右图需要拟合激活函数和真实函数的嵌套函数。既然未激活输出能拟合任意函数，肯定能拟合这个嵌套函数\(\sigma^{-1} \circ f(x)\)，再用激活函数作用一下\(\sigma\circ\sigma^{-1} \circ f(x)\)，激活函数抵消了，正好得到\(f(x)\)。&lt;/p&gt;
 &lt;p&gt;如果输入是多维，或者输出是多维，都是类似的道理。这就说明神经网络确实可以拟合任意函数，真的很强大哦。&lt;/p&gt;</description>
     </item>
     <item>
