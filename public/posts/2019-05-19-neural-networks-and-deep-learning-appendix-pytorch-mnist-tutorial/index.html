@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Neural Networks and Deep Learning（七）番外篇·Pytorch MNIST教程 | bitJoy</title>
+<meta name="keywords" content="CNN, 神经网络, MNIST, Pytorch, 卷积, 池化, 深度学习">
+<meta name="description" content="由于本书成书较早（2015），作者当时使用的是Theano，但Theano已不再维护，所以本博客使用当下流行的Pytorch框架讲解MNIST图片分类的代码实现，具体就是Pytorch官方给出的MNIST代码：https://github.com/pytorch/examples/tree/master/mnist。
+
+使用该工具在线制作：http://alexlenail.me/NN-SVG/LeNet.html
+下面，我首先贴出经过我注释的Pytorch MNIST代码，然后对一些关键问题进行解释。
+
+
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+
+
+from __future__ import print_function
+import argparse
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+ 
+# 所有网络类要继承nn.Module
+class Net(nn.Module):
+    def __init__(self):
+        super(Net, self).__init__() # 调用父类构造函数
+        self.conv1 = nn.Conv2d(1, 20, 5, 1) # (in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)
+        self.conv2 = nn.Conv2d(20, 50, 5, 1) # 这一层的in_channels正好是上一层的out_channels
+        self.fc1 = nn.Linear(4*4*50, 500)
+        self.fc2 = nn.Linear(500, 10)
+ 
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        x = F.max_pool2d(x, 2, 2) # kernel_size=2, stride=2，pooling之后的大小除以2
+        x = F.relu(self.conv2(x))
+        x = F.max_pool2d(x, 2, 2)
+        x = x.view(-1, 4*4*50) # 展开成 (z, 4*4*50)，其中z是通过自动推导得到的，所以这里设置为-1，这里相当于展开成行向量，便于后续全连接
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1) # log_softmax 即 log(softmax(x))；dim=1对行进行softmax，因为上面x.view展开成行向量了，log_softmax速度和数值稳定性都比softmax好一些
+     
+def train(args, model, device, train_loader, optimizer, epoch):
+    model.train() # 告诉pytorch，这是训练阶段 https://stackoverflow.com/a/51433411/2468587
+    for batch_idx, (data, target) in enumerate(train_loader):
+        data, target = data.to(device), target.to(device)
+        optimizer.zero_grad() # 每个batch的梯度重新累加
+        output = model(data)
+        loss = F.nll_loss(output, target) # 这里的nll_loss就是Michael Nielsen在ch3提到的log-likelihood cost function，配合softmax使用，batch的梯度/loss要求均值mean
+        loss.backward() # 求loss对参数的梯度dw
+        optimizer.step() # 梯度下降，w&#39;=w-η*dw
+        if batch_idx % args.log_interval == 0:
+            print(&#39;Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}&#39;.format(
+                epoch, batch_idx * len(data), len(train_loader.dataset),
+                100. * batch_idx / len(train_loader), loss.item()))
+ 
+def test(args, model, device, test_loader):
+    model.eval()  # 告诉pytorch，这是预测（评价）阶段
+    test_loss = 0
+    correct = 0
+    with torch.no_grad(): # 预测时不需要误差反传，https://discuss.pytorch.org/t/model-eval-vs-with-torch-no-grad/19615/2
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss &#43;= F.nll_loss(output, target, reduction=&#39;sum&#39;).item() # sum up batch loss，预测时的loss求sum，L54再求均值
+            pred = output.argmax(dim=1, keepdim=True) # get the index of the max log-probability
+            correct &#43;= pred.eq(target.view_as(pred)).sum().item()
+ 
+    test_loss /= len(test_loader.dataset)
+ 
+    print(&#39;\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n&#39;.format(
+        test_loss, correct, len(test_loader.dataset),
+        100. * correct / len(test_loader.dataset)))
+ 
+ 
+def plot1digit(data_loader):
+ 
+    import numpy as np
+    import matplotlib.pyplot as plt
+ 
+    examples = enumerate(data_loader)
+    batch_idx, (Xs, ys) = next(examples) # 读取到的是一个batch的所有数据
+ 
+    X=Xs[0].numpy()[0] # Xs[0]取出batch中的第一个数据，由tensor转换为numpy，因为pytorch tensor的格式是[channel, height, width]，所以最后[0]取出其第一个通道的[h,w]
+    y=ys[0].numpy() # y没有通道，就一个标量值
+ 
+    np.savetxt(&#39;../../../fig/%d.csv&#39;%y, X, delimiter=&#39;,&#39;)
+     
+    plt.imshow(X, cmap=&#39;Greys&#39;) # or &#39;Greys_r&#39;
+    plt.savefig(&#39;../../../fig/%d.png&#39;%y)
+    plt.show()
+ 
+def main():
+    # Training settings
+    parser = argparse.ArgumentParser(description=&#39;PyTorch MNIST Example&#39;)
+    parser.add_argument(&#39;--batch-size&#39;, type=int, default=64, metavar=&#39;N&#39;,
+                        help=&#39;input batch size for training (default: 64)&#39;)
+    parser.add_argument(&#39;--test-batch-size&#39;, type=int, default=1000, metavar=&#39;N&#39;,
+                        help=&#39;input batch size for testing (default: 1000)&#39;)
+    parser.add_argument(&#39;--epochs&#39;, type=int, default=10, metavar=&#39;N&#39;,
+                        help=&#39;number of epochs to train (default: 10)&#39;)
+    parser.add_argument(&#39;--lr&#39;, type=float, default=0.01, metavar=&#39;LR&#39;,
+                        help=&#39;learning rate (default: 0.01)&#39;)
+    parser.add_argument(&#39;--momentum&#39;, type=float, default=0.5, metavar=&#39;M&#39;,
+                        help=&#39;SGD momentum (default: 0.5)&#39;)
+    parser.add_argument(&#39;--no-cuda&#39;, action=&#39;store_true&#39;, default=False,
+                        help=&#39;disables CUDA training&#39;)
+    parser.add_argument(&#39;--seed&#39;, type=int, default=1, metavar=&#39;S&#39;,
+                        help=&#39;random seed (default: 1)&#39;)
+    parser.add_argument(&#39;--log-interval&#39;, type=int, default=10, metavar=&#39;N&#39;,
+                        help=&#39;how many batches to wait before logging training status&#39;)
+     
+    parser.add_argument(&#39;--save-model&#39;, action=&#39;store_true&#39;, default=False,
+                        help=&#39;For Saving the current Model&#39;)
+    args = parser.parse_args()
+    use_cuda = not args.no_cuda and torch.cuda.is_available()
+ 
+    torch.manual_seed(args.seed)
+ 
+    device = torch.device(&#34;cuda&#34; if use_cuda else &#34;cpu&#34;)
+ 
+    kwargs = {&#39;num_workers&#39;: 1, &#39;pin_memory&#39;: True} if use_cuda else {}
+    train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(&#39;../data&#39;, train=True, download=True,
+                       transform=transforms.Compose([ # https://discuss.pytorch.org/t/can-some-please-explain-how-the-transforms-work-and-why-normalize-the-data/2461/3
+                           transforms.ToTensor(), # 把[0,255]的(H,W,C)的图片转换为[0,1]的(channel,height,width)的图片
+                           transforms.Normalize((0.1307,), (0.3081,)) # 进行z-score标准化，这两个数分别是MNIST的均值和标准差
+                       ])),
+        batch_size=args.batch_size, shuffle=True, **kwargs)
+    test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(&#39;../data&#39;, train=False, transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])),
+        batch_size=args.test_batch_size, shuffle=True, **kwargs)
+ 
+    # plot1digit(train_loader)
+ 
+    model = Net().to(device)
+    optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+ 
+    for epoch in range(1, args.epochs &#43; 1):
+        train(args, model, device, train_loader, optimizer, epoch)
+        test(args, model, device, test_loader)
+ 
+    if (args.save_model):
+        torch.save(model.state_dict(),&#34;mnist_cnn.pt&#34;)
+         
+if __name__ == &#39;__main__&#39;:
+    main()
+
+
+首先是MNIST数据格式的问题，在L108~L120，我们使用Pytorch的DataLoader载入了训练和测试数据，数据格式本质上和本系列博客的第一篇博客介绍的是一致的，即每张图片都是28*28的灰度图片，因为是灰度图片，所以只有一个通道数，默认格式是(H,W,C)，且值域范围是[0,255]。但上述代码对原始图片进行了两个变换，分别是ToTensor和Normalize。ToTensor将[0,255]的灰度图片(H,W,C)转换为[0,1]的灰度图片(C,H,W)，即Pytorch对2D图片的格式要求都是channel在前。所以经过这一转换，一张图片的shape是(1,28,28)，是一个三维矩阵；如果是彩色图片的话，有R,G,B三个通道，C=3。Normalize对图片数据进行z-score标准化，即减去均值再除以标准差；L112的两个值就是预先计算的MNIST数据集的均值和标准差。这些操作的好处是能让模型更加平稳快速收敛。同第一篇博客一样，我们可以把Pytorch格式的图片打印出来以便直观理解，L61的plot1digit函数就是这个作用。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2019-05-19-neural-networks-and-deep-learning-appendix-pytorch-mnist-tutorial/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2019-05-19-neural-networks-and-deep-learning-appendix-pytorch-mnist-tutorial/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Neural Networks and Deep Learning（七）番外篇·Pytorch MNIST教程
+    </h1>
+    <div class="post-meta"><span title='2019-05-19 22:07:51 +0800 CST'>May 19, 2019</span>&nbsp;·&nbsp;3 min
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>由于本书成书较早（2015），作者当时使用的是Theano，但Theano已不再维护，所以本博客使用当下流行的Pytorch框架讲解MNIST图片分类的代码实现，具体就是Pytorch官方给出的MNIST代码：<a href="https://github.com/pytorch/examples/tree/master/mnist">https://github.com/pytorch/examples/tree/master/mnist</a>。</p>
+<p><img loading="lazy" src="/posts/2019-05-19-neural-networks-and-deep-learning-appendix-pytorch-mnist-tutorial/nn.png">
+使用该工具在线制作：<a href="http://alexlenail.me/NN-SVG/LeNet.html">http://alexlenail.me/NN-SVG/LeNet.html</a></p>
+<p>下面，我首先贴出经过我注释的Pytorch MNIST代码，然后对一些关键问题进行解释。</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> print_function
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch.nn <span style="color:#66d9ef">as</span> nn
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch.nn.functional <span style="color:#66d9ef">as</span> F
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> torch.optim <span style="color:#66d9ef">as</span> optim
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> torchvision <span style="color:#f92672">import</span> datasets, transforms
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 所有网络类要继承nn.Module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Net</span>(nn<span style="color:#f92672">.</span>Module):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self):
+</span></span><span style="display:flex;"><span>        super(Net, self)<span style="color:#f92672">.</span><span style="color:#a6e22e">__init__</span>() <span style="color:#75715e"># 调用父类构造函数</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>conv1 <span style="color:#f92672">=</span> nn<span style="color:#f92672">.</span>Conv2d(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>) <span style="color:#75715e"># (in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True)</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>conv2 <span style="color:#f92672">=</span> nn<span style="color:#f92672">.</span>Conv2d(<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">1</span>) <span style="color:#75715e"># 这一层的in_channels正好是上一层的out_channels</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>fc1 <span style="color:#f92672">=</span> nn<span style="color:#f92672">.</span>Linear(<span style="color:#ae81ff">4</span><span style="color:#f92672">*</span><span style="color:#ae81ff">4</span><span style="color:#f92672">*</span><span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">500</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>fc2 <span style="color:#f92672">=</span> nn<span style="color:#f92672">.</span>Linear(<span style="color:#ae81ff">500</span>, <span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forward</span>(self, x):
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>relu(self<span style="color:#f92672">.</span>conv1(x))
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>max_pool2d(x, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>) <span style="color:#75715e"># kernel_size=2, stride=2，pooling之后的大小除以2</span>
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>relu(self<span style="color:#f92672">.</span>conv2(x))
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>max_pool2d(x, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> x<span style="color:#f92672">.</span>view(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span><span style="color:#f92672">*</span><span style="color:#ae81ff">4</span><span style="color:#f92672">*</span><span style="color:#ae81ff">50</span>) <span style="color:#75715e"># 展开成 (z, 4*4*50)，其中z是通过自动推导得到的，所以这里设置为-1，这里相当于展开成行向量，便于后续全连接</span>
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>relu(self<span style="color:#f92672">.</span>fc1(x))
+</span></span><span style="display:flex;"><span>        x <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>fc2(x)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> F<span style="color:#f92672">.</span>log_softmax(x, dim<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>) <span style="color:#75715e"># log_softmax 即 log(softmax(x))；dim=1对行进行softmax，因为上面x.view展开成行向量了，log_softmax速度和数值稳定性都比softmax好一些</span>
+</span></span><span style="display:flex;"><span>     
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train</span>(args, model, device, train_loader, optimizer, epoch):
+</span></span><span style="display:flex;"><span>    model<span style="color:#f92672">.</span>train() <span style="color:#75715e"># 告诉pytorch，这是训练阶段 https://stackoverflow.com/a/51433411/2468587</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> batch_idx, (data, target) <span style="color:#f92672">in</span> enumerate(train_loader):
+</span></span><span style="display:flex;"><span>        data, target <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>to(device), target<span style="color:#f92672">.</span>to(device)
+</span></span><span style="display:flex;"><span>        optimizer<span style="color:#f92672">.</span>zero_grad() <span style="color:#75715e"># 每个batch的梯度重新累加</span>
+</span></span><span style="display:flex;"><span>        output <span style="color:#f92672">=</span> model(data)
+</span></span><span style="display:flex;"><span>        loss <span style="color:#f92672">=</span> F<span style="color:#f92672">.</span>nll_loss(output, target) <span style="color:#75715e"># 这里的nll_loss就是Michael Nielsen在ch3提到的log-likelihood cost function，配合softmax使用，batch的梯度/loss要求均值mean</span>
+</span></span><span style="display:flex;"><span>        loss<span style="color:#f92672">.</span>backward() <span style="color:#75715e"># 求loss对参数的梯度dw</span>
+</span></span><span style="display:flex;"><span>        optimizer<span style="color:#f92672">.</span>step() <span style="color:#75715e"># 梯度下降，w&#39;=w-η*dw</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> batch_idx <span style="color:#f92672">%</span> args<span style="color:#f92672">.</span>log_interval <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">&#39;Train Epoch: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> [</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">{:.0f}</span><span style="color:#e6db74">%)]</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Loss: </span><span style="color:#e6db74">{:.6f}</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>                epoch, batch_idx <span style="color:#f92672">*</span> len(data), len(train_loader<span style="color:#f92672">.</span>dataset),
+</span></span><span style="display:flex;"><span>                <span style="color:#ae81ff">100.</span> <span style="color:#f92672">*</span> batch_idx <span style="color:#f92672">/</span> len(train_loader), loss<span style="color:#f92672">.</span>item()))
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test</span>(args, model, device, test_loader):
+</span></span><span style="display:flex;"><span>    model<span style="color:#f92672">.</span>eval()  <span style="color:#75715e"># 告诉pytorch，这是预测（评价）阶段</span>
+</span></span><span style="display:flex;"><span>    test_loss <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    correct <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> torch<span style="color:#f92672">.</span>no_grad(): <span style="color:#75715e"># 预测时不需要误差反传，https://discuss.pytorch.org/t/model-eval-vs-with-torch-no-grad/19615/2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> data, target <span style="color:#f92672">in</span> test_loader:
+</span></span><span style="display:flex;"><span>            data, target <span style="color:#f92672">=</span> data<span style="color:#f92672">.</span>to(device), target<span style="color:#f92672">.</span>to(device)
+</span></span><span style="display:flex;"><span>            output <span style="color:#f92672">=</span> model(data)
+</span></span><span style="display:flex;"><span>            test_loss <span style="color:#f92672">+=</span> F<span style="color:#f92672">.</span>nll_loss(output, target, reduction<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;sum&#39;</span>)<span style="color:#f92672">.</span>item() <span style="color:#75715e"># sum up batch loss，预测时的loss求sum，L54再求均值</span>
+</span></span><span style="display:flex;"><span>            pred <span style="color:#f92672">=</span> output<span style="color:#f92672">.</span>argmax(dim<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, keepdim<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>) <span style="color:#75715e"># get the index of the max log-probability</span>
+</span></span><span style="display:flex;"><span>            correct <span style="color:#f92672">+=</span> pred<span style="color:#f92672">.</span>eq(target<span style="color:#f92672">.</span>view_as(pred))<span style="color:#f92672">.</span>sum()<span style="color:#f92672">.</span>item()
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    test_loss <span style="color:#f92672">/=</span> len(test_loader<span style="color:#f92672">.</span>dataset)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Test set: Average loss: </span><span style="color:#e6db74">{:.4f}</span><span style="color:#e6db74">, Accuracy: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">/</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> (</span><span style="color:#e6db74">{:.0f}</span><span style="color:#e6db74">%)</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">.</span>format(
+</span></span><span style="display:flex;"><span>        test_loss, correct, len(test_loader<span style="color:#f92672">.</span>dataset),
+</span></span><span style="display:flex;"><span>        <span style="color:#ae81ff">100.</span> <span style="color:#f92672">*</span> correct <span style="color:#f92672">/</span> len(test_loader<span style="color:#f92672">.</span>dataset)))
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">plot1digit</span>(data_loader):
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#66d9ef">as</span> plt
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    examples <span style="color:#f92672">=</span> enumerate(data_loader)
+</span></span><span style="display:flex;"><span>    batch_idx, (Xs, ys) <span style="color:#f92672">=</span> next(examples) <span style="color:#75715e"># 读取到的是一个batch的所有数据</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    X<span style="color:#f92672">=</span>Xs[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>numpy()[<span style="color:#ae81ff">0</span>] <span style="color:#75715e"># Xs[0]取出batch中的第一个数据，由tensor转换为numpy，因为pytorch tensor的格式是[channel, height, width]，所以最后[0]取出其第一个通道的[h,w]</span>
+</span></span><span style="display:flex;"><span>    y<span style="color:#f92672">=</span>ys[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>numpy() <span style="color:#75715e"># y没有通道，就一个标量值</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    np<span style="color:#f92672">.</span>savetxt(<span style="color:#e6db74">&#39;../../../fig/</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">.csv&#39;</span><span style="color:#f92672">%</span>y, X, delimiter<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;,&#39;</span>)
+</span></span><span style="display:flex;"><span>     
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>imshow(X, cmap<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Greys&#39;</span>) <span style="color:#75715e"># or &#39;Greys_r&#39;</span>
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>savefig(<span style="color:#e6db74">&#39;../../../fig/</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">.png&#39;</span><span style="color:#f92672">%</span>y)
+</span></span><span style="display:flex;"><span>    plt<span style="color:#f92672">.</span>show()
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Training settings</span>
+</span></span><span style="display:flex;"><span>    parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser(description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;PyTorch MNIST Example&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--batch-size&#39;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">64</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;N&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;input batch size for training (default: 64)&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--test-batch-size&#39;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;N&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;input batch size for testing (default: 1000)&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--epochs&#39;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;N&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;number of epochs to train (default: 10)&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--lr&#39;</span>, type<span style="color:#f92672">=</span>float, default<span style="color:#f92672">=</span><span style="color:#ae81ff">0.01</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;LR&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;learning rate (default: 0.01)&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--momentum&#39;</span>, type<span style="color:#f92672">=</span>float, default<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;M&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;SGD momentum (default: 0.5)&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--no-cuda&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;store_true&#39;</span>, default<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;disables CUDA training&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--seed&#39;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;S&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;random seed (default: 1)&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--log-interval&#39;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, metavar<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;N&#39;</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;how many batches to wait before logging training status&#39;</span>)
+</span></span><span style="display:flex;"><span>     
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;--save-model&#39;</span>, action<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;store_true&#39;</span>, default<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>                        help<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;For Saving the current Model&#39;</span>)
+</span></span><span style="display:flex;"><span>    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>    use_cuda <span style="color:#f92672">=</span> <span style="color:#f92672">not</span> args<span style="color:#f92672">.</span>no_cuda <span style="color:#f92672">and</span> torch<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>is_available()
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    torch<span style="color:#f92672">.</span>manual_seed(args<span style="color:#f92672">.</span>seed)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    device <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>device(<span style="color:#e6db74">&#34;cuda&#34;</span> <span style="color:#66d9ef">if</span> use_cuda <span style="color:#66d9ef">else</span> <span style="color:#e6db74">&#34;cpu&#34;</span>)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    kwargs <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;num_workers&#39;</span>: <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;pin_memory&#39;</span>: <span style="color:#66d9ef">True</span>} <span style="color:#66d9ef">if</span> use_cuda <span style="color:#66d9ef">else</span> {}
+</span></span><span style="display:flex;"><span>    train_loader <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>DataLoader(
+</span></span><span style="display:flex;"><span>        datasets<span style="color:#f92672">.</span>MNIST(<span style="color:#e6db74">&#39;../data&#39;</span>, train<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, download<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>                       transform<span style="color:#f92672">=</span>transforms<span style="color:#f92672">.</span>Compose([ <span style="color:#75715e"># https://discuss.pytorch.org/t/can-some-please-explain-how-the-transforms-work-and-why-normalize-the-data/2461/3</span>
+</span></span><span style="display:flex;"><span>                           transforms<span style="color:#f92672">.</span>ToTensor(), <span style="color:#75715e"># 把[0,255]的(H,W,C)的图片转换为[0,1]的(channel,height,width)的图片</span>
+</span></span><span style="display:flex;"><span>                           transforms<span style="color:#f92672">.</span>Normalize((<span style="color:#ae81ff">0.1307</span>,), (<span style="color:#ae81ff">0.3081</span>,)) <span style="color:#75715e"># 进行z-score标准化，这两个数分别是MNIST的均值和标准差</span>
+</span></span><span style="display:flex;"><span>                       ])),
+</span></span><span style="display:flex;"><span>        batch_size<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>batch_size, shuffle<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span>    test_loader <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>utils<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>DataLoader(
+</span></span><span style="display:flex;"><span>        datasets<span style="color:#f92672">.</span>MNIST(<span style="color:#e6db74">&#39;../data&#39;</span>, train<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>, transform<span style="color:#f92672">=</span>transforms<span style="color:#f92672">.</span>Compose([
+</span></span><span style="display:flex;"><span>                           transforms<span style="color:#f92672">.</span>ToTensor(),
+</span></span><span style="display:flex;"><span>                           transforms<span style="color:#f92672">.</span>Normalize((<span style="color:#ae81ff">0.1307</span>,), (<span style="color:#ae81ff">0.3081</span>,))
+</span></span><span style="display:flex;"><span>                       ])),
+</span></span><span style="display:flex;"><span>        batch_size<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>test_batch_size, shuffle<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>, <span style="color:#f92672">**</span>kwargs)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># plot1digit(train_loader)</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    model <span style="color:#f92672">=</span> Net()<span style="color:#f92672">.</span>to(device)
+</span></span><span style="display:flex;"><span>    optimizer <span style="color:#f92672">=</span> optim<span style="color:#f92672">.</span>SGD(model<span style="color:#f92672">.</span>parameters(), lr<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>lr, momentum<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>momentum)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> epoch <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, args<span style="color:#f92672">.</span>epochs <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>        train(args, model, device, train_loader, optimizer, epoch)
+</span></span><span style="display:flex;"><span>        test(args, model, device, test_loader)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (args<span style="color:#f92672">.</span>save_model):
+</span></span><span style="display:flex;"><span>        torch<span style="color:#f92672">.</span>save(model<span style="color:#f92672">.</span>state_dict(),<span style="color:#e6db74">&#34;mnist_cnn.pt&#34;</span>)
+</span></span><span style="display:flex;"><span>         
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>首先是MNIST数据格式的问题，在L108~L120，我们使用Pytorch的DataLoader载入了训练和测试数据，数据格式本质上和本系列博客的<a href="https://bitjoy.net/posts/2018-11-25-neutral-networks-and-deep-learning-1-mnist-dataset/">第一篇博客</a>介绍的是一致的，即每张图片都是28*28的灰度图片，因为是灰度图片，所以只有一个通道数，默认格式是(H,W,C)，且值域范围是[0,255]。但上述代码对原始图片进行了两个变换，分别是ToTensor和Normalize。ToTensor将[0,255]的灰度图片(H,W,C)转换为[0,1]的灰度图片(C,H,W)，即Pytorch对2D图片的格式要求都是channel在前。所以经过这一转换，一张图片的shape是(1,28,28)，是一个三维矩阵；如果是彩色图片的话，有R,G,B三个通道，C=3。Normalize对图片数据进行z-score标准化，即减去均值再除以标准差；L112的两个值就是预先计算的MNIST数据集的均值和标准差。这些操作的好处是能让模型更加平稳快速收敛。同第一篇博客一样，我们可以把Pytorch格式的图片打印出来以便直观理解，L61的plot1digit函数就是这个作用。</p>
+<p>Pytorch中自定义的网络类都要继承nn.Module这个基类（L10），自定义的网络类需要实现两个函数，分别是构造函数__init__和前向传播函数forward。在__init__中，定义需要用到的成员变量，往往是一些layer，比如上述代码中定义了两个卷积层和两个全连接层。在forward中，完成了实际的网络搭建过程，传入图片x，x流过整个网络，最后返回网络的输出。</p>
+<p>上述代码的网络结构如本博客开篇的图片所示，依次是：输入层、卷积层（包含ReLU激活）、池化层、卷积层（包含ReLU激活）、池化层、全连接层（包含ReLU激活）、全连接层（包含logsoftmax输出）。网络的构建过程很像搭积木，在forward函数和开篇的图片中都能很直观的看出来。</p>
+<p>需要稍微解释一下的是Conv2d类的初始化参数，前4个参数分别是in_channels, out_channels, kernel_size, stride，分别表示传入通道数、传出通道数、卷积核大小、卷积步长，对于第一个卷积核（L13），由于直接和输入层相连，MNIST图片是28*28的单通道图片，所以in_channels=1；out_channels的大小表示所用卷积核的数目，比如这里设置为20就表示有20个卷积核；kernel_size=5表示5*5的卷积核；stride=1表示卷积移动的步长为1。(1,28,28)的图片，经过上述卷积之后，得到的feature map大小变为了(20,24,24)，即有20个大小为24*24的feature map。经过max_pooling之后变为(20,12,12)，只改变了feature map大小，没有改变其channels数。所以第二个卷积核的in_channels等于第一个卷积核的out_channels，等于20（L14）。以此类推，第二个max_pooling输出的feature map就是(50,4,4)，所以第一个全连接层的输入维度是4*4*50。需要稍微注意的是在由feature map和下一层进行全连接时，需要先展开成一个行向量（L23），变成类似于<a href="https://bitjoy.net/posts/2018-12-14-neutral-networks-and-deep-learning-2-bp/">BP网络</a>的输入格式。</p>
+<p>Pytorch的官方文档对每个函数都有详细的解释，甚至还给出了公式说明怎样计算卷积层和池化层之后的feature map的size，非常良心，所以遇到任何问题，一定要先仔细看官方文档。如果你仔细看文档的话，会发现nn和nn.functional下会有很多同名的类和函数，比如nn.Conv2d和nn.functional.conv2d同时存在，有关它们的区别，简单来说，前者表示类，后者表示函数，像卷积层、全连接层等需要保存学习参数的layer，建议使用nn；而像ReLU和max_pooling等不需要保存学习参数或功能比较简单的layer，建议直接用nn.functional，具体的区别和建议请看：<a href="https://www.zhihu.com/question/66782101/answer/579393790">https://www.zhihu.com/question/66782101/answer/579393790</a>。</p>
+<p>其他还有一些小细节，比如Pytorch模型在训练和预测时，需要分别调用model.train()和model.eval()告诉Pytorch此时是训练和预测阶段了，因为在train阶段，会使用dropout、batchnorm等技术，而在预测时不会调用，所以需要显式告诉Pytorch现在是训练还是预测。还有就是训练阶段，每个batch需要梯度清零（optimizer.zero_grad）、求梯度（loss.backward）、梯度下降更新参数（optimizer.step）等步骤。在预测阶段，不用求梯度（torch.no_grad）等。具体可以看上述代码注释。</p>
+<p>最后总结，使用Pytorch构建深度学习模型是非常简单的，注意Pytorch的基本规则，仿照MNIST例子依葫芦画瓢就可以搭建自己的模型了。建议大家看过官方代码之后，自己重写一遍，检查一下是否学习到位。</p>
+<p>至此，Neural Networks and Deep Learning这本书的学习笔记到此结束，算是入门了神经网络和深度学习，接下来请开启深度学习实战的炼丹之旅。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/cnn/">CNN</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/">神经网络</a></li>
+      <li><a href="http://localhost:1313/tags/mnist/">MNIST</a></li>
+      <li><a href="http://localhost:1313/tags/pytorch/">Pytorch</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%8D%B7%E7%A7%AF/">卷积</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%B1%A0%E5%8C%96/">池化</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-08-15-announcement/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>公告</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2019-05-18-introduction-of-the-three-body-problem/">
+    <span class="title">Next »</span>
+    <br>
+    <span>《三体》始末</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
