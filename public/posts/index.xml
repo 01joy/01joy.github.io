@@ -6,8 +6,42 @@
     <description>Recent content in Posts on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 09 Nov 2025 13:08:18 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 30 Nov 2025 13:07:09 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2019 06 23 Cs224n 1 10 Word Vectors 2 and Word Senses</title>
+      <link>http://localhost:1313/posts/2019-06-23-cs224n-1-10-word-vectors-2-and-word-senses/</link>
+      <pubDate>Sun, 30 Nov 2025 13:07:09 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-06-23-cs224n-1-10-word-vectors-2-and-word-senses/</guid>
+      <description>&lt;p&gt;这一讲是上一讲的补充，内容比较零碎，包括：Word2vec回顾、优化、基于统计的词向量、GloVe、词向量评价、词义等，前两个内容没必要再介绍了，下面逐一介绍后四个内容。&lt;/p&gt;
+&lt;p&gt;基于统计的词向量&lt;/p&gt;
+&lt;p&gt;词向量的目的就是希望通过低维稠密向量来表示词的含义，而词的分布式语义表示方法认为词的含义由其上下文语境决定。Word2vec把中心词和临近词抽取出来，通过预测的方式训练得到词向量。在Word2vec之前，传统的方式通过统计词的共现性来得到词向量，即一个词的词向量表示为其临近词出现的频率，如果两个词的含义很相近，则其临近词分布会比较像，得到的词向量也比较像。其具体计算过程在第一次作业中有详细的描述，这里再简单回顾如下。&lt;/p&gt;
+&lt;p&gt;假设一个语料库中包含三个句子，共有8个特异词（包括点号），对于每个词，统计其前后一个词的词频（临近窗口为1），由此能得到一个8×8的对称矩阵，其每一行（或每一列）表示该词的词向量。比如对于like这个词，在三个句子中，其左右共出现2次I，1次deep和1次NLP，所以like对应的词向量中，I、deep和NLP维的值分别为2,1,1。&lt;/p&gt;
+&lt;p&gt;这种基于词频统计的方法很简单，但是它有如下不足：&lt;/p&gt;
+&lt;p&gt;特异的词很多，所以矩阵很大，维度很高，需要的存储空间也很大
+特异词的数目是在不断增长的，则词向量的维度也在不断增长
+矩阵很稀疏，即词向量很稀疏，会导致很多NLP任务会遇到稀疏计算的问题
+所以需要把上述计数矩阵转换为一个低维稠密的矩阵，方法就是SVD分解。上述矩阵原本是一个$n\times n$的矩阵，SVD分解后能得到一个$n\times k$的矩阵，其中$k\ll n$。即原本的词向量是一个$n$维的高维稀疏向量，变成了$k$维的低维稠密向量，而且还不会损失太多的信息。&lt;/p&gt;
+&lt;p&gt;2005年的一篇文章对上述简单的计数方法进行了改进，包括去掉停用词、使用倾斜窗口、使用皮尔逊相关系数等，提出了COALS模型，该模型得到的词向量效果也不错，也具有句法特征和语义特征。使用统计的方法和使用预测的方法训练词向量，两者的对比如下。基于统计计数的方法的主要特点是：训练速度快，能充分利用统计信息，主要用来捕获词的相似性。基于预测的方法的主要特点是：对语料库的大小可扩展，没有充分利用统计信息，能捕获除了词的相似性之外的其他复杂特征。&lt;/p&gt;
+&lt;p&gt;GloVe&lt;/p&gt;
+&lt;p&gt;GloVe的全称是GloVe: Global Vectors for Word Representation，正式这门课的老师Christopher D. Manning的研究成果。有关GloVe论文的详细解读，可以看这篇博客。GloVe希望能综合上述基于统计和基于预测的两种方法的优点。&lt;/p&gt;
+&lt;p&gt;GloVe的基本思想依然是基于统计的方法，当统计得到共现矩阵X之后，可以计算得到词$k$是词$i$的临近词的概率：&lt;/p&gt;
+&lt;p&gt;$P_{i,k}=\dfrac{X_{i,k}}{X_{i}}$&lt;/p&gt;
+&lt;p&gt;再定义两个$P$的比值：&lt;/p&gt;
+&lt;p&gt;$ratio_{i,j,k}=\dfrac{P_{i,k}}{P_{j,k}}$&lt;/p&gt;
+&lt;p&gt;如果词$k$在两个词$i$和$j$的临近概率相同，无论是同样大（water）还是同样小（fashion），经过比值计算后，$ratio_{i,j,k}$都约等于1了，说明在维度water和fashion上，无法区分ice和steam。而在维度solid和gash上，由于概率$P$的差异，导致$ratio_{i,j,k}$很大或者很小，这是有意义的，说明在solid和gas维度上，可以区分ice和steam的语义。&lt;/p&gt;
+&lt;p&gt;基于这样的观察，GloVe首先统计语料库中三元组$i,j,k$的$ratio_{i,j,k}$，然后初始化词向量$v$，构造函数$g$，使得利用词向量计算得到的$g(v_{i},v_{j},v_{k})$和真实$ratio_{i,j,k}$尽量接近。&lt;/p&gt;
+&lt;p&gt;$\dfrac{P_{i,k}}{P_{j,k}}=ratio_{i,j,k}=g(v_{i},v_{j},v_{k})$&lt;/p&gt;
+&lt;p&gt;$J=\sum_{i,j,k}^N(\dfrac{P_{i,k}}{P_{j,k}}-g(v_{i},v_{j},v_{k}))^2$&lt;/p&gt;
+&lt;p&gt;但是上述方法的复杂度太高了，对于一个$N\times N$的共现矩阵，上述算法需要计算所有的三元组，复杂度是$N\times N\times N$。GloVe文章通过各种转换技巧，把复杂度降为了一个$N\times N$的问题，具体过程可以看上面提到的博客或者paper原文。&lt;/p&gt;
+&lt;p&gt;总的来说，基于共现矩阵这种统计的方法，能捕获整个语料库全局的信息；而类似word2vec的预测的方法，则主要捕获局部的滑动窗口内的共现信息，两种方法训练得到的词向量效果都不错。&lt;/p&gt;
+&lt;p&gt;词向量评价&lt;/p&gt;
+&lt;p&gt;评价词向量的好坏主要有两个尺度，一是内部任务评价（intrinsic），一是外部任务评价（extrinsic），两者的主要特点如下。大概意思是内部任务是根据词本身具有的性质，比如近义、反义等，评价词向量本身的性能。外部任务是指词向量对NLP下游任务的性能的影响，比如同样是一个文本分类问题，换不同的词向量，对文本分类任务的性能的影响能反映出词向量的性能。&lt;/p&gt;
+&lt;p&gt;常见的内部任务评价是词的类比推理（Word Vector Analogies），就是类似man:woman :: king:queen这种，word2vec还专门整理出了这样的测试数据：word2vec/trunk/questions-words.txt。另一个内部任务评价是使用训练得到的词向量计算的词相似度，和人类认为的相似度做比较，有团队专门整理出了人类对两个词的相似度打分，具体可以看这里。&lt;/p&gt;
+&lt;p&gt;对词向量的外部任务评价就很多了，几乎所有的NLP任务都可以用来作为词向量的外部任务评价，比如命名实体识别、文本分类等等，这里不再展开。&lt;/p&gt;
+&lt;p&gt;词义&lt;/p&gt;
+&lt;p&gt;一个词往往具有多个含义（word senses），特别是对于常用的词或者存在很久的词。那么一个词向量能同时包含这个词的多个语义吗？有文章把一个词的多个语义通过线性加权的方式叠加到一个词向量中，然后还能通过稀疏编码的方式求解出每个语义的词向量，具体可以看下图中的参考文献。&lt;/p&gt;</description>
+    </item>
     <item>
       <title>解决Hugo的Giscus评论系统出现URI_TOO_LONG的问题</title>
       <link>http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/</link>
@@ -477,6 +511,50 @@ hkg1::
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;测试数学公式：
 This is an inline \(a^*=x-b^*\) equation.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>CS224N（1.8）Introduction and Word Vectors</title>
+      <link>http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/</link>
+      <pubDate>Sat, 22 Jun 2019 11:11:16 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/</guid>
+      <description>&lt;p&gt;今天开始介绍大名鼎鼎的NLP网课Stanford-CS224N。第一讲内容为课程简介和词向量。&lt;/p&gt;
+&lt;p&gt;词向量即用来表示这个词的含义的向量。早期的NLP常用one-hot编码来表示词向量，假如词典中共有10000个词，则这个one-hot向量长度就是10000，该词在词典中所处位置对应的值为1，其他值为0。&lt;/p&gt;
+&lt;p&gt;one-hot表示方法虽然简单，但其有诸多缺点：1. 词典中的词是不断增多的，比如英语，通过对原有的词增加前缀和后缀，可以变换出很多不同的词，one-hot编码会导致向量维度非常大，且每个向量是稀疏的；2. 不同词的one-hot编码向量是垂直的，在向量空间中无法表示近似关系，即使两个含义相近的词，它们的词向量点积也为0。&lt;/p&gt;
+&lt;p&gt;既然one-hot编码有这么多缺点，那我们就换一种编码，one-hot是高维稀疏向量，那新的编码就改用低维稠密向量，这样就解决了上述问题，那么怎样得到一个词的低维稠密的词向量呢？这就是word2vec算法。&lt;/p&gt;
+&lt;p&gt;word2vec采用了分布式语义的方法来表示一个词的含义。本质上，一个词的含义就是这个词所处的上下文语境。回想一下我们高中做英语完形填空时，一篇短文，挖了好多空，让我们根据空缺词的上下文语境选择合适的词。也就是说上下文语境已经能够确定这个词的含义了，如果选词正确，也就意味着我们理解了这个空缺词的含义。&lt;/p&gt;
+&lt;p&gt;word2vec算法发表于2013年，包括两种训练算法Skip-grams (SG)和Continuous Bag of Words (CBOW)，这两种方法很类似，其中CBOW和上述介绍到的英语完形填空几乎是一样的，由上下文词预测中心词；而SG则和CBOW正好相反，由中心词预测上下文词，本文主要介绍SG算法。&lt;/p&gt;
+&lt;p&gt;给定一个语料库，这个语料库包含了很多文章，每篇文章又包含很多句子，每个句子又包含很多词语。所以一个语料库是一个天然的标注集，因为对于每一个选定的中心词，我们都知道其临近的词是什么。这样一个（中心词，临近词）对就构成了一个标注集。SG算法的中心思想就是对于每个选定的中心词，尽量准确的预测其周围可能出现的词的概率分布。具体来说，SG算法首先随机初始化每个词的词向量；然后预测不同临近词出现的概率，最后最大化实际临近词出现的概率。&lt;/p&gt;
+&lt;p&gt;形式化来说，就是用极大似然估计的方法，求解每个词的词向量。其目标函数如下，其中\(\theta\)是待求解的参数；\(t\)为选定的中心词位置；对于每个\(t\)（外层\(\prod\)），估计其邻域\(\pm m\)个词出现的概率（内层\(\prod\)）。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/word2vec_objective_function.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;求解极大似然估计的方法比较成熟，一般先把极大似然转换为最小化-log似然，然后用梯度下降求解。所以核心问题就变成了如何求解\(P(w_{t+j}|w_t;\theta)\)。&lt;/p&gt;
+&lt;p&gt;对于每个词\(w\)，定义其两个词向量：\(v_w\)表示当\(w\)为中心词时的词向量，\(u_w\)表示当\(w\)为其他词的临近词时的词向量。则对于一个中心词\(c\)和其临近词\(o\)，有：&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/word2vec_prediction_function.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上式本质是一个softmax函数，因为给定\(c\)，\(o\)相当于是标注结果，所以把它们的点积作为分子，希望分子越大越好；而分母则是所有可能的\(u_w\)和\(v_c\)的点积之和，起到归一化作用。&lt;/p&gt;
+&lt;p&gt;题外话：讲这张幻灯片时，还提到softmax的一个形象解释。softmax包括max和soft两层含义。假设对于一个数组[1,2,3,4]，直接max也就是hard max的结果是保留最大值，其他全变为0，即[0,0,0,4]。但是softmax对他们求\(\frac{exp(x_i)}{\sum_{j=1}^nexp(x_j)}\)，变成了[0.03, 0.09, 0.24, 0.64]，最大的还是第4个数，但第四个数的优势被放大了，原来4只是1的4倍，现在0.64是0.03的21倍。所以softmax不但保留了max的属性，还变得更soft了，原来小的数不会被抹为0，只不过拉大了差异。&lt;/p&gt;
+&lt;p&gt;使用梯度下降还需要求解\(P\)对参数\(\theta\)的梯度，在这里\(\theta\)代表了所有词的中心词向量和临近词向量。对于上式，\(u_o\)、\(v_c\)等就是\(\theta\)的一部分。不断利用求导的链式法则，容易得到：&lt;/p&gt;
+$$\begin{eqnarray}\frac{\partial P(o|c)}{\partial v_c}=u_o-\sum_{w\in V}P(w|c)u_w.\tag{1}\end{eqnarray}$$&lt;p&gt;最后算出来的梯度很有意思，\(u_o\)表示观察到的上下文词向量（o表示observed），减号后面的是这个位置的期望的词向量，期望=概率*值。差值就是真实观察词向量减去期望词向量，这就是梯度。当它们的差值很小时，说明给定\(c\)能很好的预测其临近词的概率分布。&lt;/p&gt;
+&lt;p&gt;OK，当以上内容都准备妥当之后，我们就可以开始求解词向量了。首先随机初始化每个词\(w\)的中心词向量\(v_w\)和临近词向量\(u_w\)；然后求解-log损失函数\(J(\theta)\)；最后根据梯度下降更新所有参数\(\theta\)。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;上述word2vec算法简单，直观，但写代码实现比较复杂。在实际应用场景中，人们往往使用神经网络的方法来求解词向量，具体教程请看这里： &lt;a href=&#34;http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/&#34;&gt;http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/&lt;/a&gt; 。&lt;/p&gt;
+&lt;p&gt;我们把训练词向量的问题转换为端到端的文本分类问题。如下图所示，对于语料库中的一个句子，假设临近窗口为前后两个词，则可以抽取出如下图右边所示的训练样本，每个训练样本是一个（中心词，临近词）的pair。比如对于（the, quick）训练样本，我们希望神经网络在输入the这个中心词时，能以较高的概率预测出quick这个词。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/training_data.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;网络的结构如下图所示，也非常简单，是仅含一个隐藏层的全连接网络。比如上图的一组训练数据是（the, quick），表示输入是the的one-hot编码，输出是quick的one-hot编码。假设词典里有10,000个不同的词，则one-hot编码长度为10,000。有一个隐藏层的全连接网络，对应权重构成两个权重矩阵，和输入层连接的矩阵为\(V\)，其每一行表示词作为中心词时的词向量。输入行向量乘以\(V\)正好得到输入词的词向量，这对应课上讲的作为中心词的词向量\(v_c\)。&lt;/p&gt;
+&lt;p&gt;隐层和输出层连接的权重矩阵为\(U\)，其每一列表示输出层的词的临近词词向量。隐层的行向量\(v_c\)乘以矩阵\(U\)，得到词\(c\)的临近词的概率分布，再经过softmax激活，进行归一化。其实反过来看，从输出往隐层看，相当于输出层的行向量乘以\(U\)的转置，得到隐层词向量。这其实就是另一种训练词向量的方法CBOW，即英语完形填空，用临近词来预测中心词。&lt;/p&gt;
+&lt;p&gt;对于下图的神经网络，输出用softmax激活，损失函数使用-log损失，训练网络时使用梯度下降，其效果正好是课上讲的使用极大似然估计的方法！&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/skip_gram_net_arch2.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;另一方面，上图的这种结构是skip-gram模型，如果把对应的箭头反一下，输入变输出，输出变输入，其实就变成了CBOW模型了。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;上述全连接网络虽然能很方便的计算词向量，但存在两个问题：1. 网络过于庞大，参数量太多；2. 训练样本太多，每个样本都更新所有参数，训练速度慢。针对这两个问题，作者分别提出了 subsampling 和 negative sampling 的技巧，具体请看教程：
+&lt;a href=&#34;http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/&#34;&gt;http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/&lt;/a&gt; 。&lt;/p&gt;
+&lt;p&gt;第一个问题，网络参数量太多。假设有1w个特异的词，词向量长度为300，整个网络就有两个300w的矩阵（上图的V和U）参数需要优化。另一方面，训练语料库往往是很大的，随随便便就是成百上千万的文章，由此拆分得到的训练词组对就更大了，很容易到上亿的级别。几百万的参数，几亿的训练数据， 导致网络太过庞大，训练不动。&lt;/p&gt;
+&lt;p&gt;subsampling技巧是指，每个词有一个保留概率p，以这个概率p保留其在训练数据中，以1-p删掉这个词。比如上面的例子，删掉了fox，则fox对应的4个训练数据也一并删掉了，所以能减少较多的训练数据。对于词\(w_i\)，其概率\(P(w_i)\)公式如下，其中\(z(w_i)\)是词\(w\)的词频。概率p和这个词在语料库中的词频有关，词频越大，保留概率越低，即被删掉的概率越大，所以subsampling之后应该能较大的减少训练数据。&lt;/p&gt;
+$$\begin{eqnarray}P(w_i) = (\sqrt{\frac{z(w_i)}{0.001}} + 1) \cdot \frac{0.001}{z(w_i)} .\tag{2}\end{eqnarray}$$&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/mccormickml.com/assets/word2vec/subsample_func_plot.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第二个问题，原来的网络在训练时，对于每个输入中心词，都会对两个很大的参数矩阵V和U（和上面假设一样，300w）进行轻微的更新，更新操作太多了。&lt;/p&gt;
+&lt;p&gt;negative sampling技巧，只更新一小部分参数。比如对于(“fox”, “quick”)，期望的输出是quick的one-hot，即只有quick对应位为1，其他为0。但网络的softmax输出肯定不可能是完完全全的quick为1，其他为0；有可能是quick为0.8，其他位有些0.001，0.03之类的非0值，这就导致输出层的所有神经元都有误差。按照传统的方法，输出层所有神经元对应的U矩阵的权重都要更新。negative sampling技巧是，只更新和quick连接的U权重以及随机选5个输出神经元的连接权重进行更新，这样一下把需要更新的U权重个数从300w降到了6*300=1800，只需要更新0.06%的参数，大大减小了参数更新量！&lt;/p&gt;
+&lt;p&gt;5个随机选中的神经元（输出位置，即对应1w维的某个词）被称为negative sample，被选中的概率和词频成正比，词频越大的词被选中的概率越大，和上面subsampling类似。概率公式如下，其中\(f(w_i)\)应该和(2)中的\(z(w_i)\)一样，都表示词频。&lt;/p&gt;
+$$\begin{eqnarray}P(w_i) = \frac{ {f(w_i)}^{3/4} }{\sum_{j=0}^{n}\left( {f(w_j)}^{3/4} \right) }.\tag{3}\end{eqnarray}$$&lt;hr&gt;
+&lt;p&gt;作业请见GitHub：
+&lt;a href=&#34;https://github.com/01joy/stanford-cs224n-winter-2019/blob/master/1.8/assignment/a1/exploring_word_vectors.ipynb&#34;&gt;https://github.com/01joy/stanford-cs224n-winter-2019/blob/master/1.8/assignment/a1/exploring_word_vectors.ipynb&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>“蛋白质结构预测”问题描述</title>
