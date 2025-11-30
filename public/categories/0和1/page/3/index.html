@@ -151,6 +151,67 @@
 
 <article class="post-entry tag-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">隐马尔可夫模型及其应用（2）学习问题&amp;识别问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>上一回介绍了HMM的解码问题，今天我们介绍HMM的学习问题和识别问题，先来看学习问题。
+正如上一回结束时所说，HMM的学习问题是：仅已知观测序列\(\vec y\)，要估计出模型参数组\(\vec\lambda=(\mu,A,B)\)，其中\(\mu\)为初始概率分布向量，\(A\)为转移概率矩阵，\(B\)为发射概率矩阵。
+算法设计 求解HMM的参数学习问题，就是求解如下的最优化问题：
+$$\begin{equation} P(\vec Y = \vec y|\hat \lambda)=\max\limits_{\vec \lambda} P(\vec Y = \vec y|\vec \lambda)\end{equation}$$也就是找一个参数\(\vec \lambda\)，使得模型在该参数下最有可能产生当前的观测\(\vec y\)。如果使用极大似然法求解，对于似然函数\(P(\vec Y=\vec y|\vec \lambda)=\sum\limits_{i_1,…,i_T}\mu_{i_1}b_{i_1y_1}a_{i_1i_2}…a_{i_{T-1}i_T}b_{i_Ty_T}\)而言，这个最大值问题的计算量过大，在实际中是不可能被采用的。为此，人们构造了一个递推算法，使其能相当合理地给出模型参数\(\vec \lambda\)的粗略估计。其核心思想是：并不要求备选\(\vec\lambda\)使得\(P(\vec Y=\vec y|\vec \lambda)\)达到最大或局部极大，而只要求使\(P(\vec Y=\vec y|\vec \lambda)\)相当大，从而使计算变为实际可能。
+EM算法 为此，我们定义一个描述模型“趋势”的量\(Q(\vec\lambda^*|\vec\lambda)\)代替似然函数\(P(\vec Y=\vec y|\vec\lambda)\)，其定义为：
+$$\begin{equation} Q(\vec\lambda^*|\vec\lambda)=\sum\limits_{\vec x}P(\vec x,\vec y|\vec\lambda)\ln P(\vec x,\vec y|\vec\lambda^*)\end{equation}$$利用在\(0 &lt; x &lt; 1\)时，不等式\(\ln x\leq x-1\)成立，可以证明：
+$$\begin{equation} Q(\vec\lambda^*|\vec\lambda)-Q(\vec\lambda|\vec\lambda)\leq P(\vec Y=\vec y|\vec\lambda^*)-P(\vec Y=\vec y|\vec\lambda)\end{equation}$$由此可见，对于固定的\(\vec\lambda\)，只要\(Q(\vec\lambda^*|\vec\lambda)&gt;Q(\vec\lambda|\vec\lambda)\)，就有\(P(\vec Y=\vec y|\vec\lambda^*)&gt;P(\vec Y=\vec y|\vec\lambda)\)。于是想把模型\(\vec\lambda_m\)修改为更好的模型\(\vec\lambda_{m&#43;1}\)，只需找\(\vec\lambda_{m&#43;1}\)使得：
+$$\begin{equation}Q(\vec\lambda_{m&#43;1}|\vec\lambda_m)=\sup_{\vec\lambda}Q(\vec\lambda|\vec\lambda_m)\end{equation}$$即只要把\(Q(\vec\lambda|\vec\lambda_m)\)关于\(\vec\lambda\)的最大值处取成\(\vec\lambda_{m&#43;1}\)，就有\(P(\vec Y=\vec y|\vec\lambda_{m&#43;1})&gt;P(\vec Y=\vec y|\vec\lambda_m)\)。
+这样得到的模型序列\(\{\vec\lambda_m\}\)能保证\(P(\vec Y=\vec y|\vec\lambda_m)\)关于\(m\)是严格递增的，虽然在这里还不能在理论上证明\(P(\vec Y=\vec y|\vec\lambda_m)\)收敛到\(\max_{\vec\lambda}P(\vec Y=\vec y|\vec\lambda)\)，但是当\(m\)充分大时，\(\vec\lambda_m\)也还能提供在实际中较为满意的粗略近似。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-21 18:46:01 +0800 CST'>August 21, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 隐马尔可夫模型及其应用（2）学习问题&识别问题" href="http://localhost:1313/posts/2016-08-21-introduction-to-hmm-2/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">隐马尔可夫模型及其应用（1）简介&amp;解码问题
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>隐马尔可夫模型（Hidden Markov Model, HMM）是统计模型，它用来描述一个含有隐含未知参数的马尔可夫过程。其难点是从可观察的参数中确定该过程的隐含参数。然后利用这些参数来作进一步的分析，例如模式识别。
+先举一个简单的例子以直观地理解HMM的实质——韦小宝的骰子。
+假设韦小宝有两个骰子，一个正常的骰子A，A以1/6的概率均等的出现每个点；一个不正常的骰子B，B出现5,6点数的概率为0.3，出现其他点数的概率为0.1。显然投掷B更容易出现大的点数。每次试验第一次投掷时，韦小宝会以0.4的概率出千（即投掷B）。但是在一次试验中，韦小宝不太可能一直出千，所以骰子会在A、B之间转换，比如这次投了B，下次可能会以0.1的概率投A。A、B之间的转移概率如下图。
+某一次试验，我们观察到韦小宝掷出的骰子序列为\(O=(1,3,4,5,5,6,6,3,2,6)\)，请问韦小宝什么时候出千了。这个问题就可以通过HMM求解。
+HMM有2个状态：
+观测状态。我们观察到的骰子序列称为观测状态\(\mathbf{Y}=\{y_1,y_2,…,y_T\}\) 隐状态。隐含在每个观测状态里面的是隐状态\(\mathbf{X}=\{x_1,x_2,…,x_T\}\) T是时间，也可以认为是观测的次数。HMM有3个参数：
+初始分布\(\mathbf{\mu}=(\mu_i)\)，\(\mu_i=Pr(x_1=i)\)，即第一次观测时，每个隐状态出现的概率 转移概率矩阵\(A=(a_{ij})\)，\(a_{ij}=Pr(x_{t&#43;1}=j|x_t=i)\)，即t时刻的隐状态为i，t&#43;1时刻转移到隐状态j的概率 发射概率矩阵\(B=(b_{il})\)，\(b_{il}=Pr(y_t=l|x_t=i)\)，即t时候隐状态为i的情况下，观测到状态为l的概率 参数\(\mathbf{\lambda=\{\mu,A,B\}}\)称为HMM的模型参数。具体到上面的例子，我们有初始分布和转移概率为：
+发射概率为：
+观测状态为\(\mathbf{Y}=(1,3,4,5,5,6,6,3,2,6)\)，问题就是求解出隐状态\(\mathbf{X}\)，此问题被称为HMM的解码问题，可以由著名的维特比算法（Viterbi algorithm）解决。
+解码问题是要求出使得观测状态\(Y\)出现概率最大的隐状态\(X\)，假设有N个隐状态（本例为2），共有T个时刻（本例为10），则每个时刻有N个取值可能，则共有\(N^T\)条可能的隐状态链（本例为\(2^{10}\)）。我们需要求出每一条隐状态链下T个发射概率的乘积，然后取最大值，这是指数时间复杂度的（\(O(N^T)\)）。
+但是Viterbi算法是一个动态规划算法，只需多项式时间即可解决该问题。该算法的原理很好理解，假设我们求得到\(s_{i2}\)的最大概率路径为下图中的红线\(s_{11}\rightarrow s_{22}\rightarrow … s_{i2}\)，则在求经过\(s_{i2}\)到\(s_{(i&#43;1)1}\)的最大概率路径时，不需要再测试\(s_{13}\rightarrow s_{21}\rightarrow s_{i2}\rightarrow s_{(i&#43;1)1}\)这条路径（下图蓝线），因为显然已经知道红线概率大于蓝线概率了。图中还有很多类似蓝线的路径都可以不用计算了，大大提高了求解速度。
+因为计算第\(i&#43;1\)时刻的累积概率只和第\(i\)时刻的概率有关，每次至多计算\(N*N\)个概率乘积（可以从\(i\)时刻的\(N\)个状态到达\(i&#43;1\)时刻的某个状态，\(i&#43;1\)时刻共有\(N\)个状态），最多计算T次（共T个时刻），所以时间复杂度降到了\(O(N^2T)\)。
+下面我们形式化的描述Viterbi算法。
+假设\(\delta_t(i)\)为\(t\)时刻取到隐状态\(i\)，且1~t的观测状态都符合观测值\(Y\)的各个路径的最大概率，即
+$$ \begin{equation}\delta_t(i)=\underset{i_1,…,i_{t-1}}{\max}Pr(X_t=i,X_{t-1}=i_{t-1},…,X_1=i_1,Y_t=y_t,…,Y_1=y_1|\mathbf{\lambda})\end{equation} $$联系上图，可认为\(\delta_t(i)\)为红线。则递推公式为：
+$$ \begin{equation}\delta_{t&#43;1}(i)=b_{iy_{t&#43;1}}\underset{j}{\max}(\delta_t(j)a_{ji})\end{equation} $$由\(j\)到\(i\)的转移概率，再乘上\(i\)发射\(y_{t&#43;1}\)的概率。
+在初始时刻\(t=1\)，有：
+$$ \begin{equation}\delta_1(i)=\mu_ib_{iy_1}\end{equation} $$最后的全局最大概率为\(\underset{j}{\max}\delta_T(j)\)。为了得到完整路径，我们保留每一隐状态取得最大概率时的上一隐状态，即：
+$$ \begin{equation}\psi_{t&#43;1}(i)=j^*\end{equation} $$其中\(j^*\)要满足
+$$ \begin{equation}\delta_{t&#43;1}(i)=b_{iy_{t&#43;1}}\delta_t(j^*)a_{j^*i}\end{equation} $$最后使用如下回溯法得到所有最佳隐状态：
+$$\begin{equation}X_T=i^*\in\{i:\delta_T(i)=\underset{j}{\max}\delta_T(j)\}\end{equation}$$$$\begin{equation}X_t=\psi_{t&#43;1}(X_{t&#43;1})\end{equation}$$下面我们利用Viterbi算法来求解韦小宝的骰子这个例子。
+\(t=1\)时，\(y_1=1\)，有\(\delta_1(A)=0.6*1/6=0.1\)，\(\delta_1(B)=0.4*0.1=0.04\)。
+\(t=2\)时，\(y_2=3\)，有：
+隐状态为A：a）A-&gt;A有\(\delta_2(A)=(1/6)*0.1*0.8=1.33*10^{-2}\)；b）B-&gt;A有\(\delta_2(A)=(1/6)*0.04*0.1=6.6*10^{-4}\)。所以A-&gt;A，\(\psi_2(A)=A\)。 隐状态为B：a）A-&gt;B有\(\delta_2(B)=0.1*0.1*0.2=2*10^{-3}\)；b）B-&gt;B有\(\delta_2(B)=0.1*0.04*0.9=3.6*10^{-3}\)。所以B-&gt;B，\(\psi_2(B)=B\)。 如此计算下去，可以得到如下表： \(t=10\)时最大概率为\(\delta_{10}(B)\)，经过回溯得到最佳隐状态为：
+所以HMM很神奇吧，可以抓住韦小宝从第5次开始就一直在出千，而且出千之后，掷出的点数大部分为5和6。
+Viterbi算法还可用于解决语音识别或者拼音输入法。我们知道中文的一个拼音可以对应多个汉字，连续的一段拼音就能组成成千上万种可能的句子，哪一个句子才是最佳候选呢？我们可以把每个拼音当成观测状态，同音的汉字当成可能的隐状态。通过背景语料库统计得到每个汉字出现在词首的概率、汉字之间的转移概率和汉字与拼音之间的发射概率，这样我们就能得到模型参数，然后利用Viterbi算法求解出一个最佳的隐状态序列，这样就能完成一个简易的拼音输入法。
+HMM在实际中主要有3个方面的应用，分别是：
+从一段观测序列\(\mathbf{Y}\)及已知模型\(\mathbf{\lambda=(\mu,A,B)}\)出发，估计出隐状态\(\mathbf{X}\)的最佳值，称为解码问题，这是状态估计问题。这篇博客讨论的就是这个问题。 从一段观测序列\(\mathbf{Y}\)出发，估计模型参数组\(\mathbf{\lambda=(\mu,A,B)}\)，称为学习问题，就是参数估计问题。 对于一个特定的观测链\(\mathbf{Y}\)，已知它可能是由已经学习好的若干模型之一所得的观测，要决定此观测究竟是得自其中哪一个模型，这称为识别问题，就是分类问题。 关于HMM的学习问题和识别问题，请听下回分解。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-08-20 18:12:53 +0800 CST'>August 20, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 隐马尔可夫模型及其应用（1）简介&解码问题" href="http://localhost:1313/posts/2016-08-20-introduction-to-hmm-1/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">稳定版快速排序算法
     </h2>
   </header>
@@ -349,70 +410,12 @@ $$\begin{equation}0\leq\alpha_i \leq C,\forall i.\end{equation}$$而松弛变量
   <footer class="entry-footer"><span title='2016-05-02 15:12:39 +0800 CST'>May 2, 2016</span>&nbsp;·&nbsp;5 min</footer>
   <a class="entry-link" aria-label="post link to SVM之序列最小最优化算法（SMO算法）" href="http://localhost:1313/posts/2016-05-02-svm-smo-algorithm/"></a>
 </article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">和我一起构建搜索引擎（七）总结展望
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>至此，整个新闻搜索引擎构建完毕，总体效果令人满意，不过还是有很多可以改进的地方。下面总结一下本系统的优点和不足。
-优点
-倒排索引存储方式。因为不同词项的倒排记录表长度一般不同，所以没办法以常规的方式存入关系型数据库。通过将一个词项的倒排记录表序列化成一个字符串再存入数据库，读取的时候通过反序列化获得相关数据，整个结构类似于邻接表的形式。
-推荐阅读实现方式。利用特征提取的方法，用25个关键词表示一篇新闻，大大减小了文档词项矩阵规模，提高计算效率的同时不影响推荐新闻相关性。
-借用了Reddit的热度公式，融合了时间因素。
-不足
-构建索引时，为了降低索引规模，提高算法速度，我们将纯数字词项过滤了，同时忽略了词项大小写。虽然索引规模下降了，但是牺牲了搜索引擎的正确率。
-构建索引时，采用了jieba的精确分词模式，比如句子“我来到北京清华大学”的分词结果为“我/ 来到/ 北京/ 清华大学”，“清华大学”作为一个整体被当作一个词项，如果搜索关键词是“清华”，则该句子不能匹配，但显然这个句子和“清华”相关。所以后续可以采用结巴的搜索引擎分词模式，虽然索引规模增加了，但能提升搜索引擎的召回率。
-在推荐阅读模块，虽然进行了维度约减，但是当数据量较大时（数十万条新闻），得到的文档词项矩阵也是巨大的，会远远超过现有PC的内存大小。所以可以先对新闻进行粗略的聚类，再在类内计算两两cosine相似度，得到值得推荐的新闻。
-在热度公式中，虽然借用了Reddit的公式，大的方向是正确的，但是引入了参数\(k_1\)和\(k_2\)，而且将其简单的设置为1。如果能够由专家给出或者经过机器学习训练得到，则热度公式的效果会更好。
-完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
-以下是系列博客：
-和我一起构建搜索引擎（一）简介
-和我一起构建搜索引擎（二）网络爬虫
-和我一起构建搜索引擎（三）构建索引
-和我一起构建搜索引擎（四）检索模型
-和我一起构建搜索引擎（五）推荐阅读
-和我一起构建搜索引擎（六）系统展示
-和我一起构建搜索引擎（七）总结展望
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-09 23:52:13 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（七）总结展望" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/"></a>
-</article>
-
-<article class="post-entry tag-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">和我一起构建搜索引擎（六）系统展示
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。
-我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。
-这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。
-图1. 搜索页面
-图2. 新闻详情页面
-由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。
-完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
-以下是系列博客：
-和我一起构建搜索引擎（一）简介
-和我一起构建搜索引擎（二）网络爬虫
-和我一起构建搜索引擎（三）构建索引
-和我一起构建搜索引擎（四）检索模型
-和我一起构建搜索引擎（五）推荐阅读
-和我一起构建搜索引擎（六）系统展示
-和我一起构建搜索引擎（七）总结展望
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2016-01-09 23:32:10 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to 和我一起构建搜索引擎（六）系统展示" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/categories/0%E5%92%8C1/page/2/">
-      «&nbsp;Prev&nbsp;2/4
+      «&nbsp;Prev&nbsp;2/5
     </a>
-    <a class="next" href="http://localhost:1313/categories/0%E5%92%8C1/page/4/">Next&nbsp;4/4&nbsp;»
+    <a class="next" href="http://localhost:1313/categories/0%E5%92%8C1/page/4/">Next&nbsp;4/5&nbsp;»
     </a>
   </nav>
 </footer>

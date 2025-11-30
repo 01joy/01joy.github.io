@@ -151,6 +151,87 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">CS224N（1.8）Introduction and Word Vectors
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>今天开始介绍大名鼎鼎的NLP网课Stanford-CS224N。第一讲内容为课程简介和词向量。
+词向量即用来表示这个词的含义的向量。早期的NLP常用one-hot编码来表示词向量，假如词典中共有10000个词，则这个one-hot向量长度就是10000，该词在词典中所处位置对应的值为1，其他值为0。
+one-hot表示方法虽然简单，但其有诸多缺点：1. 词典中的词是不断增多的，比如英语，通过对原有的词增加前缀和后缀，可以变换出很多不同的词，one-hot编码会导致向量维度非常大，且每个向量是稀疏的；2. 不同词的one-hot编码向量是垂直的，在向量空间中无法表示近似关系，即使两个含义相近的词，它们的词向量点积也为0。
+既然one-hot编码有这么多缺点，那我们就换一种编码，one-hot是高维稀疏向量，那新的编码就改用低维稠密向量，这样就解决了上述问题，那么怎样得到一个词的低维稠密的词向量呢？这就是word2vec算法。
+word2vec采用了分布式语义的方法来表示一个词的含义。本质上，一个词的含义就是这个词所处的上下文语境。回想一下我们高中做英语完形填空时，一篇短文，挖了好多空，让我们根据空缺词的上下文语境选择合适的词。也就是说上下文语境已经能够确定这个词的含义了，如果选词正确，也就意味着我们理解了这个空缺词的含义。
+word2vec算法发表于2013年，包括两种训练算法Skip-grams (SG)和Continuous Bag of Words (CBOW)，这两种方法很类似，其中CBOW和上述介绍到的英语完形填空几乎是一样的，由上下文词预测中心词；而SG则和CBOW正好相反，由中心词预测上下文词，本文主要介绍SG算法。
+给定一个语料库，这个语料库包含了很多文章，每篇文章又包含很多句子，每个句子又包含很多词语。所以一个语料库是一个天然的标注集，因为对于每一个选定的中心词，我们都知道其临近的词是什么。这样一个（中心词，临近词）对就构成了一个标注集。SG算法的中心思想就是对于每个选定的中心词，尽量准确的预测其周围可能出现的词的概率分布。具体来说，SG算法首先随机初始化每个词的词向量；然后预测不同临近词出现的概率，最后最大化实际临近词出现的概率。
+形式化来说，就是用极大似然估计的方法，求解每个词的词向量。其目标函数如下，其中\(\theta\)是待求解的参数；\(t\)为选定的中心词位置；对于每个\(t\)（外层\(\prod\)），估计其邻域\(\pm m\)个词出现的概率（内层\(\prod\)）。
+求解极大似然估计的方法比较成熟，一般先把极大似然转换为最小化-log似然，然后用梯度下降求解。所以核心问题就变成了如何求解\(P(w_{t&#43;j}|w_t;\theta)\)。
+对于每个词\(w\)，定义其两个词向量：\(v_w\)表示当\(w\)为中心词时的词向量，\(u_w\)表示当\(w\)为其他词的临近词时的词向量。则对于一个中心词\(c\)和其临近词\(o\)，有：
+上式本质是一个softmax函数，因为给定\(c\)，\(o\)相当于是标注结果，所以把它们的点积作为分子，希望分子越大越好；而分母则是所有可能的\(u_w\)和\(v_c\)的点积之和，起到归一化作用。
+题外话：讲这张幻灯片时，还提到softmax的一个形象解释。softmax包括max和soft两层含义。假设对于一个数组[1,2,3,4]，直接max也就是hard max的结果是保留最大值，其他全变为0，即[0,0,0,4]。但是softmax对他们求\(\frac{exp(x_i)}{\sum_{j=1}^nexp(x_j)}\)，变成了[0.03, 0.09, 0.24, 0.64]，最大的还是第4个数，但第四个数的优势被放大了，原来4只是1的4倍，现在0.64是0.03的21倍。所以softmax不但保留了max的属性，还变得更soft了，原来小的数不会被抹为0，只不过拉大了差异。
+使用梯度下降还需要求解\(P\)对参数\(\theta\)的梯度，在这里\(\theta\)代表了所有词的中心词向量和临近词向量。对于上式，\(u_o\)、\(v_c\)等就是\(\theta\)的一部分。不断利用求导的链式法则，容易得到：
+$$\begin{eqnarray}\frac{\partial P(o|c)}{\partial v_c}=u_o-\sum_{w\in V}P(w|c)u_w.\tag{1}\end{eqnarray}$$最后算出来的梯度很有意思，\(u_o\)表示观察到的上下文词向量（o表示observed），减号后面的是这个位置的期望的词向量，期望=概率*值。差值就是真实观察词向量减去期望词向量，这就是梯度。当它们的差值很小时，说明给定\(c\)能很好的预测其临近词的概率分布。
+OK，当以上内容都准备妥当之后，我们就可以开始求解词向量了。首先随机初始化每个词\(w\)的中心词向量\(v_w\)和临近词向量\(u_w\)；然后求解-log损失函数\(J(\theta)\)；最后根据梯度下降更新所有参数\(\theta\)。
+上述word2vec算法简单，直观，但写代码实现比较复杂。在实际应用场景中，人们往往使用神经网络的方法来求解词向量，具体教程请看这里： http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/ 。
+我们把训练词向量的问题转换为端到端的文本分类问题。如下图所示，对于语料库中的一个句子，假设临近窗口为前后两个词，则可以抽取出如下图右边所示的训练样本，每个训练样本是一个（中心词，临近词）的pair。比如对于（the, quick）训练样本，我们希望神经网络在输入the这个中心词时，能以较高的概率预测出quick这个词。
+网络的结构如下图所示，也非常简单，是仅含一个隐藏层的全连接网络。比如上图的一组训练数据是（the, quick），表示输入是the的one-hot编码，输出是quick的one-hot编码。假设词典里有10,000个不同的词，则one-hot编码长度为10,000。有一个隐藏层的全连接网络，对应权重构成两个权重矩阵，和输入层连接的矩阵为\(V\)，其每一行表示词作为中心词时的词向量。输入行向量乘以\(V\)正好得到输入词的词向量，这对应课上讲的作为中心词的词向量\(v_c\)。
+隐层和输出层连接的权重矩阵为\(U\)，其每一列表示输出层的词的临近词词向量。隐层的行向量\(v_c\)乘以矩阵\(U\)，得到词\(c\)的临近词的概率分布，再经过softmax激活，进行归一化。其实反过来看，从输出往隐层看，相当于输出层的行向量乘以\(U\)的转置，得到隐层词向量。这其实就是另一种训练词向量的方法CBOW，即英语完形填空，用临近词来预测中心词。
+对于下图的神经网络，输出用softmax激活，损失函数使用-log损失，训练网络时使用梯度下降，其效果正好是课上讲的使用极大似然估计的方法！
+另一方面，上图的这种结构是skip-gram模型，如果把对应的箭头反一下，输入变输出，输出变输入，其实就变成了CBOW模型了。
+上述全连接网络虽然能很方便的计算词向量，但存在两个问题：1. 网络过于庞大，参数量太多；2. 训练样本太多，每个样本都更新所有参数，训练速度慢。针对这两个问题，作者分别提出了 subsampling 和 negative sampling 的技巧，具体请看教程： http://mccormickml.com/2017/01/11/word2vec-tutorial-part-2-negative-sampling/ 。
+第一个问题，网络参数量太多。假设有1w个特异的词，词向量长度为300，整个网络就有两个300w的矩阵（上图的V和U）参数需要优化。另一方面，训练语料库往往是很大的，随随便便就是成百上千万的文章，由此拆分得到的训练词组对就更大了，很容易到上亿的级别。几百万的参数，几亿的训练数据， 导致网络太过庞大，训练不动。
+subsampling技巧是指，每个词有一个保留概率p，以这个概率p保留其在训练数据中，以1-p删掉这个词。比如上面的例子，删掉了fox，则fox对应的4个训练数据也一并删掉了，所以能减少较多的训练数据。对于词\(w_i\)，其概率\(P(w_i)\)公式如下，其中\(z(w_i)\)是词\(w\)的词频。概率p和这个词在语料库中的词频有关，词频越大，保留概率越低，即被删掉的概率越大，所以subsampling之后应该能较大的减少训练数据。
+$$\begin{eqnarray}P(w_i) = (\sqrt{\frac{z(w_i)}{0.001}} &#43; 1) \cdot \frac{0.001}{z(w_i)} .\tag{2}\end{eqnarray}$$
+第二个问题，原来的网络在训练时，对于每个输入中心词，都会对两个很大的参数矩阵V和U（和上面假设一样，300w）进行轻微的更新，更新操作太多了。
+negative sampling技巧，只更新一小部分参数。比如对于(“fox”, “quick”)，期望的输出是quick的one-hot，即只有quick对应位为1，其他为0。但网络的softmax输出肯定不可能是完完全全的quick为1，其他为0；有可能是quick为0.8，其他位有些0.001，0.03之类的非0值，这就导致输出层的所有神经元都有误差。按照传统的方法，输出层所有神经元对应的U矩阵的权重都要更新。negative sampling技巧是，只更新和quick连接的U权重以及随机选5个输出神经元的连接权重进行更新，这样一下把需要更新的U权重个数从300w降到了6*300=1800，只需要更新0.06%的参数，大大减小了参数更新量！
+5个随机选中的神经元（输出位置，即对应1w维的某个词）被称为negative sample，被选中的概率和词频成正比，词频越大的词被选中的概率越大，和上面subsampling类似。概率公式如下，其中\(f(w_i)\)应该和(2)中的\(z(w_i)\)一样，都表示词频。
+$$\begin{eqnarray}P(w_i) = \frac{ {f(w_i)}^{3/4} }{\sum_{j=0}^{n}\left( {f(w_j)}^{3/4} \right) }.\tag{3}\end{eqnarray}$$ 作业请见GitHub： https://github.com/01joy/stanford-cs224n-winter-2019/blob/master/1.8/assignment/a1/exploring_word_vectors.ipynb
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-06-22 11:11:16 +0800 CST'>June 22, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to CS224N（1.8）Introduction and Word Vectors" href="http://localhost:1313/posts/2019-06-22-cs224n-1-8-introduction-and-word-vectors/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">“蛋白质结构预测”问题描述
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>相信很多学CS的同学之前都没听说过“蛋白质结构预测”这个问题，直到2018年12月初，一则劲爆消息瞬间引爆了CSer的朋友圈，那就是Google Deepmind团队开发的AlphaFold一举拿下当年的CASP比赛冠军，而且远远甩开了第二名。我当时就转载过类似的公众号文章，大家可以阅读并想象当时朋友圈的欢呼声：阿尔法狗再下一城 | 蛋白结构预测AlphaFold大胜传统人类模型。
+当时，很多同学也转载过类似的文章，但其实很少有人真正明白“蛋白质结构预测”这个问题是什么，它的难度有多大，CASP是个什么比赛，以及AlphaFold的内部原理是什么。当然，对于这一连串的问题，我当时也是懵逼的。不过自己好歹也是个跟蛋白质有关的PhD，如此热点事件，自然是要关注的。不过之后一直没时间，直到今年相关顶级文章再次爆出，我就借着准备文献讲评的机会了解了相关的知识，在这里跟大家分享一下。
+https://upload.wikimedia.org/wikipedia/commons/a/a9/Protein_folding.png
+蛋白质结构分为四级，分别是一级结构、二级结构、三级结构和四级结构，下面分别描述。
+一级结构 蛋白质的一级结构可以理解为一条线性的字符串，比如MSFIKTFSGKHFYYDKINKDDIVINDIAVSLSNICR。其基本组成单元是一个个的氨基酸，即一个个的字母。氨基酸有单字母表示和三字母表示，为了简洁，本文使用单字母表示，下图的例子是三字母表示。常见的氨基酸只有20种，所以一级结构的字符串通常只包含20种字母，不包含的6种字母是BJOUXZ。
+http://oregonstate.edu/instruct/bb450/450material/schedule450s17e.html 本文大部分蛋白质基础知识都来源于此
+20种氨基酸的结构符合一个通式，如下图所示，中间的碳原子称为Cα碳原子，表示它处在α位；左边连了一个氨基-NH2，称为N端；右边连了一个羧基-COOH，称为C端。20种不同氨基酸的差别就在于Cα上连接的侧链基团R，具体的差别网上一搜就能查到。 https://upload.wikimedia.org/wikipedia/commons/c/ce/AminoAcidball.svg
+20种氨基酸连接的方式为脱水缩合，即一个氨基酸的羧基-COOH和另一个氨基酸的氨基-NH2反应，丢掉一个H2O，形成一个肽键-CO-NH-，如下图所示。丢掉了羧基和氨基的氨基酸被称为氨基酸残基，这个名词很形象，氨基酸缺胳膊少腿，所以变成了“残”基。 二级结构 二级结构就是在一级结构的字符串的基础上，肽链怎样进行盘旋、折叠等变换，形成一种局部的三维结构，这种局部的三维结构通常由氢键支撑。常见的二级结构有α螺旋和β折叠，如下图所示。其中α螺旋的每个残基的-NH的H和临近的第4个残基的-CO的O形成氢键，由此支撑α螺旋的结构稳定性，如下图的箭头所指虚线。β折叠则是两条肽链，平行排列，对应残基的-NH的H和-CO的O形成氢键，由此形成两股β折叠的结构，多股β折叠形成类似手风琴的样子。β折叠分为平行和反平行排列，我们前面介绍到肽段分为N端和C端，如果形成β折叠的两股链都是从N到C（或从C到N），则称为平行排列，否则是反平行排列。每股β折叠都有一个大箭头表示其方向。
+细分的话，蛋白质的二级结构总共有8种，包括转角、无规则卷曲等。目前常采用DSSP的分类方法，有些文献会把8种结构粗分为α螺旋、β折叠和转角这三种结构。
+由上图可知，蛋白质的二级结构极大的决定了其三级结构（下面介绍），所以有很多工作是研究怎样准确预测蛋白质的二级结构的，即预测每个氨基酸残基处于哪一种二级结构中。形式化表示就是，对于一个蛋白质一级结构字符串\(A_1A_2A_3A_4A_5…\)，输出\(a_1a_2a_3a_4a_5…\)，其中\(a_i\)∈{α螺旋，β折叠，转角}。所以，蛋白质的二级结构是一个端到端的问题，很像机器翻译，目前很多文章都会用深度学习NLP的方法来预测蛋白质的二级结构。
+三级结构 简单理解，三级结构就是把多个二级结构拼接到一起，折叠成一个完整的蛋白质三维结构，如下图所示。维持蛋白质三级结构的力比较多样，除了氢键之外，还有二硫键、金属键等。
+四级结构 简单理解，四级结构就是多个三级结构分子组合成一个复合物，就是四级结构。
+https://en.wikipedia.org/wiki/Protein_quaternary_structure
+对于CSer来说，由于四级结构仅仅是多个三级结构组合到一起，我们常说的蛋白质三维结构预测问题，通常是指预测蛋白质的三级结构。问题是，构成蛋白质链的原子非常多，我们怎样形式化描述一条蛋白质的三维结构呢？这还要从最原始的一级结构说起。
+蛋白质结构预测问题 前面提到，两个氨基酸通过脱水缩合的方式形成肽键从而连接到一起形成一级结构（本文图四），肽键虽然是单键，但它具有类似双键的特点，即难以旋转（比如羧基中的-C=O键就是双键，无法旋转）。所以，由肽键及周围的6个原子形成了一个固定的肽键平面，这6个原子分别是-C-CO-NH-C-，如下图所示，箭头所指的红色键就是肽键，它周围画出了一个平面，就是肽键平面。
+肽键平面的存在极大的简化了蛋白质结构，可以认为这6个原子的相对位置是固定的了！另一方面，跟这个平面相连的左右两个C原子的两个键是单键，所以他们可以旋转，旋转的角度称为扭转角ϕ和ψ，为了更直观的感受肽链的肽键平面和两个扭转角，可以看下面的动画：K0045879-Rotation_around_amide_bonds_in_protein.mp4（来自https://www.sciencephoto.com/media/639617/view）
+事实上，扭转角ϕ和ψ并不是在360°范围内随机均匀分布的，1963年就有科学家统计过扭转角ϕ和ψ的分布，他们发现稳定的蛋白质结构的ϕ和ψ通常只分布在一小部分区域，如下图的拉氏图所示，这些区域正好对应了常见的α螺旋和β折叠的结构。
+最后，我们还需要介绍一个角度，那就是ω。前面提到，虽然肽键具有双键的特点，难以旋转，但它在少数情况下还是可以旋转的。假设通常情况下，肽键的角度定义为ω=0°，如下图所示，红色的键即为肽键，这种结构的好处是它能让形成肽键的两个残基的侧链R（图中黑色基团）离得尽量的远，这样能保持比较稳定的结构。如果肽键旋转为ω=180°，变为下图的样子，则两个侧链R很靠近，就产生位阻效应，就不稳定，所以这种情况比较少见。但不管怎么说，肽键的扭转角ω也是一个变量因素。
+综上所述，对于一条肽链，如果知道每个残基的三个扭转角ϕ、ψ和ω，则可以重构出肽链的主干部分的三维结构，这就像将极坐标转换为直角坐标一样容易。需要提醒的是，本文提到的蛋白质三维结构预测问题，对蛋白质的结构进行了简化，包括：1. 仅预测蛋白质或肽链的主干结构，不考虑侧链R的结构；2. 假设肽链主干中每个键的长度是固定的；3. 不考虑键的角度，比如对于上图的肽键，仅考虑肽键绕肽键轴本身的旋转，不考虑肽键绕着某一端原子的旋转，比如固定左边的蓝色小球，肽键和右边的红色小球旋转出平面了。 下图的肽键平面，详细的标识出了各个相对固定的值。
+Figure 8-1 from Fundamentals of Biochemistry
+所以，对于CSer来说，蛋白质的三维结构预测问题，就可以看成一个端到端的学习问题，输入是一个字符串，输出是每个字符（残基）对应的三个扭转角ϕ、ψ和ω，问题看起来非常的简洁漂亮。而且，这个问题和NLP中的序列标注、机器翻译等问题很像，所以很多NLP的技术可以用来预测蛋白质的三维结构。下图的插画就是最近发表在Cell Sytems上的一篇用LSTM预测蛋白质三维结构的文章，我会在下一篇博客中和大家分享这篇文章。
+https://www.sciencedirect.com/science/article/pii/S2405471219300766?via%3Dihub
+有关“蛋白质结构预测”本身的最后一个问题是，为什么能仅仅通过一级结构的序列信息，预测得到其三级结构呢？也就是说蛋白质结构预测这个问题是否可解，如果蛋白质的三级结构还由其他因素决定，那么即使Deeplearning玩出花了，在生物上也是不可行的。所以，每遇到一个新问题，都要自问一下，这个问题从原理上是否可解。对于“蛋白质结构预测”这个问题，最开始也有人进行了类似的自问，得到的答案是可行的：
+1965年，安芬森（Anfinsen）基于还原变性的牛胰RNase在不需其他任何物质帮助下，仅通过去除变性剂和还原剂就使其恢复天然结构的实验结果，提出了“多肽链的氨基酸序列包含了形成其热力学上稳定的天然构象所必需的全部信息”的“自组装学说”，随后这个学说又得到一些补充。这些学说表明：氨基酸序列确定其空间构象，从而为蛋白质结构预测提供了可行性。
+http://chinaxiv.org/user/download.htm?id=6478
+CASP比赛 提到蛋白质三级结构预测，不得不提的是CASP这个比赛。CASP的全称是The Critical Assessment of protein Structure Prediction (CASP)，即蛋白质结构预测的关键评估，被誉为蛋白质结构预测的奥林匹克竞赛。CASP从1994年开始举办，每两年一届，最近的一届是2018年的CASP13。
+每一届CASP比赛，都会提供大约100条未知结构的蛋白质序列，让所有参赛者进行结构预测，比赛结束之后，主办方会通过生化方法测定这些蛋白质的三维结构，然后和参赛者预测的结果进行比对，然后给出预测得分。提供的蛋白质序列分为两类：一类序列和PDB数据库中已有结构的序列有相似性，由此可以基于模板预测，准确度比较高，这类算法称为Template-Based Modeling；另一类序列和PDB库已知结构的序列相似度很低，可以认为是全新的蛋白质，因为无法利用已有模板信息，需要进行从头测序（De novo或ab initio或Free Modeling），目前的准确率比较低。参赛选手也分为两组，一组是servers only，即仅允许算法参赛，给定3天的时间；另一组是human and servers，即允许人和算法合作，共同预测蛋白质结构，给定3周的时间。
+CASP同时提供多种比赛项目，比如常规的结构预测（Regular targets）、数据辅助预测（Data-Assisted targets）和蛋白质接触面预测（Contact predictions）等，其中数据辅助预测中提供了核磁数据（NMR）、交联数据（XLMS）等，对的，交联数据就是我目前研究的pLink处理的数据。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-05-25 22:32:54 +0800 CST'>May 25, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to “蛋白质结构预测”问题描述" href="http://localhost:1313/posts/2019-05-25-introduction-to-protein-structure-prediction/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Neural Networks and Deep Learning（七）番外篇·Pytorch MNIST教程
     </h2>
   </header>
@@ -359,47 +440,6 @@ $$\begin{eqnarray}\frac{\partial C}{\partial w_j} &amp; = &amp; -\frac{1}{n} \su
   </div>
   <footer class="entry-footer"><span title='2019-03-18 10:33:32 +0800 CST'>March 18, 2019</span>&nbsp;·&nbsp;2 min</footer>
   <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·一）梯度消失" href="http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（二）BP网络
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>这一讲介绍误差反向传播（backpropagation）网络，简称BP网络。
-以上一讲介绍的MNIST手写数字图片分类问题为研究对象，首先明确输入输出：输入就是一张28×28的手写数字图片，展开后可以表示成一个长度为784的向量；输出可以表示为一个长度为10的one-hot向量，比如输入是一张“3”的图片，则输出向量为(0,0,0,1,0,0,0,0,0,0,0)。
-然后构造一个如下的三层全连接网络。第一层为输入层，包含784个神经元，正好对应输入的一张28×28的图片。第二层为隐藏层，假设隐藏层有15个神经元。第三层为输出层，正好10个神经元，对应该图片的one-hot结果。
-全连接网络表示上一层的每个神经元都和下一层的每个神经元有连接，即每个神经元的输入来自上一层所有神经元的输出，每个神经元的输出连接到下一层的所有神经元。每条连边上都有一个权重w。
-每个神经元执行的操作非常简单，就是把跟它连接的每个输入乘以边上的权重，然后累加起来。
-比如上面的一个神经元，它的输出就是：
-$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll}0 &amp; \mbox{if} \sum_j w_j x_j \leq \mbox{ threshold} \\1 &amp; \mbox{if} \sum_j w_j x_j &gt; \mbox{threshold}\end{array}\right.\tag{1}\end{eqnarray}$$其中的threshold就是该神经元激活的阈值，如果累加值超过threshold，则该神经元被激活，输出为1，否则为0。这就是最原始的感知机网络。感知机网络也可以写成如下的向量形式，用激活阈值b代替threshold，然后移到左边。神经网络中，每条边具有权重w，每个神经元具有激活阈值b。
-$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll} 0 &amp; \mbox{if } w\cdot x &#43; b \leq 0 \\1 &amp; \mbox{if } w\cdot x &#43; b &gt; 0\end{array}\right.\tag{2}\end{eqnarray}$$ 但是感知机网络的这种激活方式不够灵活，它在threshold左右有一个突变，如果输入或者某个边上的权重稍微有一点变化，输出结果可能就千差万别了。于是后来人们提出了用sigmoid函数来当激活函数，它在0附近的斜率较大，在两边的斜率较小，能达到和阶梯函数类似的效果，而且函数光滑可导。sigmoid的函数形式如下，其中\(z\equiv w \cdot x &#43; b\)为神经元激活之前的值。
-$$\begin{eqnarray} \sigma(z) \equiv \frac{1}{1&#43;e^{-z}}\tag{3}\end{eqnarray}$$sigmmoid函数还有一个优点就是它的导数很好计算，可以用它本身来表示：
-$$\begin{eqnarray}\sigma&#39;(z)=\sigma(z)(1-\sigma(z))\tag{4}\end{eqnarray}$$BP网络的参数就是所有连线上的权重w和所有神经元中的激活阈值b，如果知道这些参数，给定一个输入x，则可以很容易的通过正向传播（feedforward）的方法计算到输出，即不断的执行\(w \cdot x &#43; b\)操作，然后用sigmoid激活，再把上一层的输出传递给下一层作为输入，直到最后一层。
-1 2 3 4 5 def feedforward(self, a): &#34;&#34;&#34;Return the output of the network if ``a`` is input.&#34;&#34;&#34; for b, w in zip(self.biases, self.weights): a = sigmoid(np.dot(w, a)&#43;b) return a 同时，网络的误差可以用均方误差（mean squared error, MSE）表示，即网络在最后一层的激活值（即网络的输出值）\(a\)和对应训练集输入\(x\)的正确答案\(y(x)\)的差的平方。有\(n\)个输入则误差取平均，\(\dfrac{1}{2}\)是为了后续求导方便。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-12-14 12:18:07 +0800 CST'>December 14, 2018</span>&nbsp;·&nbsp;2 min</footer>
-  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（二）BP网络" href="http://localhost:1313/posts/2018-12-14-neutral-networks-and-deep-learning-2-bp/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（一）MNIST数据集介绍
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>最近开始学习神经网络和深度学习，使用的是网上教程：http://neuralnetworksanddeeplearning.com/，这是学习心得第一讲，介绍经典的MNIST手写数字图片数据集。
-MNIST（Modified National Institute of Standards and Technology database）数据集改编自美国国家标准与技术研究所收集的更大的NIST数据集，该数据集来自250个不同人手写的数字图片，一半是人口普查局的工作人员，一半是高中生。该数据集包括60000张训练集图片和10000张测试集图片，训练集和测试集都提供了正确答案。每张图片都是28×28=784大小的灰度图片，也就是一个28×28的矩阵，里面每个值是一个像素点，值在[0,1]之间，0表示白色，1表示黑色，(0,1)之间表示不同的灰度。下面是该数据集中的一些手写数字图片，可以有一个感性的认识。
-MNIST数据集可以在Yann LeCun的网站上下载到：http://yann.lecun.com/exdb/mnist/，但是他提供的MNIST数据集格式比较复杂，需要自己写代码进行解析。目前很多深度学习框架都自带了MNIST数据集，比较流行的是转换为pkl格式的版本：http://deeplearning.net/data/mnist/mnist.pkl.gz，该版本把原始的60000张训练集进一步划分成了50000张小训练集和10000张验证集，下面以这个版本为例进行介绍。
-pkl是python内置的一种格式，可以将python的各种数据结构序列化存储到磁盘中，需要时又可以读取并反序列化到内存中。mnist.pkl.gz做了两次操作，先pkl序列化，再gz压缩存储，所以要读取该文件，需要先解压再反序列化，在python3中，读取mnist.pkl.gz的方式如下：
-1 2 3 4 5 import pickle import gzip f = gzip.open(‘../data/mnist.pkl.gz’, ‘rb’) training_data, validation_data, test_data = pickle.load(f, encoding=’bytes’) f.close() 这样就得到了训练集、验证集和测试集。将数据集序列化到文件中的方法也很简单，需要注意的是pickle在序列化和反序列化时有不同的协议，可以用protocol参数进行设置。
-1 2 3 4 dataset=[training_data, validation_data, test_data] f=gzip.open(‘../data/mnist3.pkl.gz’,’wb’) pickle.dump(dataset,f,protocol=3) f.close() 我们从mnist.pkl.gz读取到的training_data, validation_data, test_data这三个数据的结构是一样的，每个都是一个二维的tuple。以training_data为例，training_data[0]是训练样本，是一个50000×784的矩阵，表示有50000个训练样本，每个训练样本是一个784的一维数组，784就是把一张28×28的图片展开reshape成的一维数组；training_data[1]是训练样本对应的类标号，大小为50000的一维数组，每个值为0~9中的某个数，表示对应样本的数字标号。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2018-11-25 11:33:45 +0800 CST'>November 25, 2018</span>&nbsp;·&nbsp;1 min</footer>
-  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（一）MNIST数据集介绍" href="http://localhost:1313/posts/2018-11-25-neutral-networks-and-deep-learning-1-mnist-dataset/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
