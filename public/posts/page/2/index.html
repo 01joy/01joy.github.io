@@ -151,6 +151,35 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">CS224N（1.10）Word Vectors 2 and Word Senses
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>这一讲是上一讲的补充，内容比较零碎，包括：Word2vec回顾、优化、基于统计的词向量、GloVe、词向量评价、词义等，前两个内容没必要再介绍了，下面逐一介绍后四个内容。
+基于统计的词向量 词向量的目的就是希望通过低维稠密向量来表示词的含义，而词的分布式语义表示方法认为词的含义由其上下文语境决定。Word2vec把中心词和临近词抽取出来，通过预测的方式训练得到词向量。在Word2vec之前，传统的方式通过统计词的共现性来得到词向量，即一个词的词向量表示为其临近词出现的频率，如果两个词的含义很相近，则其临近词分布会比较像，得到的词向量也比较像。其具体计算过程在第一次作业中有详细的描述，这里再简单回顾如下。
+假设一个语料库中包含三个句子，共有8个特异词（包括点号），对于每个词，统计其前后一个词的词频（临近窗口为1），由此能得到一个8×8的对称矩阵，其每一行（或每一列）表示该词的词向量。比如对于like这个词，在三个句子中，其左右共出现2次I，1次deep和1次NLP，所以like对应的词向量中，I、deep和NLP维的值分别为2,1,1。
+这种基于词频统计的方法很简单，但是它有如下不足：
+特异的词很多，所以矩阵很大，维度很高，需要的存储空间也很大 特异词的数目是在不断增长的，则词向量的维度也在不断增长 矩阵很稀疏，即词向量很稀疏，会导致很多NLP任务会遇到稀疏计算的问题 所以需要把上述计数矩阵转换为一个低维稠密的矩阵，方法就是SVD分解。上述矩阵原本是一个\(n\times n\)的矩阵，SVD分解后能得到一个\(n\times k\)的矩阵，其中\(k\ll n\)。即原本的词向量是一个\(n\)维的高维稀疏向量，变成了\(k\)维的低维稠密向量，而且还不会损失太多的信息。
+2005年的一篇文章对上述简单的计数方法进行了改进，包括去掉停用词、使用倾斜窗口、使用皮尔逊相关系数等，提出了COALS模型，该模型得到的词向量效果也不错，也具有句法特征和语义特征。使用统计的方法和使用预测的方法训练词向量，两者的对比如下。基于统计计数的方法的主要特点是：训练速度快，能充分利用统计信息，主要用来捕获词的相似性。基于预测的方法的主要特点是：对语料库的大小可扩展，没有充分利用统计信息，能捕获除了词的相似性之外的其他复杂特征。
+GloVe GloVe的全称是GloVe: Global Vectors for Word Representation，正是这门课的老师Christopher D. Manning的研究成果。有关GloVe论文的详细解读，可以看这篇博客。GloVe希望能综合上述基于统计和基于预测的两种方法的优点。
+GloVe的基本思想依然是基于统计的方法，当统计得到共现矩阵X之后，可以计算得到词\(k\)是词\(i\)的临近词的概率：
+$$P_{i,k}=\dfrac{X_{i,k}}{X_{i}}$$再定义两个\(P\)的比值：
+$$ratio_{i,j,k}=\dfrac{P_{i,k}}{P_{j,k}}$$如果词\(k\)在两个词\(i\)和\(j\)的临近概率相同，无论是同样大（water）还是同样小（fashion），经过比值计算后，\(ratio_{i,j,k}\)都约等于1了，说明在维度water和fashion上，无法区分ice和steam。而在维度solid和gash上，由于概率\(P\)的差异，导致\(ratio_{i,j,k}\)很大或者很小，这是有意义的，说明在solid和gas维度上，可以区分ice和steam的语义。
+基于这样的观察，GloVe首先统计语料库中三元组\(i,j,k\)的\(ratio_{i,j,k}\)，然后初始化词向量\(v\)，构造函数\(g\)，使得利用词向量计算得到的\(g(v_{i},v_{j},v_{k})\)和真实\(ratio_{i,j,k}\)尽量接近。
+$$\dfrac{P_{i,k}}{P_{j,k}}=ratio_{i,j,k}=g(v_{i},v_{j},v_{k})$$$$J=\sum_{i,j,k}^N(\dfrac{P_{i,k}}{P_{j,k}}-g(v_{i},v_{j},v_{k}))^2$$但是上述方法的复杂度太高了，对于一个\(N\times N\)的共现矩阵，上述算法需要计算所有的三元组，复杂度是\(N\times N\times N\)。GloVe文章通过各种转换技巧，把复杂度降为了一个\(N\times N\)的问题，具体过程可以看上面提到的博客或者paper原文。
+总的来说，基于共现矩阵这种统计的方法，能捕获整个语料库全局的信息；而类似word2vec的预测的方法，则主要捕获局部的滑动窗口内的共现信息，两种方法训练得到的词向量效果都不错。
+词向量评价 评价词向量的好坏主要有两个尺度，一是内部任务评价（intrinsic），一是外部任务评价（extrinsic），两者的主要特点如下。大概意思是内部任务是根据词本身具有的性质，比如近义、反义等，评价词向量本身的性能。外部任务是指词向量对NLP下游任务的性能的影响，比如同样是一个文本分类问题，换不同的词向量，对文本分类任务的性能的影响能反映出词向量的性能。
+常见的内部任务评价是词的类比推理（Word Vector Analogies），就是类似man:woman :: king:queen这种，word2vec还专门整理出了这样的测试数据：word2vec/trunk/questions-words.txt。另一个内部任务评价是使用训练得到的词向量计算的词相似度，和人类认为的相似度做比较，有团队专门整理出了人类对两个词的相似度打分，具体可以看这里。
+对词向量的外部任务评价就很多了，几乎所有的NLP任务都可以用来作为词向量的外部任务评价，比如命名实体识别、文本分类等等，这里不再展开。
+词义 一个词往往具有多个含义（word senses），特别是对于常用的词或者存在很久的词。那么一个词向量能同时包含这个词的多个语义吗？有文章把一个词的多个语义通过线性加权的方式叠加到一个词向量中，然后还能通过稀疏编码的方式求解出每个语义的词向量，具体可以看下图中的参考文献。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-06-23 13:07:09 +0800 CST'>June 23, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to CS224N（1.10）Word Vectors 2 and Word Senses" href="http://localhost:1313/posts/2019-06-23-cs224n-1-10-word-vectors-2-and-word-senses/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">CS224N（1.8）Introduction and Word Vectors
     </h2>
   </header>
@@ -414,32 +443,6 @@ $$\begin{eqnarray}b &amp; \rightarrow &amp; b -\eta \frac{\partial C_0}{\partial
   </div>
   <footer class="entry-footer"><span title='2019-03-24 12:14:22 +0800 CST'>March 24, 2019</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·二）过拟合与正则化" href="http://localhost:1313/posts/2019-03-24-neural-networks-and-deep-learning-3-2-overfitting-and-regularization/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·一）梯度消失
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>原文的第三章内容较多，本博客将分三个部分进行介绍：梯度消失、过拟合与正则化、权重初始化及其他，首先介绍梯度消失问题。
-为简单起见，假设网络只包含一个输入和一个神经元，网络的损失是均方误差损失MSE，激活函数是Sigmoid函数。则该网络的参数只包含权重\(w\)和偏移量\(b\)。我们想训练这个网络，使得当输入为1时，输出0。
-假设我们随机初始化\(w_0=0.6\)，\(b_0=0.9\)，则网络的损失随着训练的epoch变化曲线如下，看起来挺好的，一开始损失下降很快，随着epoch增加，损失下降逐渐平缓，直至收敛。
-但是，如果随机初始化\(w_0=2.0\)，\(b_0=2.0\)，则网络的损失一开始下降得很缓慢，要训练到快200个epoch时，损失才快速下降。可以看到同样是300个epoch，由于初始化权重的差别，损失下降的趋势完全不一样，而且对于下面这种情况，到300个epoch时，损失还有下降的空间，所以期望的output不如上面的接近目标值0。
-为什么同样的网络，只是因为初始化权重的差异，损失的变化曲线却相差这么多呢，这和我们选择的损失函数与激活函数有关。
-回顾一下，我们在上一讲的末尾介绍到如果损失函数是MSE且激活函数是Sigmoid时，有\(\delta^L = (a^L-y) \odot \{\sigma(z^L)(1-\sigma(z^L))\}\)，又因为网络只有一个神经元，所以梯度如下：
-$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; (a-y)\sigma&#39;(z) x = a \sigma&#39;(z),\tag{1}\\\frac{\partial C}{\partial b} &amp; = &amp; (a-y)\sigma&#39;(z) = a \sigma&#39;(z)\tag{2}\end{eqnarray}$$其中第二个等号是把\(x=1\)和\(y=0\)带入得到的。由此可见，误差对两个参数\(w\)和\(b\)的梯度都和激活函数的导数有关，因为激活函数是Sigmoid，当神经元的输出接近0或1时，梯度几乎为0，误差反向传播就会非常慢，导致上图出现损失下降非常慢的现象。这就是梯度消失的原因。
-为了解决这个问题，我们可以采取两种策略，一是替换损失函数，一是替换激活函数。
-第一种方法是将MSE的损失函数替换为交叉熵损失函数，激活函数依然是Sigmoid。我们考虑一个比本文开头更复杂的网络，仍然是一个输出神经元，但包含多个输入神经元。
-此时，交叉熵损失函数定义如下，其中的\(n\)表示训练样本数，\(\frac{1}{n}\sum_x\)表示对所有输入样本\(x\)的交叉熵损失求均值。
-$$\begin{eqnarray}C = -\frac{1}{n} \sum_x \left[y \ln a &#43; (1-y ) \ln (1-a) \right]\tag{3}\end{eqnarray}$$我们首先考察为什么(3)可以是一个损失函数，损失函数需要满足如下两个条件：
-非负； 当网络输出和目标答案越接近，损失越小；反之损失越大。 简单代入几组不同的样本很容易验证交叉熵满足上述两个条件 ，所以交叉熵可以作为一个损失函数。
-下面我们再考察一下为什么交叉熵损失函数&#43;Sigmoid激活函数可以解决梯度消失的问题。首先推导交叉熵损失\(C\)对权重\(w_j\)和\(b\)的梯度：
-$$\begin{eqnarray}\frac{\partial C}{\partial w_j} &amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y }{\sigma(z)} -\frac{(1-y)}{1-\sigma(z)} \right)\frac{\partial \sigma}{\partial w_j} \tag{4}\\&amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y}{\sigma(z)}-\frac{(1-y)}{1-\sigma(z)} \right)\sigma&#39;(z) x_j\tag{5}\\&amp; = &amp; \frac{1}{n}\sum_x \frac{\sigma&#39;(z) x_j}{\sigma(z) (1-\sigma(z))}(\sigma(z)-y).\tag{6}\end{eqnarray}$$上式分子Sigmoid的导数正好可以和分母抵消，得到：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2019-03-18 10:33:32 +0800 CST'>March 18, 2019</span>&nbsp;·&nbsp;2 min</footer>
-  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·一）梯度消失" href="http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
