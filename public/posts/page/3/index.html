@@ -151,6 +151,35 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·二）过拟合与正则化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>过拟合介绍 首先介绍一下神经网络中不同数据集的功能，包括训练集、验证集和测试集。
+训练集是用来训练网络参数的。当觉得在训练集上训练得差不多时，就可以在验证集上进行测试，如果验证集上的性能不好，则需要调整网络结构或者超参数，重新在训练集上训练。所以本质上验证集指导训练过程，也参与了训练和调参。为了防止网络对验证集过拟合，当网络在训练集和验证集上表现都不错时，就可以在测试集上进行测试了。测试集上的性能代表了模型的最终性能。
+当然如果发现网络在测试集上性能不好，可能还会反过来去优化网络，重新训练和验证，这么说测试集最终也变相参与了调优。如果一直这么推下去的话，就没完没了了，所以一般还是认为用验证集对模型进行优化，用测试集对模型性能进行测试。
+过拟合的含义就是网络在训练集上性能很好，但是在验证集（或者测试集）上的性能较差，这说明网络在训练集上训练过头了，对训练集产生了过拟合。为了便于叙述，本文没有验证集，直接使用测试集作为验证集对模型进行调优，所以主要考察网络在训练集和测试集上的性能表现。
+判断网络是否过拟合的方法就是观察网络在训练集和测试集上的accuracy和loss的变化曲线。对于accuracy，如果训练集的accuracy很高接近100%且收敛了，但测试集上的accuracy和训练集上的accuracy相差较大也收敛了（如下图收敛到82%左右），说明网络过拟合了。对于loss，如果训练集的loss一直在下降，但测试集的loss先下降后又上升，也说明网络过拟合了。这两种现象，虽然指标不同，但含义是一样的，即网络在训练集上的性能一直在提高甚至到完美水平，但在测试集上的性能提高到一定水平后不再变化甚至下降了。
+不过下面几张图反应的过拟合epoch时间可能不一样，比如对于测试集上的accuracy，可能在280左右过拟合，但是对于测试集上的loss，在15和280左右都可以认为是过拟合了，尤其是15，loss最低，之后loss反升，可以认为是一个合理的过拟合的点。具体哪个epoch之后过拟合，取决于问题本身关注哪个指标，比如MNIST分类问题，可能关注分类accuracy，所以可重点关注测试集上的accuracy那个图，认为是280左右过拟合，因为200~280的accuracy还一直有提升，虽然提升很有限。
+应对过拟合最好的方法就是增加训练数据，如果能把所有可能的数据都收集到，对所有数据产生过拟合，那相当于对所有数据都能预测得很好，那问题本质上已经解决了。
+但是，在实际应用场景中，不可能收集到所有数据，而且数据往往是严重不足的，此时，应对过拟合主要有三种方法：正则化、Dropout和数据增强，下面分别介绍这三个部分。
+正则化 正则化的思路就是修改损失函数，使损失函数考虑模型复杂度。考虑正则化的损失函数的通用公式如下：
+$$\begin{eqnarray} C = C_0(w,x,y) &#43; \lambda\Omega(w)\tag{1}\end{eqnarray}$$其中\(C_0\)为原始的没有正则化项的损失函数，比如MSE或者交叉熵损失等，\(\Omega(w)\)表示正则化项，即用来惩罚模型复杂度的，\(\lambda\)表示正则化参数，用来平衡\(C_0\)和\(\Omega(w)\)的重要性。
+正则化又分为L2正则和L1正则，它们很类似，先详细介绍下L2正则。
+举个例子，L2正则化后的损失函数如下：
+$$\begin{eqnarray} C = C_0 &#43; \frac{\lambda}{2n}\sum_w w^2,\tag{2}\end{eqnarray}$$前半部分就是普通的损失函数（比如MSE或者交叉熵损失），后半部分就是L2正则。L2正则是对网络中的所有权重\(w\)求平方和（\(\vec w\)的L2范数，所以叫L2正则），然后除以\(2n\)，其中\(n\)是训练样本数，除以2应该是为了后面求导方便。
+(2)式的直观含义是，\(\min C\)的过程中，我不但希望损失函数本身\(C_0\)足够小，还希望网络的权重\(w\)也比较小，最好不要出现很大的\(w\)。如果\(\lambda\)越大，表示正则化越厉害，对大的\(w\)惩罚越严重。
+加入L2正则后的梯度也很容易计算，如下：
+$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; \frac{\partial C_0}{\partial w} &#43; \frac{\lambda}{n} w \tag{3}\\ \frac{\partial C}{\partial b} &amp; = &amp; \frac{\partial C_0}{\partial b}.\tag{4}\end{eqnarray}$$对应的参数更新公式如下：
+$$\begin{eqnarray}b &amp; \rightarrow &amp; b -\eta \frac{\partial C_0}{\partial b}.\tag{5}\end{eqnarray}$$$$\begin{eqnarray} w &amp; \rightarrow &amp; w-\eta \frac{\partial C_0}{\partial w}-\frac{\eta \lambda}{n} w \tag{6}\\ &amp; = &amp; \left(1-\frac{\eta \lambda}{n}\right) w -\eta \frac{\partial C_0}{\partial w}. \tag{7}\end{eqnarray}$$由(5)可知，偏移量\(b\)的梯度更新和没有正则化时是一样的，因为正则化并没有惩罚\(b\)，这个后面会解释为什么。由(7)可知，对\(w\)的梯度更新和没有正则化时很类似，只不过需要先对\(w\)进行缩放，缩放因子为\(1-\frac{\eta\lambda}{n}\)，因为训练样本\(n\)往往很大，所以缩放因子在(0,1)，即先对\(w\)进行缩小，然后正常梯度下降，这种操作也被称为权值衰减。\(\lambda\)最好根据\(n\)的大小进行调整，如果\(n\)非常大的话，\(\lambda\)最好也大一些，否则权值衰减因子就会很小，正则化效果就不明显。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-03-24 12:14:22 +0800 CST'>March 24, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·二）过拟合与正则化" href="http://localhost:1313/posts/2019-03-24-neural-networks-and-deep-learning-3-2-overfitting-and-regularization/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·一）梯度消失
     </h2>
   </header>
@@ -396,28 +425,12 @@ http://j.map.baidu.com/M2cPN
   <footer class="entry-footer"><span title='2017-12-16 10:29:58 +0800 CST'>December 16, 2017</span>&nbsp;·&nbsp;1 min</footer>
   <a class="entry-link" aria-label="post link to 厦门之行" href="http://localhost:1313/posts/2017-12-16-a-trip-to-xiamen/"></a>
 </article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">逻辑回归之Python应用实例
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>上一篇博客主要介绍了逻辑回归的理论知识，这篇博客咱们用Python机器学习包sklearn中的LogisticRegression做一个分类的实例。
-数据还是学生样本，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。先上分类效果图：
-完整的Python代码如下：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 # -*- coding: utf-8 -*- &#34;&#34;&#34; Created on Wed Nov 08 17:49:41 2017 @author: zhenlin &#34;&#34;&#34; import numpy as np import pandas as pd from sklearn.cross_validation import train_test_split from sklearn.linear_model import LogisticRegression import matplotlib.pyplot as plt from sklearn.metrics import precision_recall_curve from sklearn.metrics import classification_report # 1. 构造数据 sample_number = 200 # 第一个高斯分布参数 mean1 = [0, 4] # 两个维度上的均值 cov1 = [[5, 3], [3, 10]] # 两个维度的协方差矩阵，必须满足对称半正定 # 第二个高斯分布参数 mean2 = [7, 5] cov2 = [[7, 2], [2, 15]] # 从两个二元高斯分布中随机采样数据点 class1_x1, class1_x2 = np.random.multivariate_normal(mean1, cov1, sample_number).T # .T表示转置 class2_x1, class2_x2 = np.random.multivariate_normal(mean2, cov2, sample_number).T # 两个高斯分布对应两个类标号 data = [[class1_x1[i],class1_x2[i],0] for i in range(sample_number)]&#43;[[class2_x1[i],class2_x2[i],1] for i in range(sample_number)] # 填充到pandas中 data = pd.DataFrame(data,columns=[&#39;score1&#39;,&#39;score2&#39;,&#39;result&#39;]) score_data = data[[&#39;score1&#39;,&#39;score2&#39;]] result_data = data[&#39;result&#39;] # 2. 训练模型 average_precision = 0 # 平均准确度 iters = 10 # 交叉验证次数 for i in xrange(iters): # 数据划分，80%用于训练，20%用于预测 x_train, x_test, y_train, y_test = train_test_split(score_data, result_data, test_size = 0.2) # 构造默认逻辑回归模型 model = LogisticRegression() # 训练 model.fit(x_train, y_train) # 预测 predict_y = model.predict(x_test) # 计算测试集上的准确度 average_precision &#43;= np.mean(predict_y == y_test) average_precision /= iters # 3. 绘制分类面 - 法1 x1_min, x1_max = score_data[&#39;score1&#39;].min() - .5, score_data[&#39;score1&#39;].max() &#43; .5 def generate_face(prob): y = -np.log(1.0 / prob - 1.0) n = 500 x1 = np.linspace(x1_min, x1_max, n) # w1x1&#43;w2x2&#43;b=y x2 = (-model.coef_[0][0] / float(model.coef_[0][1])) * x1 &#43; (y - model.intercept_) / float(model.coef_[0][1]) return x1, x2 pos_data = data[data[&#39;result&#39;] == 1] neg_data = data[data[&#39;result&#39;] == 0] plt.scatter(x = pos_data[&#39;score1&#39;], y = pos_data[&#39;score2&#39;], color = &#39;black&#39;, marker = &#39;o&#39;) plt.scatter(x = neg_data[&#39;score1&#39;], y = neg_data[&#39;score2&#39;], color = &#39;red&#39;, marker = &#39;*&#39;) face_04_x1, face_04_x2 = generate_face(0.4) face_05_x1, face_05_x2 = generate_face(0.5) face_06_x1, face_06_x2 = generate_face(0.6) plt.plot(face_04_x1, face_04_x2) plt.plot(face_05_x1, face_05_x2) plt.plot(face_06_x1, face_06_x2) plt.xlim(score_data[&#39;score1&#39;].min(), score_data[&#39;score1&#39;].max()) plt.ylim(score_data[&#39;score2&#39;].min(), score_data[&#39;score2&#39;].max()) plt.xlabel(&#39;score1&#39;) plt.ylabel(&#39;score2&#39;) plt.legend([&#39;prob_threshold = 0.4&#39;, &#39;prob_threshold = 0.5&#39;, &#39;prob_threshold = 0.6&#39;], loc=&#39;center left&#39;, bbox_to_anchor=(1, 0.865)) plt.show() # 4. 绘制分类面 - 法2 pos_data = data[data[&#39;result&#39;] == 1] neg_data = data[data[&#39;result&#39;] == 0] h = 0.02 s1_min, s1_max = score_data[&#39;score1&#39;].min() - .5, score_data[&#39;score1&#39;].max() &#43; .5 s2_min, s2_max = score_data[&#39;score2&#39;].min() - .5, score_data[&#39;score2&#39;].max() &#43; .5 # 生成s1在[s1_min, s1_max]，且s2在[s2_min, s2_max]的网格数据点 # meshgrid含义参见：http://blog.sciencenet.cn/blog-791749-675394.html s1, s2 = np.meshgrid(np.arange(s1_min, s1_max, h), np.arange(s2_min, s2_max, h)) # 把两个坐标的值按列拼在一起构成二维数据点 Z = model.predict(np.c_[s1.ravel(), s2.ravel()]) # 绘制边界和散点 Z = Z.reshape(s1.shape) # 坐标点是(s1[i], s2[i])，对应颜色是Z[i]，颜色主题使用plt.cm.Paired plt.pcolormesh(s1, s2, Z, cmap = plt.cm.Paired) plt.scatter(x = pos_data[&#39;score1&#39;], y = pos_data[&#39;score2&#39;], color = &#39;black&#39;, marker = &#39;o&#39;) plt.scatter(x = neg_data[&#39;score1&#39;], y = neg_data[&#39;score2&#39;], color = &#39;red&#39;, marker = &#39;*&#39;) plt.xlim(s1.min(), s1.max()) plt.ylim(s2.min(), s2.max()) plt.xlabel(&#39;score1&#39;) plt.ylabel(&#39;score2&#39;) plt.show() # 5. 评估模型 # 对于测试数据，模型输出1的概率 answer = model.predict_proba(x_test)[:,1] # 计算不同概率阈值下的P和R precision, recall, thresholds = precision_recall_curve(y_test, answer) # prob &gt; 0.5的报告为1 report = answer &gt; 0.5 print(classification_report(y_test, report, target_names = [&#39;neg&#39;, &#39;pos&#39;])) print(&#39;average precision: %f&#39;%average_precision) # 6. 绘制PRC曲线 # step阶跃图，在点(recall[i],precision[i])进行跳变 plt.step(recall, precision, color=&#39;b&#39;, alpha=0.2, where=&#39;post&#39;) # 对PRC下方填充颜色 plt.fill_between(recall, precision, step=&#39;post&#39;, alpha=0.2, color=&#39;b&#39;) plt.xlabel(&#39;Recall&#39;) plt.ylabel(&#39;Precision&#39;) plt.ylim([0.0, 1.05]) plt.xlim([0.0, 1.0]) plt.title(&#39;2-class Precision-Recall curve&#39;) plt.show() 下面将逐模块介绍代码细节，大神可以略过。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2017-12-05 21:20:01 +0800 CST'>December 5, 2017</span>&nbsp;·&nbsp;4 min</footer>
-  <a class="entry-link" aria-label="post link to 逻辑回归之Python应用实例" href="http://localhost:1313/posts/2017-12-05-logistic-regression-in-python/"></a>
-</article>
 <footer class="page-footer">
   <nav class="pagination">
     <a class="prev" href="http://localhost:1313/posts/page/2/">
-      «&nbsp;Prev&nbsp;2/8
+      «&nbsp;Prev&nbsp;2/9
     </a>
-    <a class="next" href="http://localhost:1313/posts/page/4/">Next&nbsp;4/8&nbsp;»
+    <a class="next" href="http://localhost:1313/posts/page/4/">Next&nbsp;4/9&nbsp;»
     </a>
   </nav>
 </footer>
