@@ -13,13 +13,60 @@
       <link>http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/</link>
       <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
       <guid>http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/</guid>
-      <description>&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
 &lt;ul&gt;
 &lt;li&gt;论文标题：Large Reasoning Embedding Models: Towards Next-Generation Dense Retrieval Paradigm&lt;/li&gt;
 &lt;li&gt;作者单位：阿里巴巴&lt;/li&gt;
-&lt;li&gt;论文链接：https://arxiv.org/abs/2510.14321&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/abs/2510.14321&#34;&gt;https://arxiv.org/abs/2510.14321&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;来源：arxiv&lt;/li&gt;
-&lt;/ul&gt;</description>
+&lt;/ul&gt;
+&lt;h1 id=&#34;一问题&#34;&gt;一、问题&lt;/h1&gt;
+&lt;p&gt;电商emb召回场景，目前的方法都是直接字面语义上的对比学习训练（direct-embedding methods），即q2i的对比学习训练。对于复杂、困难的query，语义理解能力不足，比如下图Fig1中的query=&amp;ldquo;比茶更提神的饮料&amp;rdquo;，仍然会召回很多茶，因为字面理解没有理解query背后的深层含义。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-Fig1.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;二方法&#34;&gt;二、方法&lt;/h1&gt;
+&lt;p&gt;使用LLM强大的推理能力（reasoning），先推理出CoT，然后基于CoT再产emb。比如上面的例子中，经过LLM推理之后，推理出咖啡、红牛等关键词，通过这些关键词再去产emb然后召回，效果就好很多。&lt;/p&gt;
+&lt;h2 id=&#34;21-训练样本构造方法&#34;&gt;2.1 训练样本构造方法&lt;/h2&gt;
+&lt;p&gt;如下图Fig2中的Data Construction部分：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;收集线上query，尤其是那种困难query，就是在现有direct-embedding表现不好的query&lt;/li&gt;
+&lt;li&gt;把这些query喂给现有召回模型，得到召回商品集合①&lt;/li&gt;
+&lt;li&gt;然后使用强大的Qwen3-30B-A3B-Instruct生产CoT扩展信息
+&lt;ul&gt;
+&lt;li&gt;Unconstrained Reasoning：首先不加任何限制地生产CoT，尽可能利用大模型的世界知识和推理能力，生产充分完全的CoT信息&lt;/li&gt;
+&lt;li&gt;Information Extraction：由于上一步产出的CoT信息太长了，不利于线上推理，因此把上一步产出的CoT和原始query再次输入给大模型，让大模型抽取其中的关键信息，以keyword list形式输出&lt;/li&gt;
+&lt;li&gt;Post Processing：最后对上一步抽取的关键词进行后处理，去除重复词，去除query中已有的词等，得到精简、干净的关键词列表，列表最大长度是16&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;接着把query和CoT喂给已有的向量召回模型，得到扩展的召回商品集合②
+&lt;ul&gt;
+&lt;li&gt;由于要训练模型的Reasoning能力，所以只取出集合②-①的差集部分，这部分是CoT带来的增益商品集合&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;最后使用相关性模型对商品集合②-①进行过滤，过滤出相关的商品&lt;/li&gt;
+&lt;li&gt;通过上述步骤，产出约7.5kw的&amp;lt;query, CoT, item&amp;gt;三元组&lt;/li&gt;
+&lt;li&gt;把上述样本划分成两部分，7.1kw的&amp;lt;query, CoT, item&amp;gt;三元组用于Cold start预训练；剩余400w的&amp;lt;query, item&amp;gt;用于RL微调&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-Fig2.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;22-cold-start预训练&#34;&gt;2.2 Cold Start预训练&lt;/h2&gt;
+&lt;p&gt;对应图Fig2左下角部分，该模块通过大规模的&amp;lt;query, CoT,item&amp;gt;三元组数据预训练，想要达到两个目的：一是让基础模型具备think能力；二是让基础模型产出的emb和下游q2i任务对齐。&lt;/p&gt;
+&lt;p&gt;这里使用的基础模型是Qwen2.5-3B-Instruct，比生产CoT的模型（Qwen3-30B-A3B-Instruct）小，其实也有点蒸馏的感觉，把大模型的CoT能力蒸馏到小模型中。&lt;/p&gt;
+&lt;p&gt;训练任务包括两个，一个是CoT的NTP loss（对应图中的SFT loss），另一个是q2i的对比学习InfoNCE loss。query塔和item塔共享参数，他们的emb都是最后一个特殊token &amp;lt;emb&amp;gt; 的emb。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula4.png&#34;&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula5-7.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Loss组合：
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula8.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;23-rl微调&#34;&gt;2.3 RL微调&lt;/h2&gt;
+&lt;p&gt;上一步的SFT主要进行模仿学习，模仿更大的大模型的think能力，小模型本身的reasoning能力受限，接下来需要用GRPO对小模型进行RL微调。RL微调同时对生产CoT和生产emb两个任务都有作用，具体看下面的reward：&lt;/p&gt;
+&lt;p&gt;RL微调设计了3个reward：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Format Reward：产出的CoT格式符合“&amp;lt;think&amp;gt; Specific CoT &amp;lt;/think&amp;gt;&amp;lt;emb&amp;gt;”就得1分，否则得0分&lt;/li&gt;
+&lt;li&gt;Length Reward：产出的CoT格式符合长度限制（&amp;lt;=16）就得1分，否则得0分&lt;/li&gt;
+&lt;li&gt;Retrieval Accuracy Reward：联合原始query和产出的CoT产出的增强query emb，与batch内所有的item emb求相似度，正确item所在的排名为\(rank(d_i)\)，再根据公式12计算一个排名的reward。核心思想是：正确的item与query的相似度排名越高则reward越大（即rank值越小则reward越大）。
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula11-12.png&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最后，上述3个reward通过三个β系数组合起来：
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula13.png&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>论文阅读：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings</title>
