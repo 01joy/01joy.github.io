@@ -6,8 +6,43 @@
     <description>Recent content in Tags on bitJoy</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 09 Nov 2025 13:08:18 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 13 Dec 2025 18:25:12 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Embedding</title>
+      <link>http://localhost:1313/tags/embedding/</link>
+      <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
+      <guid>http://localhost:1313/tags/embedding/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GRPO</title>
+      <link>http://localhost:1313/tags/grpo/</link>
+      <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
+      <guid>http://localhost:1313/tags/grpo/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>多模态</title>
+      <link>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</link>
+      <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>大模型</title>
+      <link>http://localhost:1313/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</link>
+      <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>强化学习</title>
+      <link>http://localhost:1313/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/</link>
+      <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Giscus</title>
       <link>http://localhost:1313/tags/giscus/</link>
@@ -62,13 +97,6 @@
       <link>http://localhost:1313/tags/vl-clip/</link>
       <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
       <guid>http://localhost:1313/tags/vl-clip/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>多模态</title>
-      <link>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</link>
-      <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</guid>
       <description></description>
     </item>
     <item>
@@ -158,8 +186,50 @@
     <item>
       <title>三国演义</title>
       <link>http://localhost:1313/tags/%E4%B8%89%E5%9B%BD%E6%BC%94%E4%B9%89/</link>
-      <pubDate>Thu, 11 Jul 2019 11:31:06 +0800</pubDate>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
       <guid>http://localhost:1313/tags/%E4%B8%89%E5%9B%BD%E6%BC%94%E4%B9%89/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>关羽</title>
+      <link>http://localhost:1313/tags/%E5%85%B3%E7%BE%BD/</link>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%85%B3%E7%BE%BD/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>刮骨疗毒</title>
+      <link>http://localhost:1313/tags/%E5%88%AE%E9%AA%A8%E7%96%97%E6%AF%92/</link>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%88%AE%E9%AA%A8%E7%96%97%E6%AF%92/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>南蛮入侵</title>
+      <link>http://localhost:1313/tags/%E5%8D%97%E8%9B%AE%E5%85%A5%E4%BE%B5/</link>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%8D%97%E8%9B%AE%E5%85%A5%E4%BE%B5/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>夷陵之战</title>
+      <link>http://localhost:1313/tags/%E5%A4%B7%E9%99%B5%E4%B9%8B%E6%88%98/</link>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E5%A4%B7%E9%99%B5%E4%B9%8B%E6%88%98/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>败走麦城</title>
+      <link>http://localhost:1313/tags/%E8%B4%A5%E8%B5%B0%E9%BA%A6%E5%9F%8E/</link>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E8%B4%A5%E8%B5%B0%E9%BA%A6%E5%9F%8E/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>赵云</title>
+      <link>http://localhost:1313/tags/%E8%B5%B5%E4%BA%91/</link>
+      <pubDate>Wed, 17 Jul 2019 17:37:06 +0800</pubDate>
+      <guid>http://localhost:1313/tags/%E8%B5%B5%E4%BA%91/</guid>
       <description></description>
     </item>
     <item>
@@ -167,13 +237,6 @@
       <link>http://localhost:1313/tags/%E4%B8%89%E9%A1%BE%E8%8C%85%E5%BA%90/</link>
       <pubDate>Thu, 11 Jul 2019 11:31:06 +0800</pubDate>
       <guid>http://localhost:1313/tags/%E4%B8%89%E9%A1%BE%E8%8C%85%E5%BA%90/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>关羽</title>
-      <link>http://localhost:1313/tags/%E5%85%B3%E7%BE%BD/</link>
-      <pubDate>Thu, 11 Jul 2019 11:31:06 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E5%85%B3%E7%BE%BD/</guid>
       <description></description>
     </item>
     <item>
@@ -216,13 +279,6 @@
       <link>http://localhost:1313/tags/%E8%B5%A4%E5%A3%81%E4%B9%8B%E6%88%98/</link>
       <pubDate>Thu, 11 Jul 2019 11:31:06 +0800</pubDate>
       <guid>http://localhost:1313/tags/%E8%B5%A4%E5%A3%81%E4%B9%8B%E6%88%98/</guid>
-      <description></description>
-    </item>
-    <item>
-      <title>赵云</title>
-      <link>http://localhost:1313/tags/%E8%B5%B5%E4%BA%91/</link>
-      <pubDate>Thu, 11 Jul 2019 11:31:06 +0800</pubDate>
-      <guid>http://localhost:1313/tags/%E8%B5%B5%E4%BA%91/</guid>
       <description></description>
     </item>
     <item>
