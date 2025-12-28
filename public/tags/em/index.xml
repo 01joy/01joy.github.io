@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>EM on bitJoy</title>
+    <link>http://localhost:1313/tags/em/</link>
+    <description>Recent content in EM on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 21 Aug 2016 18:46:01 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/em/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>隐马尔可夫模型及其应用（2）学习问题&amp;识别问题</title>
+      <link>http://localhost:1313/posts/2016-08-21-introduction-to-hmm-2/</link>
+      <pubDate>Sun, 21 Aug 2016 18:46:01 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-08-21-introduction-to-hmm-2/</guid>
+      <description>&lt;p&gt;上一回介绍了HMM的解码问题，今天我们介绍HMM的学习问题和识别问题，先来看学习问题。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;正如上一回结束时所说，&lt;strong&gt;HMM的学习问题&lt;/strong&gt;是：仅已知观测序列\(\vec y\)，要估计出模型参数组\(\vec\lambda=(\mu,A,B)\)，其中\(\mu\)为初始概率分布向量，\(A\)为转移概率矩阵，\(B\)为发射概率矩阵。&lt;/p&gt;
+&lt;h1 id=&#34;算法设计&#34;&gt;算法设计&lt;/h1&gt;
+&lt;p&gt;求解HMM的参数学习问题，就是求解如下的最优化问题：&lt;/p&gt;
+$$\begin{equation} P(\vec Y = \vec y|\hat \lambda)=\max\limits_{\vec \lambda} P(\vec Y = \vec y|\vec \lambda)\end{equation}$$&lt;p&gt;也就是找一个参数\(\vec \lambda\)，使得模型在该参数下最有可能产生当前的观测\(\vec y\)。如果使用极大似然法求解，对于似然函数\(P(\vec Y=\vec y|\vec \lambda)=\sum\limits_{i_1,…,i_T}\mu_{i_1}b_{i_1y_1}a_{i_1i_2}…a_{i_{T-1}i_T}b_{i_Ty_T}\)而言，这个最大值问题的计算量过大，在实际中是不可能被采用的。为此，人们构造了一个递推算法，使其能相当合理地给出模型参数\(\vec \lambda\)的粗略估计。其核心思想是：并不要求备选\(\vec\lambda\)使得\(P(\vec Y=\vec y|\vec \lambda)\)达到最大或局部极大，而只要求使\(P(\vec Y=\vec y|\vec \lambda)\)相当大，从而使计算变为实际可能。&lt;/p&gt;
+&lt;h1 id=&#34;em算法&#34;&gt;EM算法&lt;/h1&gt;
+&lt;p&gt;为此，我们定义一个描述模型“趋势”的量\(Q(\vec\lambda^*|\vec\lambda)\)代替似然函数\(P(\vec Y=\vec y|\vec\lambda)\)，其定义为：&lt;/p&gt;
+$$\begin{equation} Q(\vec\lambda^*|\vec\lambda)=\sum\limits_{\vec x}P(\vec x,\vec y|\vec\lambda)\ln P(\vec x,\vec y|\vec\lambda^*)\end{equation}$$&lt;p&gt;利用在\(0 &lt; x &lt; 1\)时，不等式\(\ln x\leq x-1\)成立，可以证明：&lt;/p&gt;
+$$\begin{equation} Q(\vec\lambda^*|\vec\lambda)-Q(\vec\lambda|\vec\lambda)\leq P(\vec Y=\vec y|\vec\lambda^*)-P(\vec Y=\vec y|\vec\lambda)\end{equation}$$&lt;p&gt;由此可见，对于固定的\(\vec\lambda\)，只要\(Q(\vec\lambda^*|\vec\lambda)&gt;Q(\vec\lambda|\vec\lambda)\)，就有\(P(\vec Y=\vec y|\vec\lambda^*)&gt;P(\vec Y=\vec y|\vec\lambda)\)。于是想把模型\(\vec\lambda_m\)修改为更好的模型\(\vec\lambda_{m+1}\)，只需找\(\vec\lambda_{m+1}\)使得：&lt;/p&gt;
+$$\begin{equation}Q(\vec\lambda_{m+1}|\vec\lambda_m)=\sup_{\vec\lambda}Q(\vec\lambda|\vec\lambda_m)\end{equation}$$&lt;p&gt;即只要把\(Q(\vec\lambda|\vec\lambda_m)\)关于\(\vec\lambda\)的最大值处取成\(\vec\lambda_{m+1}\)，就有\(P(\vec Y=\vec y|\vec\lambda_{m+1})&gt;P(\vec Y=\vec y|\vec\lambda_m)\)。&lt;/p&gt;
+&lt;p&gt;这样得到的模型序列\(\{\vec\lambda_m\}\)能保证\(P(\vec Y=\vec y|\vec\lambda_m)\)关于\(m\)是严格递增的，虽然在这里还不能在理论上证明\(P(\vec Y=\vec y|\vec\lambda_m)\)收敛到\(\max_{\vec\lambda}P(\vec Y=\vec y|\vec\lambda)\)，但是当\(m\)充分大时，\(\vec\lambda_m\)也还能提供在实际中较为满意的粗略近似。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

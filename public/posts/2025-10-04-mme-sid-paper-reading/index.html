@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs | bitJoy</title>
+<meta name="keywords" content="Semantic ID, MME-SID, LLM, 推荐系统, 多模态, CIKM">
+<meta name="description" content="
+基本信息
+
+论文标题：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs
+作者单位：香港城市大学&amp;腾讯
+论文链接：https://arxiv.org/pdf/2509.02017
+来源：CIKM 2025
+
+Motivation：论文要解决的问题是什么
+LLM4SR的基本范式如下，即用LLM直接来做搜推的范式（这种方式在学术界常见，但在工业界不常见）。由于LLM的输入词表范围是有限的（通常比较小），因此其token emb dim通常比较大，比如2048或者4096；而搜推场景的item量级很大，而且在不断更新，因此工业界经典的id-based的搜推模型的item emb dim通常比较小，比如64或128。经典的id-based的搜推模型能比较好地学习到搜推场景的协同信号，为了让LLM模型也能感知这种信息，LLM4SR范式通常会先预训练一个id-based的经典搜推模型，然后将其中的item id emb通过下图的Linear Projection的映射层，映射到LLM token emb的空间，让LLM也能感知搜推的协同信号。
+
+上述LLM4SR范式存在两个问题：
+
+
+维度坍缩：id-based训出来的id emb dim比较小（如64），LLM token emb dim比较大（如4096），在由id emb通过Linear Projection映射到toen emb的过程中，虽然64映射到4096空间了，但扩维后的矩阵存在低秩问题，即还是只利用了4096中的64维的空间。
+
+论文中，作者分两种情况进行了分析，如果Linear Projection只是一个线性层的话，通过公式推导能得出上述结论；如果Linear Projection包含非线性变换，作者通过实验分析也发现了维度坍缩的现象。
+
+
+
+灾难遗忘：除了使用id-based模型产出的id emb，LLM4SR也常用多模态模型产出item emb表征，然后转换成semantic id输入到LLM4SR中。在这种情况下，产出的semantic id通过会遗忘多模态item emb的信息，导致下游LLM4SR的效果不佳。
+
+论文中，作者用公式9来衡量semantic id保留pretrain多模态emb的信息量。具体来说，如果行为流中的商品序列是{A,B,C,D}，target item是E。使用pretrain多模态emb能计算出E和A~D的相似度，例如相似度&lt;E,A&gt; &gt; &lt;E,B&gt;。如果将pretrain多模态emb转换成semantic id，然后由semantic id恢复出新的A~E的emb之后，再计算E和A~D的相似度，如果仍然有&lt;E,A&gt; &gt; &lt;E,B&gt;，则认为一致（concordant），否则不一致（disconcordant）。这个分析方法挺好的，通过这个指标能估算出转换成semantic id之后，仍然保留原有pretrain多模态emb对搜推场景的序关系的保留程度。
+作者发现，转换成semantic id之后，信息只保留了37.14%；进一步，如果semantic id是在下游任务中端到端训练的，则信息只保留了5.5%，也就是说94.5%的pretrain emb的序的信息都丢掉了，也就是灾难遗忘。
+
+
+
+
+Semantic id构建方法
+
+3套emb来源，一套id-based经典搜推模型产出的包含协同信号的emb，另外两套是LLM2CLIP产出的多模态文本和图片emb。作者提到传统CLIP对长文本处理能力较弱，所以升级到LLM2CLIP，能更好地处理长文本。
+Semantic id构建方法是经典的RQ-VAE的方法，但有如下两个改进点：
+将emb的重构loss由MSE升级成MMD (maximum mean discrepancy)，MSE是计算原始emb和重构emb的欧式距离的误差，而MMD是计算两个分布的diff，实验表明能MMD比MSE能保留更多的pretrain多模态emb信息（即上述公式9），保留44.36%
+对量化后的emb做了对齐，因为LLM2CLIP本身进行了图文模态的对齐，所以文中只新增了id emb分别和文本、图片模态的对齐
+此外，还有一点论文没提但可能和常规RQ-VAE不同之处，就是原始emb在进行RQ-VAE之前，有一个Encoder升维的操作，在重构loss前对应有一个Decoder降维的操作，而semantic id量化恢复emb是Decoder之前的那个。这一升一降，估计也有助于缓解维度坍缩。
+
+">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs
+    </h1>
+    <div class="post-meta"><span title='2025-10-04 11:10:11 +0800 CST'>October 4, 2025</span>&nbsp;·&nbsp;1 min
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e4%bf%a1%e6%81%af" aria-label="基本信息">基本信息</a></li>
+                <li>
+                    <a href="#motivation%e8%ae%ba%e6%96%87%e8%a6%81%e8%a7%a3%e5%86%b3%e7%9a%84%e9%97%ae%e9%a2%98%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Motivation：论文要解决的问题是什么">Motivation：论文要解决的问题是什么</a></li>
+                <li>
+                    <a href="#semantic-id%e6%9e%84%e5%bb%ba%e6%96%b9%e6%b3%95" aria-label="Semantic id构建方法">Semantic id构建方法</a></li>
+                <li>
+                    <a href="#%e4%b8%bb%e6%a8%a1%e5%9e%8b" aria-label="主模型">主模型</a></li>
+                <li>
+                    <a href="#%e8%af%84%e8%ae%ba" aria-label="评论">评论</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="/posts/2025-10-04-mme-sid-paper-reading/mme-sid-paper-cover.png"></p>
+<h1 id="基本信息">基本信息<a hidden class="anchor" aria-hidden="true" href="#基本信息">#</a></h1>
+<ul>
+<li>论文标题：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</li>
+<li>作者单位：香港城市大学&amp;腾讯</li>
+<li>论文链接：<a href="https://arxiv.org/pdf/2509.02017">https://arxiv.org/pdf/2509.02017</a></li>
+<li>来源：CIKM 2025</li>
+</ul>
+<h1 id="motivation论文要解决的问题是什么">Motivation：论文要解决的问题是什么<a hidden class="anchor" aria-hidden="true" href="#motivation论文要解决的问题是什么">#</a></h1>
+<p>LLM4SR的基本范式如下，即用LLM直接来做搜推的范式（这种方式在学术界常见，但在工业界不常见）。由于LLM的输入词表范围是有限的（通常比较小），因此其token emb dim通常比较大，比如2048或者4096；而搜推场景的item量级很大，而且在不断更新，因此工业界经典的id-based的搜推模型的item emb dim通常比较小，比如64或128。经典的id-based的搜推模型能比较好地学习到搜推场景的协同信号，为了让LLM模型也能感知这种信息，LLM4SR范式通常会先预训练一个id-based的经典搜推模型，然后将其中的item id emb通过下图的Linear Projection的映射层，映射到LLM token emb的空间，让LLM也能感知搜推的协同信号。</p>
+<p><img loading="lazy" src="/posts/2025-10-04-mme-sid-paper-reading/E4SRec.png"></p>
+<p>上述LLM4SR范式存在两个问题：</p>
+<ul>
+<li>
+<p><strong>维度坍缩</strong>：id-based训出来的id emb dim比较小（如64），LLM token emb dim比较大（如4096），在由id emb通过Linear Projection映射到toen emb的过程中，虽然64映射到4096空间了，但扩维后的矩阵存在低秩问题，即还是只利用了4096中的64维的空间。</p>
+<ul>
+<li>论文中，作者分两种情况进行了分析，如果Linear Projection只是一个线性层的话，通过公式推导能得出上述结论；如果Linear Projection包含非线性变换，作者通过实验分析也发现了维度坍缩的现象。</li>
+</ul>
+</li>
+<li>
+<p><strong>灾难遗忘</strong>：除了使用id-based模型产出的id emb，LLM4SR也常用多模态模型产出item emb表征，然后转换成semantic id输入到LLM4SR中。在这种情况下，产出的semantic id通过会遗忘多模态item emb的信息，导致下游LLM4SR的效果不佳。</p>
+<ul>
+<li>论文中，作者用公式9来衡量semantic id保留pretrain多模态emb的信息量。具体来说，如果行为流中的商品序列是{A,B,C,D}，target item是E。使用pretrain多模态emb能计算出E和A~D的相似度，例如相似度&lt;E,A&gt; &gt; &lt;E,B&gt;。如果将pretrain多模态emb转换成semantic id，然后由semantic id恢复出新的A~E的emb之后，再计算E和A~D的相似度，如果仍然有&lt;E,A&gt; &gt; &lt;E,B&gt;，则认为一致（concordant），否则不一致（disconcordant）。这个分析方法挺好的，通过这个指标能估算出转换成semantic id之后，仍然保留原有pretrain多模态emb对搜推场景的<strong>序</strong>关系的保留程度。</li>
+<li>作者发现，转换成semantic id之后，信息只保留了37.14%；进一步，如果semantic id是在下游任务中端到端训练的，则信息只保留了5.5%，也就是说94.5%的pretrain emb的序的信息都丢掉了，也就是灾难遗忘。
+<img loading="lazy" src="/posts/2025-10-04-mme-sid-paper-reading/mme-sid-formula9.png"></li>
+</ul>
+</li>
+</ul>
+<h1 id="semantic-id构建方法">Semantic id构建方法<a hidden class="anchor" aria-hidden="true" href="#semantic-id构建方法">#</a></h1>
+<ul>
+<li>3套emb来源，一套id-based经典搜推模型产出的包含协同信号的emb，另外两套是LLM2CLIP产出的多模态文本和图片emb。作者提到传统CLIP对长文本处理能力较弱，所以升级到LLM2CLIP，能更好地处理长文本。</li>
+<li>Semantic id构建方法是经典的RQ-VAE的方法，但有如下两个改进点：</li>
+<li>将emb的重构loss由MSE升级成MMD (maximum mean discrepancy)，MSE是计算原始emb和重构emb的欧式距离的误差，而MMD是计算两个分布的diff，实验表明能MMD比MSE能保留更多的pretrain多模态emb信息（即上述公式9），保留44.36%</li>
+<li>对量化后的emb做了对齐，因为LLM2CLIP本身进行了图文模态的对齐，所以文中只新增了id emb分别和文本、图片模态的对齐</li>
+<li>此外，还有一点论文没提但可能和常规RQ-VAE不同之处，就是原始emb在进行RQ-VAE之前，有一个Encoder升维的操作，在重构loss前对应有一个Decoder降维的操作，而semantic id量化恢复emb是Decoder之前的那个。这一升一降，估计也有助于缓解维度坍缩。</li>
+</ul>
+<p><img loading="lazy" src="/posts/2025-10-04-mme-sid-paper-reading/mme-sid-fig2.png"></p>
+<h1 id="主模型">主模型<a hidden class="anchor" aria-hidden="true" href="#主模型">#</a></h1>
+<p><img loading="lazy" src="/posts/2025-10-04-mme-sid-paper-reading/mme-sid-fig1.png"></p>
+<ul>
+<li>为了缓解维度坍缩，使用3套emb，一套id-based协同信号emb，另外两套是文本和图片的多模态emb</li>
+<li>每套emb既包含原始emb过Linear Projection投影之后的表征（低维投影到高维，存在维度坍缩问题）；也包含由原始emb训练产出的semantic id重构回来的emb（天然高维emb）</li>
+<li>为了避免灾难遗忘，semantic id使用上述优化的MMD loss训练产出，并且semantic id emb使用在训练semantic id emb产出的codebook emb进行初始化，然后随着LLM4SR finetuning，而不是完全随机初始化然后端到端训练</li>
+<li>最后在LLM4SR输出层，有一个Multimodal Frequency-aware Fusion模块，next token prediction任务相当于一个n分类任务。在这个模块中，对target item也会新增一套emb talbe，这样总共就有4套emb table了。然后词表中每个item会根据热度过一个函数得到四种模态的emb的权重，然后4个emb进行融合。通过这种方式也能一定程度上缓解维度坍缩。
+<img loading="lazy" src="/posts/2025-10-04-mme-sid-paper-reading/mme-sid-formula17.png"></li>
+</ul>
+<h1 id="评论">评论<a hidden class="anchor" aria-hidden="true" href="#评论">#</a></h1>
+<ul>
+<li>可借鉴
+<ul>
+<li>论文的分析方法值得借鉴，例如对维度坍缩的推理分析、灾难遗忘的定量分析等</li>
+<li>semantic id训练时的MMD loss缓解灾难遗忘</li>
+<li>semantic id emb在下游应用时，使用训练的codebook emb进行初始化，而不是随机初始化，能缓解灾难遗忘</li>
+<li>使用多套emb及semantic id，缓解维度坍缩</li>
+<li>融合多套emb时，考虑item热度信息，动态调整融合权重</li>
+</ul>
+</li>
+<li>可改进
+<ul>
+<li>LLM4SR主要用于学术场景，没有考虑工业场景item id数据量巨大，而且不断更新的情况，因此在工业场景不常见</li>
+<li>即使用上MMD loss，pretrain emb信息页只保留了44.36%，如果目标是100%的话，这个绝对差距还很大</li>
+<li>没有论证semantic id emb遗忘pretrain emb信息对下游任务的影响，虽然遗忘信息了，但端到端训练也学到新知识了，功过相抵，也许效果不一定差？</li>
+<li>semantic id通常通过两阶段训练得到，先预训练emb，然后训练semantic id，两阶段过程天然容易使semantic id遗忘预训练emb的信息，如果将两者合并成一阶段的，即把训练semantic id的网络模块加入到预训练emb的网络中，在预训练emb的过程中，就完成semantic id的训练，那么semantic id遗忘的信息会不会更少？类似的思想在召回双塔模型Poeem（<a href="https://arxiv.org/abs/2105.03933">https://arxiv.org/abs/2105.03933</a>）中就有过。</li>
+</ul>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/semantic-id/">Semantic ID</a></li>
+      <li><a href="http://localhost:1313/tags/mme-sid/">MME-SID</a></li>
+      <li><a href="http://localhost:1313/tags/llm/">LLM</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">推荐系统</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/">多模态</a></li>
+      <li><a href="http://localhost:1313/tags/cikm/">CIKM</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-10-04-qarm-paper-reading/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>论文阅读：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2025-08-15-announcement/">
+    <span class="title">Next »</span>
+    <br>
+    <span>公告</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

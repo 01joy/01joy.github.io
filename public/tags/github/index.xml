@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Github on bitJoy</title>
+    <link>http://localhost:1313/tags/github/</link>
+    <description>Recent content in Github on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 13 Nov 2018 11:09:48 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/github/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ubuntu下使用VSCode连接Github</title>
+      <link>http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/</link>
+      <pubDate>Tue, 13 Nov 2018 11:09:48 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2018-11-13-access-github-from-vscode-in-ubuntu/</guid>
+      <description>&lt;p&gt;VSCode是微软开源的一个很强大的IDE，可以支持几乎所有编程语言，而且是跨平台的，Linux用户终于可以用上宇宙最强IDE了。我最近在使用VSCode编写调试Python项目，其调试功能很强大，和VS上调试C++的感觉是一样的，强烈推荐。&lt;/p&gt;
+&lt;p&gt;VSCode还可以连接Github，进行版本控制。下面以我最近学习的深度学习项目为例，介绍下怎样在Ubuntu下使用VSCode连接Github。以我fork的repo为例：&lt;a href=&#34;https://github.com/01joy/neural-networks-and-deep-learning&#34;&gt;https://github.com/01joy/neural-networks-and-deep-learning&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;连接Github有两种方式，一种是HTTPS，另一种是SSH，在每个repo页面的右边，有一个Clone or download按钮，可以获取到这两种连接方式的地址。HTTPS方式和网址类似，以HTTPS开头；SSH方式以git@githu.com开头。使用HTTPS连接比较简单，但是每次push的时候需要输入用户名和密码，比较麻烦，如果想记住密码，需要把用户名和密码以明文的形式保存到一个文件中，个人感觉不方便且不安全。下面以SSH连接为例进行介绍。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;首先设置Github提交时的用户名和密码，一般设置成全局的：&lt;a href=&#34;https://help.github.com/articles/setting-your-username-in-git/&#34;&gt;https://help.github.com/articles/setting-your-username-in-git/&lt;/a&gt;、&lt;a href=&#34;https://help.github.com/articles/setting-your-commit-email-address-in-git/&#34;&gt;https://help.github.com/articles/setting-your-commit-email-address-in-git/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;生成一对新的SSH公钥和私钥，并添加到ssh-agent中。注意生成的时候需要输入passphrase，这个passphrase不是Github的密码，自己随便取一个记住就好。&lt;a href=&#34;https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/&#34;&gt;https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;把SSH的公钥添加到Github账号中：&lt;a href=&#34;https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/&#34;&gt;https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;测试SSH连接是否成功：&lt;a href=&#34;https://help.github.com/articles/testing-your-ssh-connection/&#34;&gt;https://help.github.com/articles/testing-your-ssh-connection/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;（可选）修改SSH密码，即第1步设置的passphrase：&lt;a href=&#34;https://help.github.com/articles/working-with-ssh-key-passphrases/&#34;&gt;https://help.github.com/articles/working-with-ssh-key-passphrases/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;到这里，本级就能通过SSH连接Github了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果没有安装VSCode，可以直接通过Ubuntu的终端连接Github，步骤如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在本地创建一个和远程repo名称一样的空文件夹&lt;/li&gt;
+&lt;li&gt;终端cd到该文件夹内&lt;/li&gt;
+&lt;li&gt;git init # 在该文件夹内初始化&lt;/li&gt;
+&lt;li&gt;git remote add origin &lt;a href=&#34;mailto:git@github.com&#34;&gt;git@github.com&lt;/a&gt;:01joy/notes-on-writing.git # 使用repo的SSH地址&lt;/li&gt;
+&lt;li&gt;git pull origin master # 把远程代码拉到本地&lt;/li&gt;
+&lt;li&gt;修改代码&lt;/li&gt;
+&lt;li&gt;git add . # 在根目录执行，添加所有修改&lt;/li&gt;
+&lt;li&gt;git commit -m ‘comments’ # commit第7步添加的修改&lt;/li&gt;
+&lt;li&gt;git push origin master # 把第8步发布到远程&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果安装了VSCode，其实和直接用终端是一样的，在菜单栏的Terminal下新建一个终端，在这个终端内执行上述代码，如果在第4步出现”Enter password to unlock the private key”时，输入创建SSH时第2步的密码即可，只需一次，下次就不用再输入密码了。点击File的Open Folder打开本地repo文件夹。点击VSCode左边栏的Explorer可以在编辑器下修改代码。切换到左边栏的Source Control可以进行Git相关操作，修改的文件右边会出现一个M，点击这个M会出现diff视图；Source Control左边的右上角有三个点，点击这个按钮会出现很多Git操作，包括commit、push等，其实相当于调用上述代码，效果是一样的。&lt;/p&gt;
+&lt;p&gt;VSCode快捷键Ctrl+Shift+P会出现命令窗口，在里面输入commit、push等会出现相关操作的，能起到一定的加速效果，当然也可以自定义快捷键。&lt;/p&gt;
+&lt;p&gt;Have Fun!&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Git相关笔记</title>
+      <link>http://localhost:1313/posts/2014-11-11-git-notes/</link>
+      <pubDate>Tue, 11 Nov 2014 23:12:34 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2014-11-11-git-notes/</guid>
+      <description>&lt;h1 id=&#34;一第一次使用github的步骤&#34;&gt;一、第一次使用Github的步骤：&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;在&lt;a href=&#34;https://github.com/new&#34;&gt;这个页面&lt;/a&gt;中填写Repo名称&lt;/li&gt;
+&lt;li&gt;不要勾选Initialize this repository with a README&lt;/li&gt;
+&lt;li&gt;点击Create repository&lt;/li&gt;
+&lt;li&gt;在本地使用Git命令行工具进入到和第1步填写Repo相同名称的文件夹中（此文件夹中已包含你要push到Github上的内容），执行以下几个命令：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;
+&lt;table style=&#34;border-spacing:0;padding:0;margin:0;border:0;&#34;&gt;&lt;tr&gt;&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;1
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;2
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;3
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;4
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;5
+&lt;/span&gt;&lt;span style=&#34;white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td style=&#34;vertical-align:top;padding:0;margin:0;border:0;;width:100%&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;touch README.md &lt;span style=&#34;color:#75715e&#34;&gt;#optional&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git add .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git commit -m &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;your comment&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git remote add origin https://github.com/UserName/RepoName
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git push origin master
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol start=&#34;5&#34;&gt;
+&lt;li&gt;如果你在第2步中勾选了Initialize this repository with a README，那么在第4步中省略touch README.md并且在git add .之前，执行第5行代码，然后git pull origin master将远端（remote）的内容pull到本地&lt;/li&gt;
+&lt;li&gt;关于Git命令中的fetch和pull的区别，请看&lt;a href=&#34;https://blog.csdn.net/wfdtxz/article/details/8632811&#34;&gt;这篇博文&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;关于Git bash和Github的连接，请看&lt;a href=&#34;https://www.cnblogs.com/fnng/archive/2011/08/25/2153807.html&#34;&gt;这篇博文&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;二git命令中fetch和pull的区别转载&#34;&gt;二、Git命令中fetch和pull的区别（&lt;a href=&#34;https://blog.csdn.net/wfdtxz/article/details/8632811&#34;&gt;转载&lt;/a&gt;）&lt;/h1&gt;
+&lt;p&gt;Git中从远程的分支获取最新的版本到本地有这样2个命令：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

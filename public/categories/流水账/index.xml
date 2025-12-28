@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>流水账 on bitJoy</title>
+    <link>http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/</link>
+    <description>Recent content in 流水账 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 09 Nov 2025 13:08:18 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/%E6%B5%81%E6%B0%B4%E8%B4%A6/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>解决Hugo的Giscus评论系统出现URI_TOO_LONG的问题</title>
+      <link>http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/</link>
+      <pubDate>Sun, 09 Nov 2025 13:08:18 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/</guid>
+      <description>&lt;p&gt;本博客使用的评论系统是&lt;a href=&#34;https://github.com/giscus/giscus&#34;&gt;Giscus&lt;/a&gt;，日常使用没啥问题，但是当博客内容很长的时候，就会出现&lt;code&gt;URI_TOO_LONG&lt;/code&gt;的问题：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;An error occurred
+
+URI_TOO_LONG
+
+hkg1::
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;例如下面两篇博客：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://bitjoy.net/posts/2017-10-08-2017-solo-travel-in-zhengzhou-and-hangzhou/&#34;&gt;2017年国庆旅行——郑州、杭州&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://bitjoy.net/posts/2018-02-04-2018-campus-recruiting/&#34;&gt;伪·2018届校招面经&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;正常Giscus评论&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;异常Giscus评论&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/normal-giscus.png&#34;&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: center&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/abnormal-giscus.png&#34;&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;针对这个问题，网上搜&lt;code&gt;URI_TOO_LONG&lt;/code&gt;说的都是网页请求的URI太长导致的，但都没找到和Giscus相关的内容。&lt;/p&gt;
+&lt;p&gt;后来在Giscus的Github Issue里找到一个相同的问题：&lt;a href=&#34;https://github.com/giscus/giscus/issues/1340&#34;&gt;https://github.com/giscus/giscus/issues/1340&lt;/a&gt;，里面一个人提到和Hugo所用的主题有关，另一个人提到和博客的&lt;code&gt;meta name=&amp;quot;description&amp;quot;&lt;/code&gt;内容太长有关。但都蜻蜓点水，说的不是很详细，也没有给出一个通用的解决办法。&lt;/p&gt;
+&lt;p&gt;后来怀疑这个报错可能是在加载Giscus评论系统的时候，发起的URI请求太长有关。因此针对出问题的博客，通过Chrome右键&lt;code&gt;检查&lt;/code&gt;，找到Giscus模块出现的URI链接，如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/giscus-analysis.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;光这么看看不出来这个URI的长度，可以把这个URI拷贝出来，粘贴到Word中，你会发现这个URI真的非常非常长，而且包含了完整的博客正文！进一步分析发现是URI中的&lt;code&gt;description&lt;/code&gt;字段非常长，包含完整的博客正文。&lt;/p&gt;
+&lt;p&gt;定位到问题之后，解决办法就很简单了，目标就是如何缩短博客html代码中的&lt;code&gt;description&lt;/code&gt;字段长度。这里有很多种方法，最简单的方法就是，在每篇博客的头信息区域，增加自定义配置的&lt;code&gt;description&lt;/code&gt;内容，简短一点就行，我就直接复用了博客标题。通过这种方法就缩短了Giscus发起URI中的&lt;code&gt;description&lt;/code&gt;字段长度了。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-11-09-resolve-the-uri-too-long-error-of-giscus-in-hugo/giscus-solution.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;此外，还可以在主题中搜一下&lt;code&gt;meta name=&amp;quot;description&amp;quot;&lt;/code&gt;出现的位置，把里面的代码改掉或者注释掉，都能解决这个问题。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Word2016批注行距太大的问题</title>
+      <link>http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/</link>
+      <pubDate>Sat, 01 Sep 2018 10:53:25 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/</guid>
+      <description>&lt;p&gt;最近导师给我批注文章，说我的Word文档的批注行距极大，从入学到现在一直都是如此，对他造成了极大的困扰，希望我能解决这个问题。&lt;/p&gt;
+&lt;p&gt;但是我自己用Word2016查看导师的批注，看不出行距极大的问题，显示完全是正常的。后来猜测导师用的是旧版的Word2010，于是在虚拟机中安装了Word2010，进行测试。&lt;/p&gt;
+&lt;p&gt;经过长时间的Debug，终于发现问题所在。Word针对批注有一个默认的样式，为“&lt;strong&gt;批注文字（使用前隐藏）&lt;/strong&gt;”，可以点击样式右下角的箭头，或者直接按快捷键Ctrl+Shift+Alt+S调出样式窗口。然后点击底部的管理样式就可以看到所有的样式了。有意思的是，批注文字样式默认是隐藏的，所以在下图的样式列表中是找不到这个样式的。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-open-style.webp&#34;&gt;&lt;/p&gt;
+&lt;p&gt;找到批注文字样式，点击修改，在弹出的窗口中点击左下角的格式，选择段落，就可以看到批注的默认格式了。段落格式看不出什么异常，Word2016和Word2010的批注段落格式都是一样的，其中“如果定义了文档网格，则对齐到网格”都是默认选中的。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-comment-style.webp&#34;&gt;&lt;/p&gt;
+&lt;p&gt;有意思的是，Word2016和Word2010对网格的默认设置却不一样。在布局、页面设置中点击右下角的箭头，打开页面设置对话框。切换到文档网格选项卡。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-open-page-setting.webp&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Word2016默认指定了行网格，而Word2010默认却是无网格。因为批注文字样式中选中了“&lt;strong&gt;如果定义了文档网格，则对齐到网格&lt;/strong&gt;”这个选项，Word2016默认指定了行网格，所以批注文字会对齐到行网格，导致行间距太大，Word2010默认没有指定任何网格，所以其批注文字的行间距是正常。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2016-doc-grid.webp&#34;&gt;
+Word2016文档网格，默认指定了行网格&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2018-09-01-the-line-space-problem-of-annotation-in-word-2016/word2010-doc-grid.webp&#34;&gt;
+Word2010文档网格，默认无网格&lt;/p&gt;
+&lt;p&gt;解决办法就是，修改Word2016的设置，选中“无网格”，并设置为默认值，这样以后新建的Word文档默认都是无网格，批注的行间距也就正常了。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>2017年终总结</title>
+      <link>http://localhost:1313/posts/2018-02-18-summary-of-2017/</link>
+      <pubDate>Sun, 18 Feb 2018 21:00:20 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2018-02-18-summary-of-2017/</guid>
+      <description>&lt;p&gt;2017年是目前为止最折腾的一年。&lt;/p&gt;
+&lt;h1 id=&#34;科研工作&#34;&gt;科研工作&lt;/h1&gt;
+&lt;p&gt;今年的科研任务包括两个方面，一方面是pLink2软件的完善和发布，另一方面是完成pLink2文章初稿。软件方面，上半年忙着修改完善算法，下半年重写界面代码，修改各种bug并反复测试。最终在12月31日晚通过邮件正式发布。文章方面，元旦软件发布之后，一月份抽两周时间完成了初稿，算是自己的第一篇全英文初稿，正文加附录接近一万词。不过因为有一个实验结果不太好，还需要接着完善算法，文字也很稚嫩，需要反复修改。希望能在2018年上半年投出去。&lt;/p&gt;
+&lt;h1 id=&#34;个人提高&#34;&gt;个人提高&lt;/h1&gt;
+&lt;p&gt;上半年忙着找工作，一直在刷题看书攒面经，经过自己的不懈努力，收获了微软、百度、头条、Face++等心仪的Offer。在确定自己找工作没问题之后，被李沐的博客“忽悠”，下半年华丽丽的转博了，赶在了2015级最后一次转博前夕。&lt;/p&gt;
+&lt;p&gt;因为找工作，看了7本专业书；因为有Kindle，以及忙里偷闲，竟也看了9本非专业书。元旦完成软件发布任务之后，奖励自己去电影院连看了一整天的电影，这种休假方式也是蛮奇葩的，今年累计去电影院看的电影数已经达到16了。上半年和欣欣看了一场“OFO轻睐演唱会”，第一次参加演唱会，现场的感觉和看视频不一样，气氛很热烈，大家都很兴奋，会情不自禁跟着一起唱。国庆第一次一个人远行，去了郑州、登封和杭州，加上12月份参加厦门质谱会议，今年去的第三个城市已经达到了4个。&lt;/p&gt;
+&lt;p&gt;运动方面。在两个师兄的帮助以及室友的陪练下，真的学会了蛙泳，今年8月份还拿到了深水证，为此贺老师每个月奖励我100块钱，简单粗暴又有效的奖励机制:-)。临近年底的时候，心血来潮，准备提高乒乓球技术，混入了所里的乒乓球圈子，拜师王老师门下，经过训练以及看视频学习，竟偶尔能赢浩哥了，今年再接再厉。&lt;/p&gt;
+&lt;p&gt;今年约好了和哥一起回家过年，给家里买了一台55寸的乐视超级电视，给父母的红包也涨了不少。总体来说，家里在一年一年变好。&lt;/p&gt;
+&lt;p&gt;对照年初定的目标，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;发表pLink 2文章。只完成了初稿。&lt;/li&gt;
+&lt;li&gt;至少完成毕业工作的80%。转博了。&lt;/li&gt;
+&lt;li&gt;刷完LeetCode所有简单题和中等题，找工作之前最好刷完两遍。完成。&lt;/li&gt;
+&lt;li&gt;找到一个满意的工作。完成，具体请看&lt;a href=&#34;https://bitjoy.net/posts/2018-02-04-2018-campus-recruiting/&#34;&gt;https://bitjoy.net/posts/2018-02-04-2018-campus-recruiting/&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;读10本书。完成16：《编程珠玑》、《C++ Primer》、《程序员面试笔试宝典》、《STL源码剖析》、《剑指Offer》、《深度探索C++对象模型》、《编程之美》、《人间失格》、《枪炮、病菌与钢铁》、《杀死一只知更鸟》、《别闹了，费曼先生》、《月亮与六便士》、《突破极限》、《解忧杂货店》、《北京折叠》、《以色列，一个国家的诞生123》。&lt;/li&gt;
+&lt;li&gt;去电影院看10场电影。完成16：《爱乐之城》、《摔跤吧！爸爸》、《银河护卫队2》、《战狼2》、《敦刻尔克》、《羞羞的铁拳》、《看不见的客人》、《东方快车谋杀案》、《寻梦环游记》、《帕丁顿熊2》、《芳华》、《解忧杂货店》、《前任3：再见前任》、《无问西东》、《南极之恋》、《太空救援》。&lt;/li&gt;
+&lt;li&gt;看一场话剧（音乐会、歌剧等都可以）。完成。2017年7月2日，北京工人体育场，OFO轻睐演唱会。&lt;/li&gt;
+&lt;li&gt;学会游泳。完成，学会蛙泳和踩水，年中拿到深水证。&lt;/li&gt;
+&lt;li&gt;去第三个城市。完成，国庆去了郑州、登封、杭州，12月份第一次坐飞机去了厦门。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;总体来说，2017年的目标都完成了，而且好几项是超额完成。2018年目标如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;发表pLink2文章，科研的重中之重。&lt;/li&gt;
+&lt;li&gt;开展新课题，或SUMO或深度学习。&lt;/li&gt;
+&lt;li&gt;完成博士课程的学习。&lt;/li&gt;
+&lt;li&gt;读10本书。&lt;/li&gt;
+&lt;li&gt;去电影院看10场电影。&lt;/li&gt;
+&lt;li&gt;去北京公园年票范围中的19家公园。&lt;/li&gt;
+&lt;li&gt;看一场话剧（音乐会、歌剧等都可以）。&lt;/li&gt;
+&lt;li&gt;学会自由泳。&lt;/li&gt;
+&lt;li&gt;乒乓球稳赢。&lt;/li&gt;
+&lt;li&gt;去第三个城市。&lt;/li&gt;
+&lt;li&gt;机动目标，高温假带父母来北京玩。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;突然发现每年的目标都差不多，读万卷书和行万里路是每年都有的保留项目。&lt;/p&gt;
+&lt;p&gt;找工作，分手，转博，软件发布，文章写作构成了我2017年的365天，喜忧参半，在跌跌撞撞中前行。2018年要保持一如既往的冲劲，打赢转博之后的第一仗！&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>伪·2018届校招面经</title>
+      <link>http://localhost:1313/posts/2018-02-04-2018-campus-recruiting/</link>
+      <pubDate>Sun, 04 Feb 2018 19:03:36 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2018-02-04-2018-campus-recruiting/</guid>
+      <description>伪·2018届校招面经</description>
+    </item>
+    <item>
+      <title>2017年国庆旅行——郑州、杭州</title>
+      <link>http://localhost:1313/posts/2017-10-08-2017-solo-travel-in-zhengzhou-and-hangzhou/</link>
+      <pubDate>Sun, 08 Oct 2017 10:56:16 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2017-10-08-2017-solo-travel-in-zhengzhou-and-hangzhou/</guid>
+      <description>2017年国庆旅行——郑州、杭州</description>
+    </item>
+    <item>
+      <title>2016年终总结</title>
+      <link>http://localhost:1313/posts/2017-01-28-2016-summary/</link>
+      <pubDate>Sat, 28 Jan 2017 21:26:42 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2017-01-28-2016-summary/</guid>
+      <description>&lt;p&gt;2017农历新年的钟声都已经敲响了，我这2016的年终总结才开始动笔。&lt;/p&gt;
+&lt;p&gt;2016年，经历了很多，也成长了很多，遇到了很多曾经以为只会出现在电视剧中的场景，令人开始怀疑这个世界。前几天在朋友圈看到一个同学发的状态，觉得很适合作为这篇年终总结的开端。（同学你要是觉得被侵权了，告诉我，我立马删掉:-)）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;每个家庭的故事都会是一部长篇史诗。曾经总以为很多情节只会出现在电视剧中，现实的生活很是平淡无味，没有任何波澜，偶尔甚至还会抱怨一下自己不是故事的女主角，其不知现实的生活相比于电视剧，往往是有过之而无不及。
+今天哥哥来电话了，从“天津”，一个美丽的谎言，一直在继续，还会坚持很久…
+奶奶很开心…
+——by angel&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;关于学习和科研&lt;/strong&gt;。&lt;a href=&#34;https://bitjoy.net/posts/2016-08-20-2016-mid-year-summary/&#34;&gt;上半年在雁栖湖完成了研一的下半个学期，完完全全的结束了自己的学生时代。&lt;/a&gt;下半年开始进入实验室，直面惨淡的科研。原本以为会由组里的大师兄超哥指导我，没想到中秋前3天，直接接到H Boss的指令，要在中秋前完成一项我从来没做过的评测。不知道怎样设计实验，不知道怎样计算评价指标，甚至连需要评测的软件都不熟。不过好在加班加点完成了。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;my-office-cubicle&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2017-01-28-2016-summary/my-office-cubicle.jpg&#34;&gt;
+凌乱的工位&lt;/p&gt;
+&lt;p&gt;从9月到10月中旬，一直在各种数据集上做各种对比评测，基本上一周做完一个评测数据集，完成一份报告，直接提交给H Boss，下一周在做另一个评测的同时，要根据导师的反馈建议修改完上一个评测报告。这一个多月的时间，共完成了5份报告共计14个版本，真的是要吐了。&lt;/p&gt;
+&lt;p&gt;后来发现pLink要比对手慢，于是就尝试各种加速策略。开始从外围查找原因，尝试了各种策略，虽然多多少少能加速，但是效果都不完美，有可能对精度有影响。直到12月份，借助谷歌的开源性能分析工具gperftools才找到了软件的性能瓶颈，开始优化并取得了好几倍的加速效果。12月份对软件本身的性能优化大概是我这半年做的唯一一个和计算机本身有点关系的工作吧，可能也是为数不多的我比较享受的一件事。&lt;/p&gt;
+&lt;p&gt;整个这半年的工作，都是H Boss御驾亲征，亲自指导，当然这样有利有弊。好处是能直接和H Boss对话，机会难得呀，H那种严于律己、追求完美的品质，H的为人处世、口才都是非常值得我学习的。坦白说，虽然我只是无名小卒一个，但从小到大，真正让我从心里佩服的人没几个，H Boss绝对算是其中之一。当然不便之处也非常明显，首先会感觉特别累和压抑，除了每周一次的面谈，每天的邮件，还经常在晚上11点多收到老师的工作微信。所以这半年确实不轻松，工作日晚上基本都在加班，而且加班到晚上11点也是常事，周末也至少工作一天。几乎没有时间运动，身体素质应该下降了不少。与人的沟通也非常少，好几个师兄师姐都问我为啥看我整天都在工位上坐着，好像从来没有动过。夸张点说就是每天晚上下班要走的时候，才发现自己这一天还没有说话。&lt;/p&gt;
+&lt;p&gt;当然半年高强度的工作，也有不少的收获，基本摸清了pLink代码的来龙去脉，也加速了两三倍，自己的表现也稍微得到了老师和同学的肯定。不过我自己还是不太满意的，加速并没有达到理想的效果。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于亲情&lt;/strong&gt;。随着我们两兄弟的大学毕业，家里的情况也在稍稍好转，但是只能算是曲折前进吧。以前小的时候，都是爸妈两个人闹，现在哥哥出场了，真是可笑。谈了快两年的女朋友，女方父母又是要查户口本，又是催着要付定金，说什么不给定金就要拉回老家相亲。这TM比电视剧还荒唐，真把自己当商品了，是不是给的钱多就跟谁呀，混蛋。哥哥也不是个省油的灯，分手之后没过多久说什么被公司派去新加坡学习了，去了之后，连个固定的联系方式都没有，三天两头失联，都老大不小的人了，还让父母担心。工作了两年，一分钱都没攒到，连大学的助学贷款都要我这个还在上学的弟弟替他还。女朋友分手也就算了，没赚到钱也不要紧，关键是你不能让家人这样担心你呀，你定期给家人打个电话，说说你到底在哪里干什么，既然到了新加坡，发几张国外的照片回来分享一下，不可以吗？已经两年过年没回家了，而且两年除夕居然连个电话都没有，这不是不孝是什么，混蛋。&lt;/p&gt;
+&lt;p&gt;今年妈妈也终于愿意外出挣钱了，虽然不多，但是起码在和爸爸一起努力。家里装修好了一层房子，但是也就是把墙什么的弄好了，家具还没制备。本来想着过年回家给家里买个小米电视，但是爸妈死活说不要买，现在买了也就过年看几天，不划算。后来只好作罢。放假给老爸买的红米手机，终于在除夕这一天拿到手了。给爸妈包的红包，也在按计划逐年的递增着。&lt;/p&gt;
+&lt;p&gt;自己有时候也埋怨家里，为什么家境这么的不堪，为什么父母没有达到我理想的高度，为什么哥哥这么不争气，为什么没有人关心我。但是埋怨有用吗，肯定是没用的，还是要看各自的造化。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于爱情&lt;/strong&gt;。我还是太幼稚，看看我的家境吧，有哪个女生愿意摊上我家这些破事呢，我就不应该奢望有什么爱情。不过今年上半年，爱情确实来过，抛开所有的一切，纯粹的校园爱情。可是10月份的一件事，彻底打醒了我，爱情没有那么简单，需要考虑的问题太多了。关于那段时间的记忆，写过很多文字，也流过很多泪。回顾整个下半年，欣欣和我的状态都不太好，除了那件事的原因，和工作变化也有很大的关系。我们都从雁栖湖到中关村，需要经历一个由学生到科研工作者的角色转变，面对科研的未知，都显得有些手足无措。科研的不顺，生活的压力以及家里的一些烦心事，一股脑的涌向了我们，矛盾也时有发生。经历过不少的磕磕绊绊，总算顺利度过了2016年，没有了热恋时期的疯狂，生活终要归于平淡。正所谓陪伴是最长情的告白，爱情的意义是否就在于两个人一起经历，一起成长呢。让我们共同守护。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于友情&lt;/strong&gt;。是的，我还欠很多人一顿饭。很多同学，如果长时间不见面，恐怕真的要忘掉了。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关于个人提高&lt;/strong&gt;。上半年忙于课程学习，下半年忙于科研，花在个人提高上的时间真的是太少了。不过感谢有欣欣一直做我的榜样，我现在的小目标就是希望比欣欣看更多的书、刷更多的题。&lt;/p&gt;
+&lt;p&gt;另外下半年回到市区之后，也去了一些之前没去过的地方，比如：清华艺术博物馆、繁星戏剧村、中国美术馆、三联书店、香山等地。其中前两个地方都是和欣欣一起去的，感觉超棒~第一次看达芬奇的特展，开始了解这样一个天才，后来还看过他的传记；第一次去剧院看话剧，感觉和看电影完全不一样，小剧场的效果也是棒棒的。2016年12月31日也是一个值得纪念的日子：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;from-2016-to-2017&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2017-01-28-2016-summary/from-2016-to-2017.jpg&#34;&gt;
+2017跨年活动~&lt;/p&gt;
+&lt;p&gt;今年借着CNCP2016会议的机会，去了一次大连，见识了一下海滨城市的风貌，后来还跑去渤海学游泳，海水很脏，而且咸得发苦。希望今后每年都去一个除了上班地点和家里之外的第三个城市。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2017-01-28-2016-summary/dalian1-201608.jpg&#34;&gt;
+大连滨海国家地质公园&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2017-01-28-2016-summary/dalian2-201608.jpg&#34;&gt;
+大连滨海国家地质公园&lt;/p&gt;
+&lt;p&gt;最后看看&lt;a href=&#34;https://bitjoy.net/posts/2016-01-03-2016-happy-new-year/&#34;&gt;年初计划&lt;/a&gt;的完成情况：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;del&gt;完成国科大下学期的课程任务：完成&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;接手pLink软件：完成&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;刷完LeetCode所有题目：进度147/461，没有完成&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;读10本书：目前读了《数学之美》、《大话设计模式》、《我不知道该说什么，关于死亡还是爱情》、《男人来自火星、女人来自金星，卷I》、《只有医生知道，卷I》、《文学的种子》、《讲理》、《暗时间》、《达·芬奇传：放飞的心灵》、《人间失格》，刚好10本，圆满完成任务:-)&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;去电影院看10场电影：目前看了《美人鱼》、《北京遇上西雅图之不二情书》、《忍者神龟2：破影而出》、《七月与安生》、《湄公河行动》、《比利·林恩的中场战事》、《你的名字》、《血战钢锯岭》，只有8场，其中7场是和欣欣一起看的~&lt;/li&gt;
+&lt;li&gt;改正坐姿：有一段时间刻意改正了，但是这东西貌似改不过来？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;除了LeetCode完成度太差之外，其他计划完成度还是蛮高的。下面定一下2017年的年度计划：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;发表pLink 2文章&lt;/li&gt;
+&lt;li&gt;至少完成毕业工作的80%&lt;/li&gt;
+&lt;li&gt;刷完LeetCode所有简单题和中等题，找工作之前最好刷完两遍&lt;/li&gt;
+&lt;li&gt;找到一个满意的工作&lt;/li&gt;
+&lt;li&gt;读10本书&lt;/li&gt;
+&lt;li&gt;去电影院看10场电影&lt;/li&gt;
+&lt;li&gt;看一场话剧（音乐会、歌剧等都可以）&lt;/li&gt;
+&lt;li&gt;学会游泳&lt;/li&gt;
+&lt;li&gt;去第三个城市&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;简短总结一下我的2016：完成了由上课到科研的转变；开始有能力感恩家人；遇到了欣欣，由一个人变成了两个人；第一次去剧场看话剧。展望2017，找工作和准备毕业迫在眉睫，注定又是繁忙的一年！&lt;/p&gt;
+&lt;p&gt;最后用汪老师的年终总结PPT封面的一句话来结束吧：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;from-2016-to-2017-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2017-01-28-2016-summary/from-2016-to-2017-2.png&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>最怕空气突然安静</title>
+      <link>http://localhost:1313/posts/2016-10-28-waiting-for-you/</link>
+      <pubDate>Fri, 28 Oct 2016 20:57:21 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-10-28-waiting-for-you/</guid>
+      <description>&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;最怕空气突然安静
+最怕朋友突然的关心
+最怕回忆突然翻滚绞痛着不平息
+最怕突然听到你的消息
+
+想念如果会有声音
+不愿那是悲伤的哭泣
+事到如今终於让自已属於我自已
+只剩眼泪还骗不过自己
+
+突然好想你你会在哪里
+过的快乐或委屈
+突然好想你突然锋利的回忆
+突然模糊的眼睛
+
+我们像一首最美丽的歌曲
+变成两部悲伤的电影
+为什麽你带我走过最难忘的旅行
+然後留下最痛的纪念品
+
+我们那麽甜那麽美那麽相信
+那麽疯那麽热烈的曾经
+为何我们还是要奔向
+各自的幸福和遗憾中老去
+
+突然好想你你会在哪里
+过的快乐或委屈
+突然好想你突然锋利的回忆
+突然模糊的眼睛
+
+最怕空气突然安静
+最怕朋友突然的关心
+最怕回忆突然翻滚绞痛着不平息
+最怕突然听到你的消息
+最怕此生已经决定自己过
+没有你却又突然听到你的消息
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就好像是突然之间，整个世界都失去了你的声音，以前每天都会收到你的喜怒哀乐、衣食住行、午安晚安，突然之间，空气都安静了，没有了你的消息。翻遍你的空间、朋友圈、微博、博客，都没有消息，不知道你在干什么，好伤心。&lt;/p&gt;
+&lt;p&gt;想你，想知道你在哪里，想知道你在干什么，想要发消息给你，又害怕不能收到你的回信，然后郁闷一整天。想要引起你的注意，绞尽脑汁故意发一些不着边际的微博，等了一整天，没有收到你的点赞或评论。&lt;/p&gt;
+&lt;p&gt;约你出来吃饭，你一句简单得不能再简单的“可以”，冷冰冰。见到你，裹着厚厚的棉衣，戴着帽子和手套，没有一丝的眼神交流，两个人就这样默默的吃着不知道什么味道的饭菜。&lt;/p&gt;
+&lt;p&gt;想要打破这宁静的空气，之前想到无数要和你说的人和事，现在却一句话也说不出。两个最熟悉的人，突然之间，像多年未见的朋友，因完全不同的人生轨迹而没有任何共同语言，成了最熟悉的陌生人。&lt;/p&gt;
+&lt;p&gt;你说最近科研压力很大，周围的同学又是发论文，又是发专利，你却一无所有。挑战赛答辩和开题答辩在即，手足无措。&lt;/p&gt;
+&lt;p&gt;你说未来太渺茫，没钱买房买车，就算月入两万，要在北京买房也得攒20年。即使买了房，在北京还要买车还要摇号，看病也很贵，还要担心孩子上学各种问题。&lt;/p&gt;
+&lt;p&gt;我向来是个不会安慰别人的人，但是我尽力想要告诉你，你已经很优秀了，从小到大的尖子生，多才多艺，研一在雁栖湖那么多高手，你照样轻松拿下第一。你的编程能力也远超你们实验室的人，只不过你目前处于一种有力没处使的状态，你的导师让你干一些杂活，如果你的导师也让专心指导你的挑战赛，你现在肯定也写论文了。&lt;/p&gt;
+&lt;p&gt;我尽力安慰你，希望你对对未来乐观一点。面包会有的，不要太在意这些东西，生活快乐最重要，不要太在意别人的看法，自己纵向比较有进步就行了。突然觉得自己词穷，完全不会安慰一个人。&lt;/p&gt;
+&lt;p&gt;世界上比你悲惨的人多得太多了，为什么不想想自己有的，至少你有一个健康的身体。&lt;/p&gt;
+&lt;p&gt;是的，我猜到了，你不理我和我们上周的体检结果有关。我有病，是的，我有病，而且是不可能治好的病，是随时都可能发病的病。我知道这对于你来说很为难，你有矛盾，我理解，只是我希望你能把你的所有顾虑都告诉我，至少让我和你一起分担，如果你说因为我的病，因为我那卑微的背景，想要离开我，我无话可说，这也无可厚非，我接受。&lt;/p&gt;
+&lt;p&gt;刚开始交往时，我没有告诉你，是我的错。上周的检查结果至少说明你是健康的，我很庆幸，没有伤害到你。如果因为我而让你不开心，让你纠结，请一定让我知道，我会默默走开，我是一个讲理的人。希望你永远健康快乐。&lt;/p&gt;
+&lt;p&gt;你说这东西还有窗口期，我认，再过几个月，我们再去检查一次，我默默祈祷你是健康的。我知道你和我一样，对一件微小的事也要纠结半天，我不想让你那样难过。&lt;/p&gt;
+&lt;p&gt;我原本以为我是一个耐得住安静和寂寞的人，我一度还觉得你像一个叽叽喳喳的小鸟不停的在我耳边发出噪声。直到有一天，我发现你的声音不见了，我开始慌了，不安、烦躁、忧郁充斥我的大脑，想要马上见到你问个一清二楚。也许这就是&lt;a href=&#34;http://zhihu.com/question/26049681/answer/32014770&#34;&gt;日久生情&lt;/a&gt;，这就是感情吧。&lt;/p&gt;
+&lt;p&gt;熟悉了你随性而又纠结的脾气；习惯了每次和你一起吃饭时纠结菜里到底有没有混猪肉；习惯了每次吃饭时要双份碗筷和三份汤的感觉；渐渐喜欢上了和你一起漫无目的的逛街试衣服的感觉；习惯了买两本一样的书，然后每次你看得都比我快，逼迫我不得不也快快的看；喜欢和你一起看电影出去玩的感觉。&lt;/p&gt;
+&lt;p&gt;也不知从什么时候开始，微信里的情侣表情都积了厚厚的一层灰；好久好久都没有掰你了，你的手指应该纤细如初了吧。带上耳机，听了一整晚的音乐，已经很久很久没有听歌了。&lt;/p&gt;
+&lt;p&gt;以前常常对电视剧里的爱情嗤之以鼻，完全不能理解他们为什么要为爱情哭得死去活来，现在，我大概理解了。&lt;/p&gt;
+&lt;p&gt;你说每个正常人遇到我这种情况，都会矛盾，会需要思考、抉择和权衡，是的，爱情完全不是小说里的义无反顾，说到底是各种利益的权衡。&lt;/p&gt;
+&lt;p&gt;10月真是一个让人忧伤的月份，亲人的离世，自己也前前后后进了三次医院，揭开了深藏心底N年的伤疤，曾经一直陪伴在身边的人也想要离开。科研上的压力就更不说了，老板一直不停的催促，每天活得像个陀螺，没有方向的转，没有一丝的停顿。&lt;/p&gt;
+&lt;p&gt;这病态的社会。&lt;/p&gt;
+&lt;p&gt;亲爱的，我愿意等你，我尊重你的决定，如果你离开，我会祝福你，如果你留下，我希望你不是在怜悯我。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>2016年中总结</title>
+      <link>http://localhost:1313/posts/2016-08-20-2016-mid-year-summary/</link>
+      <pubDate>Sat, 20 Aug 2016 11:33:26 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-08-20-2016-mid-year-summary/</guid>
+      <description>&lt;p&gt;半年的时光又过去了，圆满结束了一年的集中教学任务，离开了美丽的雁栖湖，回到闹市中关村。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ucas-schedule-2016-spring&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-08-20-2016-mid-year-summary/ucas-schedule-2016-spring.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这半年基本上延续了研一上学期的高强度学习，四门硬课。《高级算法》这门课由四位大师级的老师授课，内容囊括了近似算法、计算复杂性、随机算法、局部搜索、全息规约等，完全是神一样的课。最后复习的时候，大家都生不如死啊，不过经过一个月的挑灯夜战，我还是取得了97分的好成绩，值了。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;advanced-algorithm&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-08-20-2016-mid-year-summary/advanced-algorithm.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;《大数据系统与大规模数据分析》这门课的老师是一个年轻的海归，要求很严格，有专门的算法检查平时作业是否抄袭，真的有好几个同学因为抄袭而得0分。这门课的大作业是在GraphLite上实现SVD，我带领队员经过一个月的努力比较圆满的完成了大作业，感谢组里的编程大神。&lt;/p&gt;
+&lt;p&gt;《机器学习方法与应用》是面向电子学院的课程，讲得太简单，考试基本是概念题，不建议选修。&lt;/p&gt;
+&lt;p&gt;《生物信息学中的算法设计》这门课其实应该叫统计机器学习在生物信息领域的应用，讲的内容比《机器学习方法与应用》的内容更深更广。不过内容太多也难以消化，好好做大作业应该会有不少收获。&lt;/p&gt;
+&lt;p&gt;集中教学一年，研一上的GPA是87分，研一下的GPA是89.3分，平均是88.1分。&lt;/p&gt;
+&lt;p&gt;除了完成若干个课程大作业，这学期还完成了两个组内大作业，分别是倒排索引和蛋白质搜索引擎，也多谢XN和我一起查Bug、对答案。（天啊，我半年是做了多少个大作业啊…）&lt;/p&gt;
+&lt;p&gt;这半年每周二回所和师姐交接任务，真是要感谢天真呆萌的JL师姐，当初保研的时候就被师姐的热情所感染，现在又有幸接替师姐的接力棒，好幸运。&lt;/p&gt;
+&lt;p&gt;要说上半年最大的收获，应该是收获了一枚女朋友吧~没错，就是我&lt;del&gt;这篇博客&lt;/del&gt;里提到的欣欣~真的没想到这么聊得来，一起吃饭、看电影、聊代码、骑行、游山玩水。这半年拍的照片，比我前22年拍的照片还多。和她在一起很开心，不过有时候也会很累，身体累（羸弱），有时候也心累，毕竟课程压力和组内压力摆在那里，白天去玩了，晚上还是要加班补回来的。有时候冷落了她，也会感到愧疚不安，特别是我在复习《高级算法》期间，两人都很少见面，那一次是真的惹欣欣生气了:-(&lt;/p&gt;
+&lt;p&gt;总结一下在雁栖湖一年的收获，大致有如下图的四个方面：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;mid-year 2016 summary&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-08-20-2016-mid-year-summary/mid-year-2016-summary.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;看看&lt;a href=&#34;https://bitjoy.net/posts/2016-01-03-2016-happy-new-year/&#34;&gt;年初计划&lt;/a&gt;的完成情况：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;del&gt;完成国科大下学期的课程任务：完成&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;&lt;del&gt;接手pLink软件：完成&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;刷完LeetCode所有题目：上半年基本没刷题，下半年一定完成&lt;/li&gt;
+&lt;li&gt;读10本书：目前读了《数学之美》、《大话设计模式》、《我不知道该说什么，关于死亡还是爱情》、《男人来自火星、女人来自金星，卷I》，还差6本，下半年加油！&lt;/li&gt;
+&lt;li&gt;去电影院看10场电影：目前看了《美人鱼》、《北京遇上西雅图之不二情书》、《忍者神龟2：破影而出》，还差好多…&lt;/li&gt;
+&lt;li&gt;改正坐姿：有一段时间刻意改正了，但是这东西貌似改不过来？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下半年就进入实验室，开始科研实战了，做交联的师兄师姐都毕业了，留下我一个人，感觉好艰难，希望我能顺利进入角色，协助师兄把文章发了，维护好pLink2的软件，并且开发集群版。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>LaTeX写作完美解决方案</title>
+      <link>http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/</link>
+      <pubDate>Mon, 16 May 2016 20:14:50 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://www.ctan.org/lion/ctan_lion_350x350.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。&lt;/p&gt;
+&lt;p&gt;我大学刚接触\(\LaTeX\)的时候，使用的是&lt;a href=&#34;http://www.ctex.org/HomePage&#34;&gt;CTeX&lt;/a&gt;，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。&lt;/p&gt;
+&lt;p&gt;目前使用的是&lt;a href=&#34;http://miktex.org/&#34;&gt;MiKTeX&lt;/a&gt;+&lt;a href=&#34;http://www.xm1math.net/texmaker/&#34;&gt;Texmaker&lt;/a&gt;的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。&lt;/p&gt;
+&lt;p&gt;MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。&lt;/p&gt;
+&lt;p&gt;MiKTeX自带了一个&lt;a href=&#34;https://www.tug.org/texworks/&#34;&gt;TeXworks&lt;/a&gt;编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。&lt;/p&gt;
+&lt;p&gt;如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&amp;gt;配置Texmaker-&amp;gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX + View PDF”。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Texmaker-1&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/Texmaker-1.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Texmaker-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/Texmaker-2.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的&lt;a href=&#34;http://www.sumatrapdfreader.org/free-pdf-reader.html&#34;&gt;Sumatra PDF&lt;/a&gt;，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。&lt;/p&gt;
+&lt;p&gt;Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl+click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl+space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl+1，我当时是打开下图的快捷方式窗口才发现这个问题的。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Texmaker-3&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/Texmaker-3.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。&lt;/p&gt;
+&lt;p&gt;另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。&lt;/p&gt;
+&lt;p&gt;OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/www.xm1math.net/texmaker/texmakertop_big.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;下面是我常用的\(\LaTeX\)中文模板：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/LaTeXDemo.pdf&#34;&gt;LaTeXDemo.pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/LaTeXDemo.tex&#34;&gt;LaTeXDemo.tex&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>和GRE纠缠的岁月</title>
+      <link>http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/</link>
+      <pubDate>Wed, 16 Mar 2016 11:44:37 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/</guid>
+      <description>&lt;p&gt;&lt;img alt=&#34;GRE3000&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/GRE3000.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;yn说最近在备考GMAT和托福，把手机都清理了只为专心学习。xx说TCP/IP大作业要用Qt做一个网络监控的软件，问我Qt好不好学。&lt;/p&gt;
+&lt;p&gt;GRE遇见Qt，会擦出怎样的火花呢~没错，我用Qt写了一个强化背诵GRE单词的软件——Cracking 3000&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Cracking-3000-1&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/Cracking-3000-1.png&#34;&gt; &lt;img alt=&#34;Cracking-3000-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/Cracking-3000-2.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当时的一本GRE单词书有3000个单词，用杨鹏17天刷过之后，很多都记不住，于是想有没有办法把记不住的单词筛选出来，集中力量强化记忆。网上已经有3000的Excel表，所以我很自然的想到了把表格导入软件，用软件快速测试，并把不认识的单词筛选到新的Excel表格中。这样就可以把不认识的单词表打印出来，记完之后再导入软件进行新一轮的测试筛选，直到不认识的单词数为零。&lt;/p&gt;
+&lt;p&gt;有了软件需求，代码实现起来就很快了。由于当时用Qt库比较多，所以直接拿来用了。软件实现这一块，主要是Excel表格的导入和导出，需要查一些文档，其他的就很简单了。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;GRE3000-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/GRE3000-2.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;虽然和GRE纠缠了一个多月，最终却没有考，但是想起当初早上6点爬起来背单词，晚上回宿舍抹黑写代码的情景，心情还是有一点小小的激动！以后类似的体验估计不会太多吧。&lt;/p&gt;
+&lt;p&gt;最后祝yn GT考试顺利，xx大作业圆满完成！&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-03-16-hello-gre-do-you-like-me/Cracking_3000.zip&#34;&gt;Cracking_3000软件安装包及说明&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>国科大半年体验报告</title>
+      <link>http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/</link>
+      <pubDate>Thu, 04 Feb 2016 00:42:30 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/</guid>
+      <description>&lt;p&gt;现在是2016年2月4日，距离农历新年不到4天，结束了半年的国科大研一生活，躺在被窝里，松了一口气……&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ucas-2015-1&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-1.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;来国科大之前，在贴吧上了解到国科大雁栖湖校区地处偏远农村，周边几乎没有娱乐场所；但同时学校的软硬件设施非常的棒：豪华单人间，研究员甚至院士亲自授课等等。所以对国科大雁栖湖校区满是憧憬。至今还清楚的记得坐校车从玉泉路过来时，沿途看到APEC主会场的鸟蛋、国科大桥、钟楼以及国科大正门几个大字时的激动心情~&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ucas-2015-7&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-7.jpg&#34;&gt; &lt;img alt=&#34;ucas-2015-3&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-3.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;入住国科大，着实被UCAS的蓝天白云、青山绿水给迷住了。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ucas-2015-2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-2.jpg&#34;&gt; &lt;img alt=&#34;ucas-2015-4&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-4.jpg&#34;&gt; &lt;img alt=&#34;ucas-2015-5&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-5.jpg&#34;&gt; &lt;img alt=&#34;ucas-2015-6&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-2015-6.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当然，凡事有利必有弊，因为这里远离市区，环境好，但正因为远离市区，几乎没有年轻人的娱乐活动，想要看个电影唱个歌少说也得跑城里，再要想感受下帝都奢靡的生活，必须各种倒车近2个小时到市里。&lt;/p&gt;
+&lt;p&gt;研一这上学期，半年只进市里两次，一次是买山地车，一次是回所里开会。购物主要靠天猫超市。&lt;/p&gt;
+&lt;p&gt;九十月份，大家都和大一新生似的，各种疯玩，野长城、雁栖湖、慕田峪、青龙峡、密云水库。进入十一月，新鲜劲过去了，又开始各种赶大小作业，复习考试。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;ucas-schedule-2015-fall&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-02-04-half-year-experience-report-in-ucas/ucas-schedule-2015-fall.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这是我这学期的课表，看着课好像不多，每天都有半天休息，但是真的感觉回到了大三呀！尤其数据挖掘、信息检索、矩阵论一周上两次课，当天上完的课如果没有及时复习，隔一天再学新内容完全跟不上啊，而且矩阵论每次课都有好多作业啊，这数学课不做练习完全消化不了呀。更神的课还要数周五的卜神算法，君不见，每到周四晚上，西A、西B两栋宿舍，灯火通明，大家都在熬夜赶算法作业啊，不熬个两三点都不好意思和别人说你熬夜了呀。&lt;a href=&#34;https://bitjoy.net/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/&#34;&gt;大家可以感受一下我整理的卜神算法作业~~&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;正是因为这奇葩的课程安排，这半年几乎没有12点前睡过觉，估计平均是1:30才睡觉，早上8点多才起，中午也没午休。想想大学的时候按时作息，真是惭愧。期间有一次听说搜狐一同届华科毕业生猝死，朋友圈传得沸沸扬扬，大伙都吓得要命，纷纷表示绝不熬夜，早睡早起，我那天也是吓坏了，决定早睡，11:30就爬床上了，但是不知道是因为紧张还是熬夜习惯了，辗转反侧，到12点多才睡着的。&lt;/p&gt;
+&lt;p&gt;我们研一在国科大上课是有补助的，但是在帝都完全不够用啊，而且CS相关的几个所补助都比ICT高，so当时还公车上书，各种写联名信、起义，经过半年之久的持久战，所里终于答应从2016年开始给我们涨500块钱的工资。涨了之后差不多够吃饭了。&lt;/p&gt;
+&lt;p&gt;虽然这半年课业繁重，但是也抽空锻炼了身体，天气不是很冷的时候，隔一天就会去夜跑；而且选了乒乓球课，从直拍转为了横拍，并且在课上结识了路路，打球好厉害的一个女生，每次老师来指导的时候，都叫路路温柔点 O__O “…&lt;/p&gt;
+&lt;p&gt;另外花了一千多块钱买了一辆二手山地车，骑着到处转悠了一下。很有缘的是，认识了一位才女。本来我们骑行社一块去美利达准备买车，但是由于种种原因我和小欣都没买，然后我们一块坐小黑车回村，在车上聊着聊着就认识，没想到后来还成为了好朋友，小欣的台球和乒乓球都打得不错，琴棋书画样样精通。突然发现身边的学霸才子佳人好多，更加深刻感受到有些东西不是你努力就能够弥补的，天赋、眼界、才艺、品味、性格……&lt;/p&gt;
+&lt;p&gt;来国科大的这半年，自我感觉变化最大的是自己变得爱说话了，而且带着一种zhuang bi气息，不知道是不是受某几个我一直崇拜的人的影响。有时候静下心来想想都不敢相信之前的话是我说的，和大学时的我完全判若两人。当然这种事情有利也有弊，还在慢慢找平衡点，可能正如CL说的“话怎么说是一回事，内心要知道自己想要的”。&lt;/p&gt;
+&lt;p&gt;这半年突然害怕一个人上学，一个人吃饭，一个人自习了，更喜欢face-to-face的交谈，少了对网络的依赖，不知道是不是因为性格的变化、环境的变化、抑或是认识的人多了，有了念想。&lt;/p&gt;
+&lt;p&gt;半年时光，认识了不多不少几个好朋友：良辰、发文章、牛牛、欣儿、路路，有你们真好，谢谢你们~&lt;/p&gt;
+&lt;p&gt;2016猴赛雷，即将从研一的上课转入课题组工作，很关键的一年，加油！&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/image.thepaper.cn/www/image/4/753/520.jpg&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>卜神算法作业整理</title>
+      <link>http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/</link>
+      <pubDate>Fri, 29 Jan 2016 17:07:11 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/</guid>
+      <description>&lt;p&gt;这学期选修了&lt;a href=&#34;http://bioinfo.ict.ac.cn/~dbu/AlgorithmCourses/CS711008Z/CS711008Z_2015.html&#34;&gt;卜老师的算法课&lt;/a&gt;，都说这课是神课，上过之后果然是神课。同样是算法课，别人12月底就考完了，我们要1月底才考试。&lt;/p&gt;
+&lt;p&gt;本课程主要讲了以下几个专题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Divide-and-conquer&lt;/li&gt;
+&lt;li&gt;Dynamic programming&lt;/li&gt;
+&lt;li&gt;Greedy&lt;/li&gt;
+&lt;li&gt;Linear programming&lt;/li&gt;
+&lt;li&gt;Linear programming: duality&lt;/li&gt;
+&lt;li&gt;Network flow&lt;/li&gt;
+&lt;li&gt;Problem hardness: Polynomial-time reduction&lt;/li&gt;
+&lt;li&gt;NP-Completeness&lt;/li&gt;
+&lt;li&gt;Approximation algorithm&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;前三个专题的算法大多数本科时学过的，但是经卜老师讲一遍还会有新的收获。后六个专题接触较少，学到了很多新算法。&lt;/p&gt;
+&lt;p&gt;下图是卜老师每节课必讲的问题求解思路图：&lt;/p&gt;
+&lt;p&gt;（待我回家把图画出来…）&lt;/p&gt;
+&lt;p&gt;本课程最神的要数课后作业了，一般deadline是周五，每到周四晚上，大家都做好熬通宵赶作业的准备，没熬到两三点都不好意思睡觉，我同学有一次甚至熬到了第二天六点！&lt;/p&gt;
+&lt;p&gt;每次作业大概有10题，前7题是算法设计，后3题是算法实现，每题都不是省油的灯，不过如果把每道题都理解消化，算法及编程能力会有很大的提高。&lt;/p&gt;
+&lt;p&gt;下面是我整理出来的算法题目和个人解答，大家感受一下。（&lt;strong&gt;仅供完成作业之后交流使用，拒绝抄袭！&lt;/strong&gt;）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment1_DandC.zip&#34;&gt;Assignment1_DandC.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A1sol.pdf&#34;&gt;A1sol.pdf&lt;/a&gt;   |  &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A1sol.tex&#34;&gt;A1sol.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A1sol_supplement.pdf&#34;&gt;A1sol_supplement.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A1sol_supplement.tex_.zip&#34;&gt;A1sol_supplement.tex_.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment2_DP.zip&#34;&gt;Assignment2_DP.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A2sol.pdf&#34;&gt;A2sol.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A2sol.tex_.zip&#34;&gt;A2sol.tex_.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A2sol_supplement.pdf&#34;&gt;A2sol_supplement.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A2sol_supplement.tex&#34;&gt;A2sol_supplement.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment3_Greedy.zip&#34;&gt;Assignment3_Greedy.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A3sol.pdf&#34;&gt;A3sol.pdf&lt;/a&gt;  |  &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A3sol.tex_.zip&#34;&gt;A3sol.tex_.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A3sol_supplement.pdf&#34;&gt;A3sol_supplement.pdf&lt;/a&gt;  |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A3sol_supplement.tex&#34;&gt;A3sol_supplement.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment4_LP.zip&#34;&gt;Assignment4_LP.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A4sol.pdf&#34;&gt;A4sol.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A4sol.tex&#34;&gt;A4sol.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A4sol_supplement.pdf&#34;&gt;A4sol_supplement.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A4sol_supplement.tex&#34;&gt;A4sol_supplement.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment5_NF.zip&#34;&gt;Assignment5_NF.zip&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A5sol.pdf&#34;&gt;A5sol.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A5sol.tex&#34;&gt;A5sol.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A5sol_supplement.pdf&#34;&gt;A5sol_supplement.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A5sol_supplement.tex&#34;&gt;A5sol_supplement.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment6_NP.pdf&#34;&gt;Assignment6_NP.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A6sol.pdf&#34;&gt;A6sol.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A6sol.tex&#34;&gt;A6sol.tex&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/Assignment7_App.pdf&#34;&gt;Assignment7_App.pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A7sol.pdf&#34;&gt;A7sol.pdf&lt;/a&gt;   |   &lt;a href=&#34;http://localhost:1313/posts/2016-01-29-algorithm-design-and-analysis-by-dbu/A7sol.tex&#34;&gt;A7sol.tex&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>2016新年快乐</title>
+      <link>http://localhost:1313/posts/2016-01-03-2016-happy-new-year/</link>
+      <pubDate>Sun, 03 Jan 2016 12:25:50 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2016-01-03-2016-happy-new-year/</guid>
+      <description>&lt;p&gt;2015年过得好快，梳理一下，2015年的时间线大概是这样的：&lt;/p&gt;
+&lt;p&gt;3月来北京计算所做毕设→5月返回武大修改论文→5月30公开答辩→6月毕业季→7月回北京计算所→8月回家陪父母→9月国科大开学→持续高强度的学习→2016元旦还在图书馆研究NPC问题。&lt;/p&gt;
+&lt;p&gt;2015年给我的总体感受是很忙，但忙的事情都很琐碎，并没有什么大的里程碑事件，不过以下三件事情我认为值得一提。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;本科四年修成正果，研究生三年新的起航&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt=&#34;whu_certificate&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-03-2016-happy-new-year/whu_certificate.jpg&#34;&gt;
+&lt;img alt=&#34;ucas_admission&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-03-2016-happy-new-year/ucas_admission.jpg&#34;&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;买了一辆属于自己的山地车，1k2，虽然是二手的，但足够我骑着它去看世界了:-)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img alt=&#34;bike&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-03-2016-happy-new-year/bike.jpg&#34;&gt;
+&lt;img alt=&#34;2015_cycling_1&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-03-2016-happy-new-year/2015_cycling_1.jpg&#34;&gt;
+&lt;img alt=&#34;2015_cycling_2&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2016-01-03-2016-happy-new-year/2015_cycling_2.jpg&#34;&gt;&lt;/p&gt;
+&lt;p&gt;也许是在城市里待久了，我特别享受这种亲近大自然的感觉，蓝天、白云、草原、大海这些美景永远也看不够。&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;在国科大认识了两个好基友，虽然都是单身汪，但至少想看电影吃火锅的时候还可以有个伴。（此处居然少了三人合照）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;2015年共写了14篇博客，包含3篇技术博客，bitjoy.net 历史累计PV1039，UV520，IP502。&lt;/p&gt;
+&lt;p&gt;展望2016年，大的方向基本都确定了，目标如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;完成国科大下学期的课程任务&lt;/li&gt;
+&lt;li&gt;接手pLink软件&lt;/li&gt;
+&lt;li&gt;刷完LeetCode所有题目&lt;/li&gt;
+&lt;li&gt;读10本书&lt;/li&gt;
+&lt;li&gt;去电影院看10场电影（2015下半年在怀柔村里没看一部电影/(ㄒoㄒ)/~~）&lt;/li&gt;
+&lt;li&gt;改正坐姿&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;大家一起见证！&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>北国的雪</title>
+      <link>http://localhost:1313/posts/2015-11-22-snow-in-beijing/</link>
+      <pubDate>Sun, 22 Nov 2015 12:16:00 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-11-22-snow-in-beijing/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://upload.wikimedia.org/wikipedia/commons/f/fd/Von_Koch_curve.gif&#34;&gt;&lt;/p&gt;
+&lt;p&gt;第一次在北方过冬，今年北京11月6日就下雪了，然而我在广州的小伙伴还穿着短袖吃着冰棍呢。。。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;2015_11_06_beijing_snow&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-11-22-snow-in-beijing/2015_11_06_beijing_snow.jpg&#34;&gt;
+北京2015年的第一场雪，比以往时候来的更早一些&lt;/p&gt;
+&lt;p&gt;今天又下起了第二场雪，下了整整两天的大雪，然而我房间的暖气却不暖了，大叔来修了两次，无功而返，说是一楼的宿舍暖气都有问题，当初设计有缺陷(╯‵□′)╯︵┻━┻&lt;/p&gt;
+&lt;p&gt;这样也好，给了自己去图书馆的理由❉&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>再见武大</title>
+      <link>http://localhost:1313/posts/2015-06-28-farewell-to-whu/</link>
+      <pubDate>Sun, 28 Jun 2015 11:32:18 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-06-28-farewell-to-whu/</guid>
+      <description>&lt;p&gt;2015年6月27日，武汉大学在梅园操场举办了2015年毕业典礼。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;武汉大学2015年毕业典礼，正在发言的是雷军学长[1]&#34; loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/ww1.sinaimg.cn/large/634fd979jw1etiecww24cj20hs0dctbj.jpg&#34;&gt;
+武汉大学2015年毕业典礼，正在发言的是雷军学长[1]&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;武汉大学2015年毕业典礼[2]&#34; loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/news.whu.edu.cn/_mediafile/whu_news/2015/06/27/29kc177qza.jpg&#34;&gt;
+武汉大学2015年毕业典礼[2]&lt;/p&gt;
+&lt;p&gt;坐在台下，顿感恍惚，四年前同样在梅操，同样是这些人，我们举办开学典礼。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;武汉大学2011年开学典礼[3]&#34; loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/ww3.sinaimg.cn/large/005Muw7zjw1etjl1cs943j30j60bpgpm.jpg&#34;&gt;
+武汉大学2011年开学典礼[3]&lt;/p&gt;
+&lt;p&gt;原来梅操到梅操的距离只有四年。&lt;/p&gt;
+&lt;p&gt;毕业典礼结束，下午集体收拾行李，大家都默默无语。晚上去红牛—-大一第一次聚餐的地方—-吃最后的晚餐，这次聚餐喝了两箱啤酒，6瓶白酒！白酒下肚，前一口酒落地又向上翻滚，和后一口酒相互撞击，四年的往事喷涌而出。离别之际，每个人都把自己的心声说出来了，说出了自己的家境、对某某的感情、一个宿舍的兄弟情，说出了自己的抱负、未来的理想，再互相拥抱、道一声珍重。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;whu_bbs_graduation_2015&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-06-28-farewell-to-whu/whu_bbs_graduation_2015.jpg&#34;&gt;
+山水一程，三生有幸[4]&lt;/p&gt;
+&lt;p&gt;回到宿舍，所有人吐得一塌糊涂，昏睡过去。也许这就是离别的滋味，折磨着你，让你难受，只有把它吐出来，离开了，平静了，一切就好了。&lt;/p&gt;
+&lt;p&gt;第二天醒来，发现隔壁宿舍的几个哥们已经走了，宿舍冷清了许多。去小卖部买了一些非必需品，只为把卡里的几十块钱用掉。打包行李，准备出发。&lt;/p&gt;
+&lt;p&gt;毕业了，离开了，那些大一的迷茫、兼职，大二的信息安全竞赛，大三繁重的课业、为保研奋斗的数学建模竞赛，大四悠闲的生活也将躲藏在记忆的某个角落，不再被轻易的发现。武大的樱花、牌坊、樱顶、新图、青楼、梅操电影、珞珈之声、每天晚上在奥场穿着17号球衣跑步的女生、一起练笛的同学、在梅园食堂吃饭的一对情侣、幽默装逼的室友，这一幅幅画面，也将随着时间的车轮，慢慢消散。&lt;/p&gt;
+&lt;p&gt;天下没有不散的筵席，我们来到这个世上，就注定要历经悲欢离合。在中国最美丽的大学，度过了我人生中最美好的年华，山水一程，三生有幸，感谢有你。&lt;/p&gt;
+&lt;p&gt;别怕，梦的方向叫做闯，青春还没散场！&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;p&gt;[1]. 武汉大学官方微博&lt;/p&gt;
+&lt;p&gt;[2]. 武大新闻网：&lt;a href=&#34;http://news.whu.edu.cn/info/1002/43788.htm&#34;&gt;http://news.whu.edu.cn/info/1002/43788.htm&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[3]. 守望珞珈的新浪博客：&lt;a href=&#34;http://blog.sina.com.cn/s/blog_4da93d1f0100t6v9.html&#34;&gt;http://blog.sina.com.cn/s/blog_4da93d1f0100t6v9.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[4]. 珞珈山水bbs毕业封面：&lt;a href=&#34;http://bbs.whu.edu.cn/&#34;&gt;http://bbs.whu.edu.cn/&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>家乡遭受几十年一遇的洪灾</title>
+      <link>http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/</link>
+      <pubDate>Thu, 21 May 2015 20:32:19 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/</guid>
+      <description>&lt;p&gt;5月19号的中午吃完饭后随手刷了一下朋友圈，发现MS表哥分享了一个&lt;a href=&#34;http://mp.weixin.qq.com/s?__biz=MzAwNDUzMjg5OA==&amp;amp;mid=208222165&amp;amp;idx=1&amp;amp;sn=8586e0f5d9830cfb4cf51921bfe1269a&amp;amp;scene=2&amp;amp;from=timeline&amp;amp;isappinstalled=0#rd&#34;&gt;链接&lt;/a&gt;，说家乡发生了十多年未遇洪灾。仔细看了一下，发现这次洪灾真的很严重，然后就给妈妈打了个电话，妈妈说从昨天下午开始下大雨，到晚上下暴雨，我家后院有一座小山，也出现了滑坡；附近的一座桥也淹了，家门口的一片农田（不是我家的）也全被淹了。妈妈说她也是头一回看到这么大而持久的暴雨。&lt;/p&gt;
+&lt;p&gt;后来看QQ空间，全是关于家乡灾情的状态，很多新闻媒体也报道了。县的下游地区受灾比较严重，隔壁有个叫横江的村镇，这个镇因为坐落在横江水旁边，受灾最严重，听说整个镇断水断电，都快成孤岛了。我有一个亲戚在横江，他们家一层楼就被淹了，很多人家养的鸡鸭鱼猪等都被冲走了，几乎所有的农田被淹，损失真的很严重。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;横江镇政府被淹情形[1]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/flood201505-1.jpg&#34;&gt;
+横江镇政府被淹情形[1]&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;这是通往横江镇的公路，下坡后就是横江镇，可以看到整个村镇已经被淹[2]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/flood201505-2.jpg&#34;&gt;
+这是通往横江镇的公路，下坡后就是横江镇，可以看到整个村镇已经被淹[2]&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;停在路边的小汽车都被冲走了！[2]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/flood201505-3.jpg&#34;&gt;
+停在路边的小汽车都被冲走了！[2]&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;整个村子一片汪洋[2]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/flood201505-4.jpg&#34;&gt;
+整个村子一片汪洋[2]&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;特写[2]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/flood201505-5.jpg&#34;&gt;
+特写[2]&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;估计我家后山的滑坡比这严重很多[1]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/flood201505-6.jpg&#34;&gt;
+估计我家后山的滑坡比这严重很多[1]&lt;/p&gt;
+&lt;p&gt;我记得我小的时候（大概五六岁？），可能是1998年吧，也发生过一次特大洪水，当时也是晚上，爷爷把我和哥哥叫起来，爬到后山上去避难了。当时虽然洪水也大，但也就一晚上，第二天很快就退了，不像这次持续的特大暴雨。&lt;/p&gt;
+&lt;p&gt;晚些时候我又打电话给妈妈，听妈妈说因为怕山体滑坡，已经去半山腰上的烤烟房里过夜了。那个烤烟房是我还没出生（或者我很小）的时候盖的土坯房，专门用来烤烟的。 后来一家人常年在外，也没怎么管它，很多瓦都碎了。前几年我爸回家补漏，现在是不会漏水了。但是毕竟年代久远了，而且是土坯房，又下那么大雨，还是不放心。想到妈妈一个人在家，晚上要住在一个没有水没有电的土坯房里，心里真不是滋味。以后有钱了应该把烤烟房改建成砖房，万一出现什么灾害，也有个落脚的地方。&lt;/p&gt;
+&lt;p&gt;刚看了下天气预报，现在还在下雨，周六周一还有雷阵雨，希望不要再滑坡了。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;石城5月份历史天气，从15号开始连下了6天的大雨，以18,19,20为最[4]&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-05-21-severe-flooding-hits-my-hometown/shicheng_history_weather.png&#34;&gt;
+石城5月份历史天气，从15号开始连下了6天的大雨，以18,19,20为最[4]&lt;/p&gt;
+&lt;p&gt;在这次灾害中，也要感谢当今发达的互联网，让全国各地的人实时了解家乡的情况，很多救援队也纷纷赶赴家乡展开救援。希望洪水快快退去，还家乡人民安宁的生活。&lt;/p&gt;
+&lt;p&gt;此次特大灾害直播：&lt;a href=&#34;http://mp.weixin.qq.com/s?__biz=MjM5MzEzODgyMA==&amp;amp;mid=206189476&amp;amp;idx=1&amp;amp;sn=3e2cc4f01b7ff42f933420063f4e5a74#rd&#34;&gt;http://mp.weixin.qq.com/s?__biz=MjM5MzEzODgyMA==&amp;amp;mid=206189476&amp;amp;idx=1&amp;amp;sn=3e2cc4f01b7ff42f933420063f4e5a74#rd&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;520，对石城说“我爱你”：&lt;a href=&#34;http://v.qq.com/boke/page/z/0/2/z0154dvf6d2.html&#34;&gt;http://v.qq.com/boke/page/z/0/2/z0154dvf6d2.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;灾后场景：&lt;a href=&#34;http://mp.weixin.qq.com/s?__biz=MzAwNDUzMjg5OA==&amp;amp;mid=208435542&amp;amp;idx=1&amp;amp;sn=346f8e17448bf3a976c55591636b6e02&amp;amp;scene=1&amp;amp;from=singlemessage&amp;amp;isappinstalled=0#rd&#34;&gt;http://mp.weixin.qq.com/s?__biz=MzAwNDUzMjg5OA==&amp;amp;mid=208435542&amp;amp;idx=1&amp;amp;sn=346f8e17448bf3a976c55591636b6e02&amp;amp;scene=1&amp;amp;from=singlemessage&amp;amp;isappinstalled=0#rd&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;2015年5月21号石城新闻：&lt;a href=&#34;http://v.qq.com/boke/page/w/0/4/w015442vnu4.html&#34;&gt;http://v.qq.com/boke/page/w/0/4/w015442vnu4.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;相关媒体报道：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://pic.people.com.cn/n/2015/0520/c1016-27031534.html?k=1&#34;&gt;http://pic.people.com.cn/n/2015/0520/c1016-27031534.html?k=1&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://news.163.com/15/0521/05/AQ48GSQU00014Q4P.html&#34;&gt;http://news.163.com/15/0521/05/AQ48GSQU00014Q4P.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://news.163.com/15/0521/06/AQ4CVUIF00014AEE.html&#34;&gt;http://news.163.com/15/0521/06/AQ4CVUIF00014AEE.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;p&gt;[1]. 赣江源头微信公众号文章&lt;/p&gt;
+&lt;p&gt;[2]. 石城热线微信公众号文章&lt;/p&gt;
+&lt;p&gt;[3]. 百度搜索“石城天气”，数据来源中国天气网&lt;/p&gt;
+&lt;p&gt;[4]. 数据来源：&lt;a href=&#34;http://15tianqi.cn/shicheng5yuetianqi/&#34;&gt;http://15tianqi.cn/shicheng5yuetianqi/&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>我学繁体字</title>
+      <link>http://localhost:1313/posts/2015-04-21-learning-traditional-chinese-characters/</link>
+      <pubDate>Tue, 21 Apr 2015 09:30:34 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-04-21-learning-traditional-chinese-characters/</guid>
+      <description>&lt;p&gt;其实很早之前就打算学习繁体字了，但是直接驱动我开始行动的还是上周末的一件事。&lt;/p&gt;
+&lt;p&gt;上周末组内一起去天津蓟县盘山景区游玩，进入景区看到的第一个“景点”就是下面的乾隆御笔&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;乾隆《游盘山记》&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-04-21-learning-traditional-chinese-characters/panshan.jpg&#34;&gt;
+乾隆《游盘山记》&lt;/p&gt;
+&lt;p&gt;当时JL师姐念了一遍，有几个繁体字不认识，在场的其他人也都模棱两可。我当时就后悔为什么不早点把繁体字学了呢。所以回所之后马上买了下面的这本《繁简字对照字典》，决定每天看一两页。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://img3.doubanio.com/lpic/s2988301.jpg&#34;&gt;
+《繁简字对照字典》[1]&lt;/p&gt;
+&lt;p&gt;网上也有《游盘山记》的简体版，如下&lt;/p&gt;
+&lt;p&gt;连太行，拱神京，放碣石，距沧溟，走蓟野，枕长城，盖蓟州之天作，俯临重壑，如众星拱北而莫敢与争者也。—-乾隆御笔&lt;/p&gt;
+&lt;p&gt;对照图片中的繁体字，学习一下。&lt;/p&gt;
+&lt;p&gt;有些繁体字和简体字不是一一对应的，比如同样是“汇”字，“汇聚”对应的繁体字为“匯聚”，而“词汇”对应的繁体字为“詞彙”，这一点需要注意，网上有开源的繁简字转换工具，可以看&lt;a href=&#34;http://opencc.byvoid.com/&#34;&gt;这里&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.zhihu.com/question/25389359&#34;&gt;关于繁简字的争论，网上已经很多了&lt;/a&gt;，我也不想评论，我只想说，学习繁体字完全是个人兴趣，我觉得繁体字很美，很有意思，一个字可以研究半天，外出游玩的时候也能顺带“和古人交流交流”，所以就学了-:)&lt;/p&gt;
+&lt;p&gt;参考：&lt;/p&gt;
+&lt;p&gt;[1]. 豆瓣读书《繁简字对照字典》：&lt;a href=&#34;http://book.douban.com/subject/2234412/&#34;&gt;http://book.douban.com/subject/2234412/&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>One month in Beijing</title>
+      <link>http://localhost:1313/posts/2015-03-30-one-month-in-beijing/</link>
+      <pubDate>Mon, 30 Mar 2015 19:23:42 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2015-03-30-one-month-in-beijing/</guid>
+      <description>&lt;p&gt;2015年2月28日到达北京，到现在一月有余，是时候月度总结了。&lt;/p&gt;
+&lt;h1 id=&#34;这是我第三次来北京&#34;&gt;这是我第三次来北京&lt;/h1&gt;
+&lt;p&gt;2014年的6月份第一次来北京，去北大计算所实习十天。感受了一下北大计算所p老师及其博士生z的冷漠。我还记得刚到的那天晚上一个人孤零零的走在北京的大街上寻找北大方正员工宿舍的场景。每天重复着朝九晚十的固定模式，每个人都像机器一样的工作，实验室只有敲击键盘的声音，偶尔看到p的时候他也是阴沉着脸，临走的时候还被z批评了。虽然p承诺说只要我通过夏令营面试就会要我，但是这明显就是废话呀；而且这段不算愉快的实习经历让我对p的实验室产生了厌恶。&lt;/p&gt;
+&lt;p&gt;回学校之后开始准备期末考试和7月份的夏令营，并于2014年7月9日到达北京，这次的行程包括北大计算所和中科院计算所的夏令营。北大计算所因为机试和综合排名不占优势，败下阵来，不过现在想想当初幸好没有进p的实验室，要不然天天对着p的臭脸，估计要疯。&lt;/p&gt;
+&lt;p&gt;中科院计算所的风格完全不像北大，中科院真正做到了海纳百川，一视同仁，不像北大看不起校外学生。来北京之前和ict的h老师沟通过很多次，发现我和h老师的性格很相似，我非常崇拜h老师严谨的处事风格，经过认真的准备，我也顺利通过了ict的夏令营，然后跑去深圳siat玩耍了。&lt;/p&gt;
+&lt;h1 id=&#34;北京的物价真是贵&#34;&gt;北京的物价真是贵&lt;/h1&gt;
+&lt;p&gt;这次是来ict完成我的本科毕业设计的，大概要待到5月初。一来从家里不方便带太多东西，二来想想要在北京待三年，所以准备在北京重新置办生活用品。&lt;/p&gt;
+&lt;p&gt;2月28刚到北京，去了师兄推荐的家乐福大超市。超市很大，有两层，不过里面的东西真是贵。也就买了被子、三件套、桶、盆，花了四五百，很可恨的是，很薄的春秋单人被子，居然要169，这还是最便宜的，床垫比被子还贵，要199。&lt;/p&gt;
+&lt;p&gt;没必要的用品可以不买，但是饭不能不吃。以前在学校一天也就十几块，到北京后发现，一顿饭就十多块了。早餐一个鸡蛋要2块，一个小包子要1.5块，哎，想想以前自己家做早餐的时候1块钱4个大肉包子啊，当初怎么不多吃几个呢。&lt;/p&gt;
+&lt;p&gt;餐厅里的饭菜确实贵，不过国科大食堂的饭菜既便宜又好吃，赞一个。&lt;/p&gt;
+&lt;h1 id=&#34;北京的雾霾&#34;&gt;北京的雾霾&lt;/h1&gt;
+&lt;p&gt;来北京之前对北京的雾霾也略有耳闻，觉得那是北京人的小题大做，武汉也是扬尘满天飞，我也活得好好的啊；不过真来北京之后，确实受不了，放眼望去，街道上灰蒙蒙的一片，路上的特大广告牌都看不清。也许是雾霾加干燥的原因，刚来北京那一个星期，嗓子特别不舒服，每天早晨刷牙的时候都恶心干呕，不过后来慢慢好了。&lt;/p&gt;
+&lt;p&gt;3月28那天，北京还遭遇了沙尘暴，那场景真像外星人袭击地球。所以来北京，口罩是必需品。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;3月28日北京的沙尘暴&#34; loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/y0.ifengimg.com/cmpp/2015/03/28/14/1120a1ac-4317-49ca-8114-5962823270e1_size48_w600_h400.jpg&#34;&gt;
+3月28日北京的沙尘暴[1]&lt;/p&gt;
+&lt;h1 id=&#34;北京的风景&#34;&gt;北京的风景&lt;/h1&gt;
+&lt;p&gt;来北京的前3个星期，忙于组内布置的任务，也是过着朝九晚十的生活，后来想想也不能天天这样，我应该出去透透气，于是选择了颐和园，3月份属于颐和园景区的淡季，加上学生证，门票不贵。颐和园不愧是皇家园林，里面的景色确实很漂亮，有万寿山、昆明湖，湖水还算干净。&lt;/p&gt;
+&lt;p&gt;我去的那天天气很好，空气质量也不错；人虽多，但不算拥挤，部分原因是颐和园真是太大了。我在游玩的过程中看到了很多外国旅游团，听到过英语、法语、日语、韩语、粤语、中文，让我默默联想起了八国联军侵略中国的场景。&lt;/p&gt;
+&lt;p&gt;在游玩的过程中遇到了一个很温馨的“外国小家庭”，妈妈是外国人，爸爸应该也是外国人，爸爸和妈妈聊天的时候是用英语，但是爸爸和儿子却是用中文，他们还有一个坐在婴儿车里的小女儿，儿子坐在湖边玩ipad，小女儿在车里哭个不停…&lt;/p&gt;
+&lt;p&gt;虽然颐和园的风景很好，但是里面居然有很多蚊子（小虫子）！期间有一个虫子撞到我的嘴巴，还有一个钻进了我的耳朵。可能是春天到了，万物复苏，加上颐和园内潮湿，植物丰富，给虫子提供了很好的环境。&lt;/p&gt;
+&lt;p&gt;下面放几张游玩时拍的照片。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;谁能告诉我这是什么乐器&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/Summer-Palace1.jpg&#34;&gt;
+谁能告诉我这是什么乐器&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;学太极的外国人&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/Summer-Palace2.jpg&#34;&gt;
+学太极的外国人&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;这也是迎春花？&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/Summer-Palace3.jpg&#34;&gt;
+这也是迎春花？&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;这个角度的颐和园很美&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/Summer-Palace4.jpg&#34;&gt;
+这个角度的颐和园很美&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;长廊&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/Summer-Palace5.jpg&#34;&gt;
+长廊&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;准备回去的时候看到的，各种长枪大炮，据说是在抓拍一种珍稀鸟类。。。&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/Summer-Palace6.jpg&#34;&gt;
+准备回去的时候看到的，各种长枪大炮，据说是在抓拍一种珍稀鸟类。。。&lt;/p&gt;
+&lt;p&gt;颐和园的风景虽好，但就自然风光来说，比不上南方早已复苏的大自然。&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;家乡的油菜花，比颐和园的迎春花漂亮多了-:)&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2015-03-30-one-month-in-beijing/rape-flowers.jpg&#34;&gt;
+家乡的油菜花，比颐和园的迎春花漂亮多了-:)&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;武大樱花已经争奇斗艳了，北方还是萧瑟一片&#34; loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/i2.chinanews.com/simg/hd/2015/03/21/7e9527ca232f4253bfb86eef15cee517.jpg&#34;&gt;
+武大樱花已经争奇斗艳了，北方还是萧瑟一片[2]&lt;/p&gt;
+&lt;h1 id=&#34;后记&#34;&gt;后记&lt;/h1&gt;
+&lt;p&gt;没来北京之前，我想着以后一定要在北京工作，还要争取在北京安家落户。虽然北京生活压力很大，但是机会和挑战也多，这不就是我要的生活吗；而且北京是全国的政治、经济和文化中心，可以很方便的去感受中国几千年的文化和历史。在北京生活一个月之后，我的想法变了，很重要的原因是北京的雾霾和气候。雾霾不是一个人一天两天能够解决的，你必须尽量减少不必要的出行，跑步健身什么的就更别提了；北京属于北温带季风气候，冬天很干燥，而且放眼望去看不到绿色，ict旁边种的树，光秃秃的只有树干。这种钢筋混凝土构筑起来的城市，我真的不喜欢。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;和南方的一些城市相比，北京真的不适宜居住，尤其对于南方人！&lt;/strong&gt;&lt;/p&gt;
+&lt;h1 id=&#34;参考&#34;&gt;参考&lt;/h1&gt;
+&lt;p&gt;[1]. 新京报网：&lt;a href=&#34;http://www.bjnews.com.cn/news/2015/03/28/358122.html&#34;&gt;http://www.bjnews.com.cn/news/2015/03/28/358122.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[2]. 中新网：&lt;a href=&#34;http://www.chinanews.com/tp/hd2011/2015/03-21/496005.shtml&#34;&gt;http://www.chinanews.com/tp/hd2011/2015/03-21/496005.shtml&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

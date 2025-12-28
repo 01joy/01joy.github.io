@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>论文阅读：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings | bitJoy</title>
+<meta name="keywords" content="CLIP, VL-CLIP, 多模态, RecSys">
+<meta name="description" content="
+基本信息
+
+论文标题：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings
+作者单位：沃尔玛
+论文链接：https://arxiv.org/pdf/2507.17080
+来源：RecSys 2025
+
+Motivation：论文要解决的问题是什么
+多模态q2i召回通常使用CLIP的对比学习方式进行训练，在电商场景下存在2个问题：
+
+CLIP这种方式通常是对图片整体的表征，缺乏细粒度的目标检测能力，尤其在电商场景，比如fig1，卖衣服场景，传统CLIP只能识别整张图片是一件T恤，难以关注T恤上的图案等细节特征；另外，电商图片往往存在很多附加背景、道具、模特等元素，会影响主体物体的表征
+电商标题、属性等文本描述通常参差不齐，存在错误、堆砌、图文不符等问题，导致CLIP训练时图文对齐效果不佳
+
+
+VL-CLIP解决方案
+针对图片的处理：
+
+将图片和商品类型（product type）输入到开源模型Grounding DINO中，让模型进行目标检测，将可信度超过某个阈值且可信度最高的区域抠出来，输入到CLIP的图像encoder中。通过这步预处理，相当于对电商图片进行了关键主体识别和提取，只提取和商品最相关的主体进行图像表征。文中使用的图像编码器是ViT-B/32。
+
+
+针对文本的处理：
+
+将商品的类型、标题、描述、性别、年龄等文本描述以及图片本身输入到Summarizer多模态大模型，让大模型产出精简、准确的文本描述\(q_0\)
+将\(q_0\)和商品图文信息输入到Evaluator多模态大模型，让大模型对\(q_0\)的质量进行评判，如果\(q_0\)质量很好，则直接输出&lt;STOP&gt;；否则指出\(q_0\)的问题所在，并说明改进方法
+如果第2步输出不是&lt;STOP&gt;，则将第2步的输出再输入到Refiner大模型，让大模型根据第2步的结果继续调整并输出更优的文本描述\(q_i\)
+不断重复第2、3步，直到输出&lt;STOP&gt;，或者最多重复5遍
+将产出的精准的文本描述q输入到CLIP的文本encoder中，文中使用的是BERT系列。产出的emb维度是512
+上述Summarizer、Evaluator、Refiner都是VLM，文中使用的是GPT-4o，三个任务的prompt设计参考论文附录Table 9
+
+
+上述对图片和文本的处理本质上是去噪，提取图片的主体物品、让文本描述更加精准。
+产出多模态emb之后，后续的操作就是常规的召回流程了，使用HNSW进行ANN召回。
+评论
+
+可借鉴
+
+使用Grounding DINO对图片进行主体识别，值得借鉴
+使用VLM对商品标题、描述等文本信息进行去噪，值得借鉴
+但如果商品量级很大的话，这两个步骤估计会很耗时
+
+
+可改进
+
+如果是q2i场景，直接用query文本是不是更真实，更接近搜索日子的真实数据分布？
+
+
+">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      论文阅读：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings
+    </h1>
+    <div class="post-meta"><span title='2025-10-08 23:31:54 +0800 CST'>October 8, 2025</span>&nbsp;·&nbsp;1 min
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e4%bf%a1%e6%81%af" aria-label="基本信息">基本信息</a></li>
+                <li>
+                    <a href="#motivation%e8%ae%ba%e6%96%87%e8%a6%81%e8%a7%a3%e5%86%b3%e7%9a%84%e9%97%ae%e9%a2%98%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Motivation：论文要解决的问题是什么">Motivation：论文要解决的问题是什么</a></li>
+                <li>
+                    <a href="#vl-clip%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88" aria-label="VL-CLIP解决方案">VL-CLIP解决方案</a></li>
+                <li>
+                    <a href="#%e8%af%84%e8%ae%ba" aria-label="评论">评论</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-paper-cover.png"></p>
+<h1 id="基本信息">基本信息<a hidden class="anchor" aria-hidden="true" href="#基本信息">#</a></h1>
+<ul>
+<li>论文标题：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings</li>
+<li>作者单位：沃尔玛</li>
+<li>论文链接：<a href="https://arxiv.org/pdf/2507.17080">https://arxiv.org/pdf/2507.17080</a></li>
+<li>来源：RecSys 2025</li>
+</ul>
+<h1 id="motivation论文要解决的问题是什么">Motivation：论文要解决的问题是什么<a hidden class="anchor" aria-hidden="true" href="#motivation论文要解决的问题是什么">#</a></h1>
+<p>多模态q2i召回通常使用CLIP的对比学习方式进行训练，在电商场景下存在2个问题：</p>
+<ul>
+<li>CLIP这种方式通常是对图片整体的表征，缺乏细粒度的目标检测能力，尤其在电商场景，比如fig1，卖衣服场景，传统CLIP只能识别整张图片是一件T恤，难以关注T恤上的图案等细节特征；另外，电商图片往往存在很多附加背景、道具、模特等元素，会影响主体物体的表征</li>
+<li>电商标题、属性等文本描述通常参差不齐，存在错误、堆砌、图文不符等问题，导致CLIP训练时图文对齐效果不佳</li>
+</ul>
+<p><img loading="lazy" src="/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-fig1.png"></p>
+<h1 id="vl-clip解决方案">VL-CLIP解决方案<a hidden class="anchor" aria-hidden="true" href="#vl-clip解决方案">#</a></h1>
+<p>针对图片的处理：</p>
+<ul>
+<li>将图片和商品类型（product type）输入到开源模型<a href="https://github.com/IDEA-Research/GroundingDINO">Grounding DINO</a>中，让模型进行目标检测，将可信度超过某个阈值且可信度最高的区域抠出来，输入到CLIP的图像encoder中。通过这步预处理，相当于对电商图片进行了关键主体识别和提取，只提取和商品最相关的主体进行图像表征。文中使用的图像编码器是ViT-B/32。</li>
+</ul>
+<p><img loading="lazy" src="/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-fig2.png"></p>
+<p>针对文本的处理：</p>
+<ol>
+<li>将商品的类型、标题、描述、性别、年龄等文本描述以及图片本身输入到Summarizer多模态大模型，让大模型产出精简、准确的文本描述\(q_0\)</li>
+<li>将\(q_0\)和商品图文信息输入到Evaluator多模态大模型，让大模型对\(q_0\)的质量进行评判，如果\(q_0\)质量很好，则直接输出&lt;STOP&gt;；否则指出\(q_0\)的问题所在，并说明改进方法</li>
+<li>如果第2步输出不是&lt;STOP&gt;，则将第2步的输出再输入到Refiner大模型，让大模型根据第2步的结果继续调整并输出更优的文本描述\(q_i\)</li>
+<li>不断重复第2、3步，直到输出&lt;STOP&gt;，或者最多重复5遍</li>
+<li>将产出的精准的文本描述q输入到CLIP的文本encoder中，文中使用的是BERT系列。产出的emb维度是512</li>
+<li>上述Summarizer、Evaluator、Refiner都是VLM，文中使用的是GPT-4o，三个任务的prompt设计参考论文附录Table 9</li>
+</ol>
+<p><img loading="lazy" src="/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-fig3.png"></p>
+<p>上述对图片和文本的处理本质上是去噪，提取图片的主体物品、让文本描述更加精准。</p>
+<p>产出多模态emb之后，后续的操作就是常规的召回流程了，使用HNSW进行ANN召回。</p>
+<h1 id="评论">评论<a hidden class="anchor" aria-hidden="true" href="#评论">#</a></h1>
+<ul>
+<li>可借鉴
+<ul>
+<li>使用Grounding DINO对图片进行主体识别，值得借鉴</li>
+<li>使用VLM对商品标题、描述等文本信息进行去噪，值得借鉴</li>
+<li>但如果商品量级很大的话，这两个步骤估计会很耗时</li>
+</ul>
+</li>
+<li>可改进
+<ul>
+<li>如果是q2i场景，直接用query文本是不是更真实，更接近搜索日子的真实数据分布？</li>
+</ul>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/clip/">CLIP</a></li>
+      <li><a href="http://localhost:1313/tags/vl-clip/">VL-CLIP</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/">多模态</a></li>
+      <li><a href="http://localhost:1313/tags/recsys/">RecSys</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-10-09-meta-prefix-ngram-sid-paper-reading/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>论文阅读：Enhancing Embedding Representation Stability in Recommendation Systems with Semantic ID</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2025-10-07-grid-paper-reading/">
+    <span class="title">Next »</span>
+    <br>
+    <span>论文阅读：Generative Recommendation with Semantic IDs: A Practitioner’s Handbook</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

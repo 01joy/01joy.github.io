@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>多模态 on bitJoy</title>
+    <link>http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/</link>
+    <description>Recent content in 多模态 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 13 Dec 2025 18:25:12 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>论文阅读：Large Reasoning Embedding Models: Towards Next-Generation Dense Retrieval Paradigm</title>
+      <link>http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/</link>
+      <pubDate>Sat, 13 Dec 2025 18:25:12 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：Large Reasoning Embedding Models: Towards Next-Generation Dense Retrieval Paradigm&lt;/li&gt;
+&lt;li&gt;作者单位：阿里巴巴&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/abs/2510.14321&#34;&gt;https://arxiv.org/abs/2510.14321&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：arxiv&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;一问题&#34;&gt;一、问题&lt;/h1&gt;
+&lt;p&gt;电商emb召回场景，目前的方法都是直接字面语义上的对比学习训练（direct-embedding methods），即q2i的对比学习训练。对于复杂、困难的query，语义理解能力不足，比如下图Fig1中的query=&amp;ldquo;比茶更提神的饮料&amp;rdquo;，仍然会召回很多茶，因为字面理解没有理解query背后的深层含义。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-Fig1.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;二方法&#34;&gt;二、方法&lt;/h1&gt;
+&lt;p&gt;使用LLM强大的推理能力（reasoning），先推理出CoT，然后基于CoT再产emb。比如上面的例子中，经过LLM推理之后，推理出咖啡、红牛等关键词，通过这些关键词再去产emb然后召回，效果就好很多。&lt;/p&gt;
+&lt;h2 id=&#34;21-训练样本构造方法&#34;&gt;2.1 训练样本构造方法&lt;/h2&gt;
+&lt;p&gt;如下图Fig2中的Data Construction部分：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;收集线上query，尤其是那种困难query，就是在现有direct-embedding表现不好的query&lt;/li&gt;
+&lt;li&gt;把这些query喂给现有召回模型，得到召回商品集合①&lt;/li&gt;
+&lt;li&gt;然后使用强大的Qwen3-30B-A3B-Instruct生产CoT扩展信息
+&lt;ul&gt;
+&lt;li&gt;Unconstrained Reasoning：首先不加任何限制地生产CoT，尽可能利用大模型的世界知识和推理能力，生产充分完全的CoT信息&lt;/li&gt;
+&lt;li&gt;Information Extraction：由于上一步产出的CoT信息太长了，不利于线上推理，因此把上一步产出的CoT和原始query再次输入给大模型，让大模型抽取其中的关键信息，以keyword list形式输出&lt;/li&gt;
+&lt;li&gt;Post Processing：最后对上一步抽取的关键词进行后处理，去除重复词，去除query中已有的词等，得到精简、干净的关键词列表，列表最大长度是16&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;接着把query和CoT喂给已有的向量召回模型，得到扩展的召回商品集合②
+&lt;ul&gt;
+&lt;li&gt;由于要训练模型的Reasoning能力，所以只取出集合②-①的差集部分，这部分是CoT带来的增益商品集合&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;最后使用相关性模型对商品集合②-①进行过滤，过滤出相关的商品&lt;/li&gt;
+&lt;li&gt;通过上述步骤，产出约7.5kw的&amp;lt;query, CoT, item&amp;gt;三元组&lt;/li&gt;
+&lt;li&gt;把上述样本划分成两部分，7.1kw的&amp;lt;query, CoT, item&amp;gt;三元组用于Cold start预训练；剩余400w的&amp;lt;query, item&amp;gt;用于RL微调&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-Fig2.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;22-cold-start预训练&#34;&gt;2.2 Cold Start预训练&lt;/h2&gt;
+&lt;p&gt;对应图Fig2左下角部分，该模块通过大规模的&amp;lt;query, CoT,item&amp;gt;三元组数据预训练，想要达到两个目的：一是让基础模型具备think能力；二是让基础模型产出的emb和下游q2i任务对齐。&lt;/p&gt;
+&lt;p&gt;这里使用的基础模型是Qwen2.5-3B-Instruct，比生产CoT的模型（Qwen3-30B-A3B-Instruct）小，其实也有点蒸馏的感觉，把大模型的CoT能力蒸馏到小模型中。&lt;/p&gt;
+&lt;p&gt;训练任务包括两个，一个是CoT的NTP loss（对应图中的SFT loss），另一个是q2i的对比学习InfoNCE loss。query塔和item塔共享参数，他们的emb都是最后一个特殊token &amp;lt;emb&amp;gt; 的emb。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula4.png&#34;&gt;
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula5-7.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Loss组合：
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula8.png&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;23-rl微调&#34;&gt;2.3 RL微调&lt;/h2&gt;
+&lt;p&gt;上一步的SFT主要进行模仿学习，模仿更大的大模型的think能力，小模型本身的reasoning能力受限，接下来需要用GRPO对小模型进行RL微调。RL微调同时对生产CoT和生产emb两个任务都有作用，具体看下面的reward：&lt;/p&gt;
+&lt;p&gt;RL微调设计了3个reward：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Format Reward：产出的CoT格式符合“&amp;lt;think&amp;gt; Specific CoT &amp;lt;/think&amp;gt;&amp;lt;emb&amp;gt;”就得1分，否则得0分&lt;/li&gt;
+&lt;li&gt;Length Reward：产出的CoT格式符合长度限制（&amp;lt;=16）就得1分，否则得0分&lt;/li&gt;
+&lt;li&gt;Retrieval Accuracy Reward：联合原始query和产出的CoT产出的增强query emb，与batch内所有的item emb求相似度，正确item所在的排名为\(rank(d_i)\)，再根据公式12计算一个排名的reward。核心思想是：正确的item与query的相似度排名越高则reward越大（即rank值越小则reward越大）。
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula11-12.png&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;最后，上述3个reward通过三个β系数组合起来：
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-12-13-alibaba-large-reasoning-embedding-model-lrem-paper-reading/LREM-formula13.png&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>论文阅读：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings</title>
+      <link>http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/</link>
+      <pubDate>Wed, 08 Oct 2025 23:31:54 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：VL-CLIP: Enhancing Multimodal Recommendations via Visual Grounding and LLM-Augmented CLIP Embeddings&lt;/li&gt;
+&lt;li&gt;作者单位：沃尔玛&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2507.17080&#34;&gt;https://arxiv.org/pdf/2507.17080&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：RecSys 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;多模态q2i召回通常使用CLIP的对比学习方式进行训练，在电商场景下存在2个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CLIP这种方式通常是对图片整体的表征，缺乏细粒度的目标检测能力，尤其在电商场景，比如fig1，卖衣服场景，传统CLIP只能识别整张图片是一件T恤，难以关注T恤上的图案等细节特征；另外，电商图片往往存在很多附加背景、道具、模特等元素，会影响主体物体的表征&lt;/li&gt;
+&lt;li&gt;电商标题、属性等文本描述通常参差不齐，存在错误、堆砌、图文不符等问题，导致CLIP训练时图文对齐效果不佳&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-fig1.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;vl-clip解决方案&#34;&gt;VL-CLIP解决方案&lt;/h1&gt;
+&lt;p&gt;针对图片的处理：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将图片和商品类型（product type）输入到开源模型&lt;a href=&#34;https://github.com/IDEA-Research/GroundingDINO&#34;&gt;Grounding DINO&lt;/a&gt;中，让模型进行目标检测，将可信度超过某个阈值且可信度最高的区域抠出来，输入到CLIP的图像encoder中。通过这步预处理，相当于对电商图片进行了关键主体识别和提取，只提取和商品最相关的主体进行图像表征。文中使用的图像编码器是ViT-B/32。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-fig2.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;针对文本的处理：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;将商品的类型、标题、描述、性别、年龄等文本描述以及图片本身输入到Summarizer多模态大模型，让大模型产出精简、准确的文本描述\(q_0\)&lt;/li&gt;
+&lt;li&gt;将\(q_0\)和商品图文信息输入到Evaluator多模态大模型，让大模型对\(q_0\)的质量进行评判，如果\(q_0\)质量很好，则直接输出&amp;lt;STOP&amp;gt;；否则指出\(q_0\)的问题所在，并说明改进方法&lt;/li&gt;
+&lt;li&gt;如果第2步输出不是&amp;lt;STOP&amp;gt;，则将第2步的输出再输入到Refiner大模型，让大模型根据第2步的结果继续调整并输出更优的文本描述\(q_i\)&lt;/li&gt;
+&lt;li&gt;不断重复第2、3步，直到输出&amp;lt;STOP&amp;gt;，或者最多重复5遍&lt;/li&gt;
+&lt;li&gt;将产出的精准的文本描述q输入到CLIP的文本encoder中，文中使用的是BERT系列。产出的emb维度是512&lt;/li&gt;
+&lt;li&gt;上述Summarizer、Evaluator、Refiner都是VLM，文中使用的是GPT-4o，三个任务的prompt设计参考论文附录Table 9&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-08-vl-clip-paper-reading/VL-CLIP-fig3.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上述对图片和文本的处理本质上是去噪，提取图片的主体物品、让文本描述更加精准。&lt;/p&gt;
+&lt;p&gt;产出多模态emb之后，后续的操作就是常规的召回流程了，使用HNSW进行ANN召回。&lt;/p&gt;
+&lt;h1 id=&#34;评论&#34;&gt;评论&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;可借鉴
+&lt;ul&gt;
+&lt;li&gt;使用Grounding DINO对图片进行主体识别，值得借鉴&lt;/li&gt;
+&lt;li&gt;使用VLM对商品标题、描述等文本信息进行去噪，值得借鉴&lt;/li&gt;
+&lt;li&gt;但如果商品量级很大的话，这两个步骤估计会很耗时&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可改进
+&lt;ul&gt;
+&lt;li&gt;如果是q2i场景，直接用query文本是不是更真实，更接近搜索日子的真实数据分布？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>论文阅读：Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation</title>
+      <link>http://localhost:1313/posts/2025-10-06-psrq-paper-reading/</link>
+      <pubDate>Mon, 06 Oct 2025 21:01:25 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-06-psrq-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-06-psrq-paper-reading/PSRQ-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation&lt;/li&gt;
+&lt;li&gt;作者单位：网易云音乐&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2508.20359&#34;&gt;https://arxiv.org/pdf/2508.20359&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：CIKM 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;多模态emb在搜推的应用方式，通常是先将多模态emb转换成semantic id，然后把semantic id用到搜推模型中，这种方式有如下两个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;模态内语义退化&lt;/strong&gt;：多模态emb转换成semantic id通常使用RQ-VAE或者RQ-KMeans的方法，这种方法在不断残差的过程中，后续残差聚类结果已经不能反映初始emb的聚类效果了。其实就是semantic id的沙漏问题，具体可以看&lt;a href=&#34;https://arxiv.org/abs/2407.21488&#34;&gt;这篇文章&lt;/a&gt;，后续有空再分享这个问题。
+&lt;ul&gt;
+&lt;li&gt;简单来说，如下图所示，初始有DJ、Rock、Lullaby、Choir四个类，但是对残差emb（即RQ-VAE的第二层）聚类的话，初始的四个类的item就打散了，会聚到不同的簇中，也就是RQ-VAE的后续层的聚类效果已经和初始emb的聚类效果很不一样了，这就是文中说的语义退化问题&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;模态间建模差异&lt;/strong&gt;：搜推场景的item通常有多种模态特征，比如文本、图像、音频等，传统方法在多模态融合方面比较简单，不能很好地捕捉多模态之间的关系。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-06-psrq-paper-reading/PSRQ-fig1.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;psrq生产semantic-id&#34;&gt;PSRQ生产semantic id&lt;/h1&gt;
+&lt;p&gt;本文是音乐推荐场景，主要用到两种模态：text和audio，分别用百川和MERT提取text和audio的模态emb。&lt;/p&gt;
+&lt;p&gt;生产semantic id的方法如下图所示：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;fig2a是传统的RQ-KMeans的方法，每一层都用上一层的残差进行聚类。如上文所述，由于沙漏问题，会导致后续层次的semantic id存在语义退化问题&lt;/li&gt;
+&lt;li&gt;fig2b是本文新提出的PSRQ量化方法，在RQ-KMeans基础上，每一层除了有上一层的残差向量，还会concat上初始emb减去残差emb后的向量。&lt;strong&gt;这样就能区分出残差相似，但初始emb不同的item了&lt;/strong&gt;，也就避免了RQ方法的沙漏问题，后续semantic id也能保留初始emb的语义信息。fig1d能看出来第二层semantic id仍然能够反映初始emb的分类效果。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-06-psrq-paper-reading/PSRQ-fig2.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;semantic-id在下游的应用方法&#34;&gt;Semantic id在下游的应用方法&lt;/h1&gt;
+&lt;p&gt;如下图所示：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个item有两套多模态emb：text和audio，但是有三套semantic id，除了text和audio各自产一套semantic id之外，还会把text和audio的emb concat起来，再产一套semantic id，相当于多模态融合的semantic id&lt;/li&gt;
+&lt;li&gt;semantic id的emb在排序模型中随机初始化，然后端到端训练&lt;/li&gt;
+&lt;li&gt;semantic id在用户建模时，使用DIN模型，query用的是多模态融合的semantic id emb，行为流分别用text和audio的semantic id emb。作者说这种方法既能捕捉到单模态细粒度的信息，又能建模跨模态的交互信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-06-psrq-paper-reading/PSRQ-fig3.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;评论&#34;&gt;评论&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;可借鉴
+&lt;ul&gt;
+&lt;li&gt;PSRQ的semantic id生产方法确实很有意思，在每一层都用上原始emb，这样不同簇的item在每一层都能分开，不会出现沙漏问题，使得每一层的semantic id都能保留原始emb的语义聚类信息&lt;/li&gt;
+&lt;li&gt;产了多套semantic id，单模态semantic id是常规操作；多模态emb concat后也产一套semantic id，是个创新点&lt;/li&gt;
+&lt;li&gt;用户建模时query用多模态semantic id，行为流用单模态semantic id，也是个创新点，虽然论文说这种方法效果最好，但是有点存疑&lt;/li&gt;
+&lt;li&gt;论文有个实验结果对比了不同semantic id量化方法的效果，结论是：PSRQ &amp;gt; RQ-KMeans = RQ-VAE &amp;gt; VQ &amp;gt; PQ&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可改进
+&lt;ul&gt;
+&lt;li&gt;pretrain emb和semantic id的生产都没有对齐协同信号&lt;/li&gt;
+&lt;li&gt;semantic id在下游应用时直接端到端训练，而没有使用codebook初始化，会不会丢失信息比较多？&lt;/li&gt;
+&lt;li&gt;产semantic id的过程中，模态内语义退化的问题，描述了现象，但是没有用定量的指标来说明问题，感觉可以借鉴&lt;a href=&#34;https://bitjoy.net/posts/2025-10-04-mme-sid-paper-reading/&#34;&gt;【论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs】&lt;/a&gt;的方法，定量说明后续层的semantic id的聚类效果或者说区分能力相比初始emb已经相差甚远了&lt;/li&gt;
+&lt;li&gt;fig2b中，第一层的codebook的dim=d，后续层的codebook的dim=2d，那么后续层的残差dim也是2d，那么初始emb怎么和后续的残差emb相减呢，维度对不上啊？我理解可能是这样的，后续层聚类的时候用的是concat的dim=2d的emb，但是算聚类中心的时候只用了残差本身的emb，这样就能解释得通了，但是文中对这部分的细节没有解释。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>论文阅读：DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System</title>
+      <link>http://localhost:1313/posts/2025-10-05-das-paper-reading/</link>
+      <pubDate>Sun, 05 Oct 2025 20:26:43 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-05-das-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System&lt;/li&gt;
+&lt;li&gt;作者单位：快手&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2508.10584&#34;&gt;https://arxiv.org/pdf/2508.10584&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：CIKM 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;Semantic id生产时，要么没有和协同信号对齐（fig2(1)），要么是两阶段对齐方式（fig2(2)）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;例如&lt;a href=&#34;https://arxiv.org/abs/2405.07314&#34;&gt;LETTER&lt;/a&gt;先生成协同emb，然后和semantic id对齐&lt;/li&gt;
+&lt;li&gt;或者例如&lt;a href=&#34;https://arxiv.org/pdf/2411.11739&#34;&gt;QARM&lt;/a&gt;，先协同对齐emb，再生产semantic id&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;把协同对齐和生产semantic id分成两个阶段，天然有信息损失，不是最优的。本文的目的就是把生产协同emb，以及semantic id的协同对齐放到一个模型中联合训练完成，尽量减少信息损失（fig2(3)）。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-fig2.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;主模型&#34;&gt;主模型&lt;/h1&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-05-das-paper-reading/das-fig3.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;主模型如上图所示，中间的ICDM是user和item的双塔模型，用于学习user和item的协同id-based emb；两边分别是生产user和item的semantic id的量化模型。&lt;/p&gt;
+&lt;p&gt;中间的ICDM就是经典的召回双塔模型，使用点击样本进行训练，唯一不同的是，在user和item塔都有流行度去偏模块，用于学习user和item的无偏emb，后续user和item的semantic id协同对齐用的也是无偏的emb。&lt;/p&gt;
+&lt;p&gt;两边分别是user和item的semantic id量化模型，两者比较类似，以item为例：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先把item的各种信息，如title、desc、ocr等信息用文本构造成prompt，输入到LLM，借助LLM的summary和reasoning能力，产出item的详细描述&lt;/li&gt;
+&lt;li&gt;然后把LLM产出的描述再输入到一个预训练的embedding模型PLM，文中用的是bge m3模型，得到item emb&lt;/li&gt;
+&lt;li&gt;后续就是标准的RQ-VAE过程了&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;需要注意的是，上述前两步，分别用到了LLM和PLM两个大模型，而且看图上这两个模型都是freeze的，也就是说并不微调这两个大模型。后续协同对齐用的emb是RQ-VAE重构emb的中间层结果，即图中的item quantized emb。&lt;/p&gt;
+&lt;p&gt;semantic id的协同对齐方面，有三大类对齐任务：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;U2I对齐：量化user emb和协同item emb对齐、量化item emb和协同user emb对齐&lt;/li&gt;
+&lt;li&gt;U2U和I2I对齐：量化user emb和协同user emb对齐、量化item emb和协同item emb对齐&lt;/li&gt;
+&lt;li&gt;U2U和I2I的共现对齐：点击相同item的两个量化user emb对齐、同一个user点击的两个item的量化item emb对齐&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;由于fig3中的协同模型和semantic id模型是联合训练的，总共有3大类loss：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;中间的ICDM的双塔召回模型的loss&lt;/li&gt;
+&lt;li&gt;两边的产semantic id的loss&lt;/li&gt;
+&lt;li&gt;三个模块的对齐loss&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;评论&#34;&gt;评论&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;可借鉴
+&lt;ul&gt;
+&lt;li&gt;把semantic id的生产和协同信号对齐统一成一阶段的模式，信息损失更少&lt;/li&gt;
+&lt;li&gt;中间的ICDM模型生产协同emb时进行了去偏，协同对齐的时候用的是去偏的emb，这是其他论文很少提到的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可改进
+&lt;ul&gt;
+&lt;li&gt;太复杂了！3个模块，3大类loss，每类loss又有很多个小loss，总loss数量加起来有十多个。。。&lt;/li&gt;
+&lt;li&gt;任务太多，各种去偏、对齐loss，真的不会互相影响吗？&lt;/li&gt;
+&lt;li&gt;中间的ICDM模块有必要吗？我理解ICDM本质是为了训练产出协同emb，但是因为训练样本本身是点击样本，样本本身已经包含了搜推场景的协同信号，也就是ICDM本身没必要存在了，直接用相同的样本训练两边的semantic id量化模型就行了，也能实现在训练semantic id的过程中，完成协同信号的对齐&lt;/li&gt;
+&lt;li&gt;生产semantic id的emb来自LLM和PLM，但是这两个大模型都是freeze的，如果把这两个模型也sft，效果会不会更好？其实我原本以为的一阶段就是这样的，这也是我在&lt;a href=&#34;https://bitjoy.net/posts/2025-10-04-mme-sid-paper-reading/&#34;&gt;【论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs】&lt;/a&gt;中提到的一阶段方法。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>论文阅读：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou</title>
+      <link>http://localhost:1313/posts/2025-10-04-qarm-paper-reading/</link>
+      <pubDate>Sat, 04 Oct 2025 18:24:40 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-04-qarm-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-qarm-paper-reading/QARM-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou&lt;/li&gt;
+&lt;li&gt;作者单位：快手&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2411.11739&#34;&gt;https://arxiv.org/pdf/2411.11739&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：CIKM 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;多模态emb在搜推场景应用时通常采用如下图的两阶段方式，先预训练多模态emb，然后作为一个冻结特征放到搜推模型中。这种方式存在2个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;表征不对齐&lt;/strong&gt;：多模态emb预训练的任务通常是图片分类或者文本的MLM，和下游搜推任务不对齐&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;表征不更新&lt;/strong&gt;：多模态emb在搜推任务中作为冻结特征，没有更新&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本文的方法就是想要解决上述2个问题。
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-qarm-paper-reading/QARM-fig1.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;对齐搜推任务的多模态emb预训练&#34;&gt;对齐搜推任务的多模态emb预训练&lt;/h1&gt;
+&lt;p&gt;为了解决多模态emb表征不对齐的问题，本文提出的多模态emb预训练任务直接对齐搜推场景，使用U2I和I2I召回模型，挖掘出相似item pair，然后通过对比学习微调多模态大模型。&lt;/p&gt;
+&lt;p&gt;具体来说，通过U2I和I2I模型，能够拿到item emb；然后用每一个target item emb去行为流中检索出最相似的商品，作为trigger item emb。&amp;lt;trigger, target&amp;gt;构成一对正样本，然后进行对比学习训练。&lt;/p&gt;
+&lt;p&gt;通过召回模型构造的训练样本，和搜推场景的协同信号对齐了，解决了开头提到的第一个问题，即表征不对齐的问题。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-qarm-paper-reading/QARM-fig3.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;semantic-id生产方法&#34;&gt;Semantic id生产方法&lt;/h1&gt;
+&lt;p&gt;Semantic id的生产方法如上图右半部分所示，有两种方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;VQ&lt;/strong&gt;：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然后任意来一个item emb，通过对底池emb进行KNN搜索，找出top-k相似商品，假设是(a,b,&amp;hellip;,k)，则VQ编码的semantic id就是(a,b,&amp;hellip;,k)。文中取k=25，感觉挺大的。。。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RQ-Kmeans&lt;/strong&gt;：对圈定的N个item emb不断进行Kmeans聚类、求残差、残差继续Kmeans聚类的过程。文中取迭代次数为L=6，但是没说每次聚到多少个类。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意：文中的RQ-Kmeans方法和RQ-VAE还不一样，RQ-Kmeans没有训练过程，也没有重构loss，纯粹是每次进行聚类，然后选聚类中心作为码本的过程。文中也没有对比过为啥不用RQ-VAE。&lt;/p&gt;
+&lt;p&gt;产出两套semantic id之后，直接在下游排序任务中进行端到端更新，解决开头提到的表征不更新的问题。具体建模方法比较常规，不是本文的重点，略讲。&lt;/p&gt;
+&lt;h1 id=&#34;评论&#34;&gt;评论&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;可借鉴
+&lt;ul&gt;
+&lt;li&gt;多模态emb预训练任务是i2i的，直接和下游搜推任务对齐&lt;/li&gt;
+&lt;li&gt;semantic id有两种产出方式，VQ和RQ-Kmeans，尽可能多地保留原始多模态emb的信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;可改进
+&lt;ul&gt;
+&lt;li&gt;多模态emb预训练和下游任务对齐，在2025年不算新鲜事了，常规操作。而且文中i2i的构造过程依赖U2I和I2I召回模型，有外部依赖，不够漂亮&lt;/li&gt;
+&lt;li&gt;VQ的方法，k=25这也太长了吧，相当于一个小型行为流了，会导致下游任务的特征处理更复杂&lt;/li&gt;
+&lt;li&gt;为什么用RQ-Kmeans而不是RQ-VAE，没有任何说明与对比&lt;/li&gt;
+&lt;li&gt;从pretrain emb量化成semantic id的过程中，存在严重的信息丢失，这在&lt;a href=&#34;https://bitjoy.net/posts/2025-10-04-mme-sid-paper-reading/&#34;&gt;Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs&lt;/a&gt;论文中有讨论&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</title>
+      <link>http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/</link>
+      <pubDate>Sat, 04 Oct 2025 11:10:11 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/</guid>
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/mme-sid-paper-cover.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;基本信息&#34;&gt;基本信息&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;论文标题：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs&lt;/li&gt;
+&lt;li&gt;作者单位：香港城市大学&amp;amp;腾讯&lt;/li&gt;
+&lt;li&gt;论文链接：&lt;a href=&#34;https://arxiv.org/pdf/2509.02017&#34;&gt;https://arxiv.org/pdf/2509.02017&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;来源：CIKM 2025&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;motivation论文要解决的问题是什么&#34;&gt;Motivation：论文要解决的问题是什么&lt;/h1&gt;
+&lt;p&gt;LLM4SR的基本范式如下，即用LLM直接来做搜推的范式（这种方式在学术界常见，但在工业界不常见）。由于LLM的输入词表范围是有限的（通常比较小），因此其token emb dim通常比较大，比如2048或者4096；而搜推场景的item量级很大，而且在不断更新，因此工业界经典的id-based的搜推模型的item emb dim通常比较小，比如64或128。经典的id-based的搜推模型能比较好地学习到搜推场景的协同信号，为了让LLM模型也能感知这种信息，LLM4SR范式通常会先预训练一个id-based的经典搜推模型，然后将其中的item id emb通过下图的Linear Projection的映射层，映射到LLM token emb的空间，让LLM也能感知搜推的协同信号。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/E4SRec.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;上述LLM4SR范式存在两个问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;维度坍缩&lt;/strong&gt;：id-based训出来的id emb dim比较小（如64），LLM token emb dim比较大（如4096），在由id emb通过Linear Projection映射到toen emb的过程中，虽然64映射到4096空间了，但扩维后的矩阵存在低秩问题，即还是只利用了4096中的64维的空间。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;论文中，作者分两种情况进行了分析，如果Linear Projection只是一个线性层的话，通过公式推导能得出上述结论；如果Linear Projection包含非线性变换，作者通过实验分析也发现了维度坍缩的现象。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;灾难遗忘&lt;/strong&gt;：除了使用id-based模型产出的id emb，LLM4SR也常用多模态模型产出item emb表征，然后转换成semantic id输入到LLM4SR中。在这种情况下，产出的semantic id通过会遗忘多模态item emb的信息，导致下游LLM4SR的效果不佳。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;论文中，作者用公式9来衡量semantic id保留pretrain多模态emb的信息量。具体来说，如果行为流中的商品序列是{A,B,C,D}，target item是E。使用pretrain多模态emb能计算出E和A~D的相似度，例如相似度&amp;lt;E,A&amp;gt; &amp;gt; &amp;lt;E,B&amp;gt;。如果将pretrain多模态emb转换成semantic id，然后由semantic id恢复出新的A~E的emb之后，再计算E和A~D的相似度，如果仍然有&amp;lt;E,A&amp;gt; &amp;gt; &amp;lt;E,B&amp;gt;，则认为一致（concordant），否则不一致（disconcordant）。这个分析方法挺好的，通过这个指标能估算出转换成semantic id之后，仍然保留原有pretrain多模态emb对搜推场景的&lt;strong&gt;序&lt;/strong&gt;关系的保留程度。&lt;/li&gt;
+&lt;li&gt;作者发现，转换成semantic id之后，信息只保留了37.14%；进一步，如果semantic id是在下游任务中端到端训练的，则信息只保留了5.5%，也就是说94.5%的pretrain emb的序的信息都丢掉了，也就是灾难遗忘。
+&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/mme-sid-formula9.png&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;semantic-id构建方法&#34;&gt;Semantic id构建方法&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;3套emb来源，一套id-based经典搜推模型产出的包含协同信号的emb，另外两套是LLM2CLIP产出的多模态文本和图片emb。作者提到传统CLIP对长文本处理能力较弱，所以升级到LLM2CLIP，能更好地处理长文本。&lt;/li&gt;
+&lt;li&gt;Semantic id构建方法是经典的RQ-VAE的方法，但有如下两个改进点：&lt;/li&gt;
+&lt;li&gt;将emb的重构loss由MSE升级成MMD (maximum mean discrepancy)，MSE是计算原始emb和重构emb的欧式距离的误差，而MMD是计算两个分布的diff，实验表明能MMD比MSE能保留更多的pretrain多模态emb信息（即上述公式9），保留44.36%&lt;/li&gt;
+&lt;li&gt;对量化后的emb做了对齐，因为LLM2CLIP本身进行了图文模态的对齐，所以文中只新增了id emb分别和文本、图片模态的对齐&lt;/li&gt;
+&lt;li&gt;此外，还有一点论文没提但可能和常规RQ-VAE不同之处，就是原始emb在进行RQ-VAE之前，有一个Encoder升维的操作，在重构loss前对应有一个Decoder降维的操作，而semantic id量化恢复emb是Decoder之前的那个。这一升一降，估计也有助于缓解维度坍缩。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/mme-sid-fig2.png&#34;&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

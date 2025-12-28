@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>和我一起构建搜索引擎（五）推荐阅读 | bitJoy</title>
+<meta name="keywords" content="jieba, sklearn, TFIDF, 推荐系统">
+<meta name="description" content="虽然主要的检索功能实现了，但是我们还需要一个“推荐阅读”的功能。当用户浏览某条具体新闻时，我们在页面底端给出5条和该新闻相关的新闻，也就是一个最简单的推荐系统。
+
+搜狐新闻“相关新闻”模块
+推荐模块的思路是度量两两新闻之间的相似度，取相似度最高的前5篇新闻作为推荐阅读的新闻。
+我们前面讲过，一篇文档可以用一个向量表示，向量中的每个值是不同词项t在该文档d中的词频tf。但是一篇较短的文档（如新闻）的关键词并不多，所以我们可以提取每篇新闻的关键词，用这些关键词的tfidf值构成文档的向量表示，这样能够大大减少相似度计算量，同时保持较好的推荐效果。
+jieba分词组件自带关键词提取功能，并能返回关键词的tfidf值。所以对每篇新闻，我们先提取tfidf得分最高的前25个关键词，用这25个关键词的tfidf值作为文档的向量表示。由此能够得到一个1000*m的文档词项矩阵M，矩阵每行表示一个文档，每列表示一个词项，m为1000个文档的所有互异的关键词（大概10000个）。矩阵M当然也是稀疏矩阵。
+得到文档词项矩阵M之后，我们利用sklearn的pairwise_distances函数计算M中行向量之间的cosine相似度，对每个文档，得到与其最相似的前5篇新闻id，并把结果写入数据库。
+推荐阅读模块的代码如下：
+
+
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+
+
+# -*- coding: utf-8 -*-
+&#34;&#34;&#34;
+Created on Wed Dec 23 14:06:10 2015
+
+@author: bitjoy.net
+&#34;&#34;&#34;
+
+from os import listdir
+import xml.etree.ElementTree as ET
+import jieba
+import jieba.analyse
+import sqlite3
+import configparser
+from datetime import *
+import math
+
+import pandas as pd
+import numpy as np
+
+from sklearn.metrics import pairwise_distances
+
+class RecommendationModule:
+    stop_words = set()
+    k_nearest = []
+
+    config_path = &#39;&#39;
+    config_encoding = &#39;&#39;
+
+    doc_dir_path = &#39;&#39;
+    doc_encoding = &#39;&#39;
+    stop_words_path = &#39;&#39;
+    stop_words_encoding = &#39;&#39;
+    idf_path = &#39;&#39;
+    db_path = &#39;&#39;
+
+    def __init__(self, config_path, config_encoding):
+        self.config_path = config_path
+        self.config_encoding = config_encoding
+        config = configparser.ConfigParser()
+        config.read(config_path, config_encoding)
+
+        self.doc_dir_path = config[&#39;DEFAULT&#39;][&#39;doc_dir_path&#39;]
+        self.doc_encoding = config[&#39;DEFAULT&#39;][&#39;doc_encoding&#39;]
+        self.stop_words_path = config[&#39;DEFAULT&#39;][&#39;stop_words_path&#39;]
+        self.stop_words_encoding = config[&#39;DEFAULT&#39;][&#39;stop_words_encoding&#39;]
+        self.idf_path = config[&#39;DEFAULT&#39;][&#39;idf_path&#39;]
+        self.db_path = config[&#39;DEFAULT&#39;][&#39;db_path&#39;]
+
+        f = open(self.stop_words_path, encoding = self.stop_words_encoding)
+        words = f.read()
+        self.stop_words = set(words.split(&#39;\n&#39;))
+
+    def write_k_nearest_matrix_to_db(self):
+        conn = sqlite3.connect(self.db_path)
+        c = conn.cursor()
+
+        c.execute(&#34;&#39;DROP TABLE IF EXISTS knearest&#39;&#34;)
+        c.execute(&#34;&#39;CREATE TABLE knearest(id INTEGER PRIMARY KEY, first INTEGER, second INTEGER, third INTEGER, fourth INTEGER, fifth INTEGER)&#39;&#34;)
+
+        for docid, doclist in self.k_nearest:
+            c.execute(&#34;INSERT INTO knearest VALUES (?, ?, ?, ?, ?, ?)&#34;, tuple([docid] &#43; doclist))
+
+        conn.commit()
+        conn.close()
+
+    def is_number(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    def construct_dt_matrix(self, files, topK = 200):
+        jieba.analyse.set_stop_words(self.stop_words_path)
+        jieba.analyse.set_idf_path(self.idf_path)
+        M = len(files)
+        N = 1
+        terms = {}
+        dt = []
+        for i in files:
+            root = ET.parse(self.doc_dir_path &#43; i).getroot()
+            title = root.find(&#39;title&#39;).text
+            body = root.find(&#39;body&#39;).text
+            docid = int(root.find(&#39;id&#39;).text)
+            tags = jieba.analyse.extract_tags(title &#43; &#39;。&#39; &#43; body, topK=topK, withWeight=True)
+            #tags = jieba.analyse.extract_tags(title, topK=topK, withWeight=True)
+            cleaned_dict = {}
+            for word, tfidf in tags:
+                word = word.strip().lower()
+                if word == &#39;&#39; or self.is_number(word):
+                    continue
+                cleaned_dict[word] = tfidf
+                if word not in terms:
+                    terms[word] = N
+                    N &#43;= 1
+                    dt.append([docid, cleaned_dict])
+                    dt_matrix = [[0 for i in range(N)] for j in range(M)]
+        i =0
+        for docid, t_tfidf in dt:
+            dt_matrix[i][0] = docid
+            for term, tfidf in t_tfidf.items():
+                dt_matrix[i][terms[term]] = tfidf
+                i &#43;= 1
+
+        dt_matrix = pd.DataFrame(dt_matrix)
+        dt_matrix.index = dt_matrix[0]
+        print(&#39;dt_matrix shape:(%d %d)&#39;%(dt_matrix.shape))
+        return dt_matrix
+
+    def construct_k_nearest_matrix(self, dt_matrix, k):
+        tmp = np.array(1 – pairwise_distances(dt_matrix[dt_matrix.columns[1:]], metric = &#34;cosine&#34;))
+        similarity_matrix = pd.DataFrame(tmp, index = dt_matrix.index.tolist(), columns = dt_matrix.index.tolist())
+        for i in similarity_matrix.index:
+            tmp = [int(i),[]]
+            j = 0
+            while j &lt;= k:
+                max_col = similarity_matrix.loc[i].idxmax(axis = 1)
+                similarity_matrix.loc[i][max_col] = -1
+                if max_col != i:
+                    tmp[1].append(int(max_col)) #max column name
+                    j &#43;= 1
+                    self.k_nearest.append(tmp)
+
+    def gen_idf_file(self):
+        files = listdir(self.doc_dir_path)
+        n = float(len(files))
+        idf = {}
+        for i in files:
+            root = ET.parse(self.doc_dir_path &#43; i).getroot()
+            title = root.find(&#39;title&#39;).text
+            body = root.find(&#39;body&#39;).text
+            seg_list = jieba.lcut(title &#43; &#39;。&#39; &#43; body, cut_all=False)
+            seg_list = set(seg_list) – self.stop_words
+            for word in seg_list:
+                word = word.strip().lower()
+                if word == &#39;&#39; or self.is_number(word):
+                    continue
+                if word not in idf:
+                    idf[word] = 1
+                else:
+                    idf[word] = idf[word] &#43; 1
+                idf_file = open(self.idf_path, &#39;w&#39;, encoding = &#39;utf-8&#39;)
+                for word, df in idf.items():
+                    idf_file.write(&#39;%s %.9f\n&#39;%(word, math.log(n / df)))
+                idf_file.close()
+
+    def find_k_nearest(self, k, topK):
+        self.gen_idf_file()
+        files = listdir(self.doc_dir_path)
+        dt_matrix = self.construct_dt_matrix(files, topK)
+        self.construct_k_nearest_matrix(dt_matrix, k)
+        self.write_k_nearest_matrix_to_db()
+
+if __name__ == &#34;__main__&#34;:
+    print(&#39;—–start time: %s—–&#39;%(datetime.today()))
+    rm = RecommendationModule(&#39;../config.ini&#39;, &#39;utf-8&#39;)
+    rm.find_k_nearest(5, 25)
+    print(&#39;—–finish time: %s—–&#39;%(datetime.today()))
+
+
+这个模块的代码量最多，主要原因是需要构建文档词项矩阵，并且计算k邻居矩阵。矩阵数据结构的设计需要特别注意，否则会严重影响系统的效率。我刚开始把任务都扔给了pandas.DataFrame，后来发现当两个文档向量合并时，需要join连接操作，当数据量很大时，非常耗时，所以改成了先用python原始的list存储，最后一次性构造一个完整的pandas.DataFrame，速度比之前快了不少。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-5/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-5/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      和我一起构建搜索引擎（五）推荐阅读
+    </h1>
+    <div class="post-meta"><span title='2016-01-09 22:34:56 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;4 min
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>虽然主要的检索功能实现了，但是我们还需要一个“推荐阅读”的功能。当用户浏览某条具体新闻时，我们在页面底端给出5条和该新闻相关的新闻，也就是一个最简单的推荐系统。</p>
+<p><img alt="搜狐新闻“相关新闻”模块" loading="lazy" src="/posts/2016-01-09-introduction-to-building-a-search-engine-5/sohu-news3.webp">
+搜狐新闻“相关新闻”模块</p>
+<p>推荐模块的思路是度量两两新闻之间的相似度，取相似度最高的前5篇新闻作为推荐阅读的新闻。</p>
+<p>我们前面讲过，一篇文档可以用一个向量表示，向量中的每个值是不同词项t在该文档d中的词频tf。但是一篇较短的文档（如新闻）的关键词并不多，所以我们可以提取每篇新闻的关键词，用这些关键词的tfidf值构成文档的向量表示，这样能够大大减少相似度计算量，同时保持较好的推荐效果。</p>
+<p><a href="https://github.com/fxsjy/jieba#3-%E5%85%B3%E9%94%AE%E8%AF%8D%E6%8F%90%E5%8F%96">jieba分词组件自带关键词提取功能</a>，并能返回关键词的tfidf值。所以对每篇新闻，我们先提取tfidf得分最高的前25个关键词，用这25个关键词的tfidf值作为文档的向量表示。由此能够得到一个1000*m的文档词项矩阵M，矩阵每行表示一个文档，每列表示一个词项，m为1000个文档的所有互异的关键词（大概10000个）。矩阵M当然也是稀疏矩阵。</p>
+<p>得到文档词项矩阵M之后，我们利用<a href="http://sklearn.metrics.pairwise.pairwise_distances/">sklearn的pairwise_distances函数</a>计算M中行向量之间的cosine相似度，对每个文档，得到与其最相似的前5篇新闻id，并把结果写入数据库。</p>
+<p>推荐阅读模块的代码如下：</p>
+<div class="highlight"><div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+<table style="border-spacing:0;padding:0;margin:0;border:0;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">100
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">101
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">102
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">103
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">104
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">105
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">106
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">107
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">108
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">109
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">110
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">111
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">112
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">113
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">114
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">115
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">116
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">117
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">118
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">119
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">120
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">121
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">122
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">123
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">124
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">125
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">126
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">127
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">128
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">129
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">130
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">131
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">132
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">133
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">134
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">135
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">136
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">137
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">138
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">139
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">140
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">141
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">142
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">143
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">144
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">145
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">146
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">147
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">148
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">149
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">150
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">151
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">152
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">153
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">154
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">155
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">156
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">157
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">158
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># -*- coding: utf-8 -*-</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Created on Wed Dec 23 14:06:10 2015
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">@author: bitjoy.net
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> os <span style="color:#f92672">import</span> listdir
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> xml.etree.ElementTree <span style="color:#66d9ef">as</span> ET
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> jieba
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> jieba.analyse
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sqlite3
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> configparser
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> datetime <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> math
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> pandas <span style="color:#66d9ef">as</span> pd
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> sklearn.metrics <span style="color:#f92672">import</span> pairwise_distances
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RecommendationModule</span>:
+</span></span><span style="display:flex;"><span>    stop_words <span style="color:#f92672">=</span> set()
+</span></span><span style="display:flex;"><span>    k_nearest <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    config_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    config_encoding <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    doc_dir_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    doc_encoding <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    stop_words_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    stop_words_encoding <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    idf_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    db_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, config_path, config_encoding):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>config_path <span style="color:#f92672">=</span> config_path
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>config_encoding <span style="color:#f92672">=</span> config_encoding
+</span></span><span style="display:flex;"><span>        config <span style="color:#f92672">=</span> configparser<span style="color:#f92672">.</span>ConfigParser()
+</span></span><span style="display:flex;"><span>        config<span style="color:#f92672">.</span>read(config_path, config_encoding)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>doc_dir_path <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;DEFAULT&#39;</span>][<span style="color:#e6db74">&#39;doc_dir_path&#39;</span>]
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>doc_encoding <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;DEFAULT&#39;</span>][<span style="color:#e6db74">&#39;doc_encoding&#39;</span>]
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>stop_words_path <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;DEFAULT&#39;</span>][<span style="color:#e6db74">&#39;stop_words_path&#39;</span>]
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>stop_words_encoding <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;DEFAULT&#39;</span>][<span style="color:#e6db74">&#39;stop_words_encoding&#39;</span>]
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>idf_path <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;DEFAULT&#39;</span>][<span style="color:#e6db74">&#39;idf_path&#39;</span>]
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>db_path <span style="color:#f92672">=</span> config[<span style="color:#e6db74">&#39;DEFAULT&#39;</span>][<span style="color:#e6db74">&#39;db_path&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        f <span style="color:#f92672">=</span> open(self<span style="color:#f92672">.</span>stop_words_path, encoding <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>stop_words_encoding)
+</span></span><span style="display:flex;"><span>        words <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>stop_words <span style="color:#f92672">=</span> set(words<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">write_k_nearest_matrix_to_db</span>(self):
+</span></span><span style="display:flex;"><span>        conn <span style="color:#f92672">=</span> sqlite3<span style="color:#f92672">.</span>connect(self<span style="color:#f92672">.</span>db_path)
+</span></span><span style="display:flex;"><span>        c <span style="color:#f92672">=</span> conn<span style="color:#f92672">.</span>cursor()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        c<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;&#39;DROP TABLE IF EXISTS knearest&#39;&#34;</span>)
+</span></span><span style="display:flex;"><span>        c<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;&#39;CREATE TABLE knearest(id INTEGER PRIMARY KEY, first INTEGER, second INTEGER, third INTEGER, fourth INTEGER, fifth INTEGER)&#39;&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> docid, doclist <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>k_nearest:
+</span></span><span style="display:flex;"><span>            c<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;INSERT INTO knearest VALUES (?, ?, ?, ?, ?, ?)&#34;</span>, tuple([docid] <span style="color:#f92672">+</span> doclist))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        conn<span style="color:#f92672">.</span>commit()
+</span></span><span style="display:flex;"><span>        conn<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">is_number</span>(self, s):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            float(s)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">construct_dt_matrix</span>(self, files, topK <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>):
+</span></span><span style="display:flex;"><span>        jieba<span style="color:#f92672">.</span>analyse<span style="color:#f92672">.</span>set_stop_words(self<span style="color:#f92672">.</span>stop_words_path)
+</span></span><span style="display:flex;"><span>        jieba<span style="color:#f92672">.</span>analyse<span style="color:#f92672">.</span>set_idf_path(self<span style="color:#f92672">.</span>idf_path)
+</span></span><span style="display:flex;"><span>        M <span style="color:#f92672">=</span> len(files)
+</span></span><span style="display:flex;"><span>        N <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        terms <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>        dt <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> files:
+</span></span><span style="display:flex;"><span>            root <span style="color:#f92672">=</span> ET<span style="color:#f92672">.</span>parse(self<span style="color:#f92672">.</span>doc_dir_path <span style="color:#f92672">+</span> i)<span style="color:#f92672">.</span>getroot()
+</span></span><span style="display:flex;"><span>            title <span style="color:#f92672">=</span> root<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#39;title&#39;</span>)<span style="color:#f92672">.</span>text
+</span></span><span style="display:flex;"><span>            body <span style="color:#f92672">=</span> root<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#39;body&#39;</span>)<span style="color:#f92672">.</span>text
+</span></span><span style="display:flex;"><span>            docid <span style="color:#f92672">=</span> int(root<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#39;id&#39;</span>)<span style="color:#f92672">.</span>text)
+</span></span><span style="display:flex;"><span>            tags <span style="color:#f92672">=</span> jieba<span style="color:#f92672">.</span>analyse<span style="color:#f92672">.</span>extract_tags(title <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;。&#39;</span> <span style="color:#f92672">+</span> body, topK<span style="color:#f92672">=</span>topK, withWeight<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">#tags = jieba.analyse.extract_tags(title, topK=topK, withWeight=True)</span>
+</span></span><span style="display:flex;"><span>            cleaned_dict <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> word, tfidf <span style="color:#f92672">in</span> tags:
+</span></span><span style="display:flex;"><span>                word <span style="color:#f92672">=</span> word<span style="color:#f92672">.</span>strip()<span style="color:#f92672">.</span>lower()
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> word <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#f92672">or</span> self<span style="color:#f92672">.</span>is_number(word):
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                cleaned_dict[word] <span style="color:#f92672">=</span> tfidf
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> word <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> terms:
+</span></span><span style="display:flex;"><span>                    terms[word] <span style="color:#f92672">=</span> N
+</span></span><span style="display:flex;"><span>                    N <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                    dt<span style="color:#f92672">.</span>append([docid, cleaned_dict])
+</span></span><span style="display:flex;"><span>                    dt_matrix <span style="color:#f92672">=</span> [[<span style="color:#ae81ff">0</span> <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(N)] <span style="color:#66d9ef">for</span> j <span style="color:#f92672">in</span> range(M)]
+</span></span><span style="display:flex;"><span>        i <span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> docid, t_tfidf <span style="color:#f92672">in</span> dt:
+</span></span><span style="display:flex;"><span>            dt_matrix[i][<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> docid
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> term, tfidf <span style="color:#f92672">in</span> t_tfidf<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>                dt_matrix[i][terms[term]] <span style="color:#f92672">=</span> tfidf
+</span></span><span style="display:flex;"><span>                i <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        dt_matrix <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(dt_matrix)
+</span></span><span style="display:flex;"><span>        dt_matrix<span style="color:#f92672">.</span>index <span style="color:#f92672">=</span> dt_matrix[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;dt_matrix shape:(</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">)&#39;</span><span style="color:#f92672">%</span>(dt_matrix<span style="color:#f92672">.</span>shape))
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> dt_matrix
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">construct_k_nearest_matrix</span>(self, dt_matrix, k):
+</span></span><span style="display:flex;"><span>        tmp <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array(<span style="color:#ae81ff">1</span> <span style="color:#960050;background-color:#1e0010">–</span> pairwise_distances(dt_matrix[dt_matrix<span style="color:#f92672">.</span>columns[<span style="color:#ae81ff">1</span>:]], metric <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;cosine&#34;</span>))
+</span></span><span style="display:flex;"><span>        similarity_matrix <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(tmp, index <span style="color:#f92672">=</span> dt_matrix<span style="color:#f92672">.</span>index<span style="color:#f92672">.</span>tolist(), columns <span style="color:#f92672">=</span> dt_matrix<span style="color:#f92672">.</span>index<span style="color:#f92672">.</span>tolist())
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> similarity_matrix<span style="color:#f92672">.</span>index:
+</span></span><span style="display:flex;"><span>            tmp <span style="color:#f92672">=</span> [int(i),[]]
+</span></span><span style="display:flex;"><span>            j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> j <span style="color:#f92672">&lt;=</span> k:
+</span></span><span style="display:flex;"><span>                max_col <span style="color:#f92672">=</span> similarity_matrix<span style="color:#f92672">.</span>loc[i]<span style="color:#f92672">.</span>idxmax(axis <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>                similarity_matrix<span style="color:#f92672">.</span>loc[i][max_col] <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> max_col <span style="color:#f92672">!=</span> i:
+</span></span><span style="display:flex;"><span>                    tmp[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>append(int(max_col)) <span style="color:#75715e">#max column name</span>
+</span></span><span style="display:flex;"><span>                    j <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>k_nearest<span style="color:#f92672">.</span>append(tmp)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">gen_idf_file</span>(self):
+</span></span><span style="display:flex;"><span>        files <span style="color:#f92672">=</span> listdir(self<span style="color:#f92672">.</span>doc_dir_path)
+</span></span><span style="display:flex;"><span>        n <span style="color:#f92672">=</span> float(len(files))
+</span></span><span style="display:flex;"><span>        idf <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> files:
+</span></span><span style="display:flex;"><span>            root <span style="color:#f92672">=</span> ET<span style="color:#f92672">.</span>parse(self<span style="color:#f92672">.</span>doc_dir_path <span style="color:#f92672">+</span> i)<span style="color:#f92672">.</span>getroot()
+</span></span><span style="display:flex;"><span>            title <span style="color:#f92672">=</span> root<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#39;title&#39;</span>)<span style="color:#f92672">.</span>text
+</span></span><span style="display:flex;"><span>            body <span style="color:#f92672">=</span> root<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#39;body&#39;</span>)<span style="color:#f92672">.</span>text
+</span></span><span style="display:flex;"><span>            seg_list <span style="color:#f92672">=</span> jieba<span style="color:#f92672">.</span>lcut(title <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;。&#39;</span> <span style="color:#f92672">+</span> body, cut_all<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>            seg_list <span style="color:#f92672">=</span> set(seg_list) <span style="color:#960050;background-color:#1e0010">–</span> self<span style="color:#f92672">.</span>stop_words
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> word <span style="color:#f92672">in</span> seg_list:
+</span></span><span style="display:flex;"><span>                word <span style="color:#f92672">=</span> word<span style="color:#f92672">.</span>strip()<span style="color:#f92672">.</span>lower()
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> word <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span> <span style="color:#f92672">or</span> self<span style="color:#f92672">.</span>is_number(word):
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> word <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> idf:
+</span></span><span style="display:flex;"><span>                    idf[word] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    idf[word] <span style="color:#f92672">=</span> idf[word] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                idf_file <span style="color:#f92672">=</span> open(self<span style="color:#f92672">.</span>idf_path, <span style="color:#e6db74">&#39;w&#39;</span>, encoding <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> word, df <span style="color:#f92672">in</span> idf<span style="color:#f92672">.</span>items():
+</span></span><span style="display:flex;"><span>                    idf_file<span style="color:#f92672">.</span>write(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">%.9f</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">%</span>(word, math<span style="color:#f92672">.</span>log(n <span style="color:#f92672">/</span> df)))
+</span></span><span style="display:flex;"><span>                idf_file<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">find_k_nearest</span>(self, k, topK):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>gen_idf_file()
+</span></span><span style="display:flex;"><span>        files <span style="color:#f92672">=</span> listdir(self<span style="color:#f92672">.</span>doc_dir_path)
+</span></span><span style="display:flex;"><span>        dt_matrix <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>construct_dt_matrix(files, topK)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>construct_k_nearest_matrix(dt_matrix, k)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>write_k_nearest_matrix_to_db()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;—–start time: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">—–&#39;</span><span style="color:#f92672">%</span>(datetime<span style="color:#f92672">.</span>today()))
+</span></span><span style="display:flex;"><span>    rm <span style="color:#f92672">=</span> RecommendationModule(<span style="color:#e6db74">&#39;../config.ini&#39;</span>, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>    rm<span style="color:#f92672">.</span>find_k_nearest(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">25</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;—–finish time: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">—–&#39;</span><span style="color:#f92672">%</span>(datetime<span style="color:#f92672">.</span>today()))
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个模块的代码量最多，主要原因是需要构建文档词项矩阵，并且计算k邻居矩阵。矩阵数据结构的设计需要特别注意，否则会严重影响系统的效率。我刚开始把任务都扔给了pandas.DataFrame，后来发现当两个文档向量合并时，需要join连接操作，当数据量很大时，非常耗时，所以改成了先用python原始的list存储，最后一次性构造一个完整的pandas.DataFrame，速度比之前快了不少。</p>
+<hr>
+<p>完整可运行的新闻搜索引擎Demo请看我的Github项目<a href="https://github.com/01joy/news_search_engine">news_search_engine</a>。</p>
+<p>以下是系列博客：</p>
+<p><a href="https://bitjoy.net/posts/2016-01-04-introduction-to-building-a-search-engine-1/">和我一起构建搜索引擎（一）简介</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-04-introduction-to-building-a-search-engine-2/">和我一起构建搜索引擎（二）网络爬虫</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-07-introduction-to-building-a-search-engine-3/">和我一起构建搜索引擎（三）构建索引</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-07-introduction-to-building-a-search-engine-4/">和我一起构建搜索引擎（四）检索模型</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-5/">和我一起构建搜索引擎（五）推荐阅读</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-6/">和我一起构建搜索引擎（六）系统展示</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-7/">和我一起构建搜索引擎（七）总结展望</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/jieba/">Jieba</a></li>
+      <li><a href="http://localhost:1313/tags/sklearn/">Sklearn</a></li>
+      <li><a href="http://localhost:1313/tags/tfidf/">TFIDF</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">推荐系统</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>和我一起构建搜索引擎（六）系统展示</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2016-01-07-introduction-to-building-a-search-engine-4/">
+    <span class="title">Next »</span>
+    <br>
+    <span>和我一起构建搜索引擎（四）检索模型</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
