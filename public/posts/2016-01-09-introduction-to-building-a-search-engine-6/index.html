@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>和我一起构建搜索引擎（六）系统展示 | bitJoy</title>
+<meta name="keywords" content="Flask">
+<meta name="description" content="前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。
+我们利用开源的Flask Web框架搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。
+这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。
+
+图1. 搜索页面
+
+图2. 新闻详情页面
+由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。
+
+完整可运行的新闻搜索引擎Demo请看我的Github项目news_search_engine。
+以下是系列博客：
+和我一起构建搜索引擎（一）简介
+和我一起构建搜索引擎（二）网络爬虫
+和我一起构建搜索引擎（三）构建索引
+和我一起构建搜索引擎（四）检索模型
+和我一起构建搜索引擎（五）推荐阅读
+和我一起构建搜索引擎（六）系统展示
+和我一起构建搜索引擎（七）总结展望">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-6/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      和我一起构建搜索引擎（六）系统展示
+    </h1>
+    <div class="post-meta"><span title='2016-01-09 23:32:10 +0800 CST'>January 9, 2016</span>&nbsp;·&nbsp;1 min
+
+</div>
+  </header> 
+
+  <div class="post-content"><p>前几个博客已经介绍完搜索引擎的所有功能，为了实现更好的用户体验，需要一个web界面。这一部分是另一个队员做的，我这里借用他的代码。</p>
+<p>我们利用开源的<a href="http://flask.pocoo.org/">Flask Web框架</a>搭建了展示系统，搜索引擎只需要两个界面，一个是搜索界面，另一个是展示详细新闻的页面（实际搜索引擎没有这个页面）。编写好这两个模板页面并调用前面给出的接口，得到数据，展示出来就可以。</p>
+<p>这一部分没有太多需要讲解的算法，直接上效果图（点击图片可以查看大图）。</p>
+<p><img alt="图1. 搜索页面" loading="lazy" src="/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine1.webp">
+图1. 搜索页面</p>
+<p><img alt="图2. 新闻详情页面" loading="lazy" src="/posts/2016-01-09-introduction-to-building-a-search-engine-6/News-Search-Engine2.webp">
+图2. 新闻详情页面</p>
+<p>由于数据量不大，只有1000条新闻，所以第一页中后面几个结果相关度就不是很高了。但是经过测试，在大数据量的情况下，不论是搜索的速度、准确率、召回率以及推荐阅读的相关度，都达到了不错的效果。</p>
+<hr>
+<p>完整可运行的新闻搜索引擎Demo请看我的Github项目<a href="https://github.com/01joy/news_search_engine">news_search_engine</a>。</p>
+<p>以下是系列博客：</p>
+<p><a href="https://bitjoy.net/posts/2016-01-04-introduction-to-building-a-search-engine-1/">和我一起构建搜索引擎（一）简介</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-04-introduction-to-building-a-search-engine-2/">和我一起构建搜索引擎（二）网络爬虫</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-07-introduction-to-building-a-search-engine-3/">和我一起构建搜索引擎（三）构建索引</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-07-introduction-to-building-a-search-engine-4/">和我一起构建搜索引擎（四）检索模型</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-5/">和我一起构建搜索引擎（五）推荐阅读</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-6/">和我一起构建搜索引擎（六）系统展示</a></p>
+<p><a href="https://bitjoy.net/posts/2016-01-09-introduction-to-building-a-search-engine-7/">和我一起构建搜索引擎（七）总结展望</a></p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/flask/">Flask</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-7/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>和我一起构建搜索引擎（七）总结展望</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2016-01-09-introduction-to-building-a-search-engine-5/">
+    <span class="title">Next »</span>
+    <br>
+    <span>和我一起构建搜索引擎（五）推荐阅读</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Neuralnetworksanddeeplearning.com | bitJoy</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/categories/neuralnetworksanddeeplearning.com/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/neuralnetworksanddeeplearning.com/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/categories/neuralnetworksanddeeplearning.com/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    Neuralnetworksanddeeplearning.com
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（七）番外篇·Pytorch MNIST教程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>由于本书成书较早（2015），作者当时使用的是Theano，但Theano已不再维护，所以本博客使用当下流行的Pytorch框架讲解MNIST图片分类的代码实现，具体就是Pytorch官方给出的MNIST代码：https://github.com/pytorch/examples/tree/master/mnist。
+使用该工具在线制作：http://alexlenail.me/NN-SVG/LeNet.html
+下面，我首先贴出经过我注释的Pytorch MNIST代码，然后对一些关键问题进行解释。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 from __future__ import print_function import argparse import torch import torch.nn as nn import torch.nn.functional as F import torch.optim as optim from torchvision import datasets, transforms # 所有网络类要继承nn.Module class Net(nn.Module): def __init__(self): super(Net, self).__init__() # 调用父类构造函数 self.conv1 = nn.Conv2d(1, 20, 5, 1) # (in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True) self.conv2 = nn.Conv2d(20, 50, 5, 1) # 这一层的in_channels正好是上一层的out_channels self.fc1 = nn.Linear(4*4*50, 500) self.fc2 = nn.Linear(500, 10) def forward(self, x): x = F.relu(self.conv1(x)) x = F.max_pool2d(x, 2, 2) # kernel_size=2, stride=2，pooling之后的大小除以2 x = F.relu(self.conv2(x)) x = F.max_pool2d(x, 2, 2) x = x.view(-1, 4*4*50) # 展开成 (z, 4*4*50)，其中z是通过自动推导得到的，所以这里设置为-1，这里相当于展开成行向量，便于后续全连接 x = F.relu(self.fc1(x)) x = self.fc2(x) return F.log_softmax(x, dim=1) # log_softmax 即 log(softmax(x))；dim=1对行进行softmax，因为上面x.view展开成行向量了，log_softmax速度和数值稳定性都比softmax好一些 def train(args, model, device, train_loader, optimizer, epoch): model.train() # 告诉pytorch，这是训练阶段 https://stackoverflow.com/a/51433411/2468587 for batch_idx, (data, target) in enumerate(train_loader): data, target = data.to(device), target.to(device) optimizer.zero_grad() # 每个batch的梯度重新累加 output = model(data) loss = F.nll_loss(output, target) # 这里的nll_loss就是Michael Nielsen在ch3提到的log-likelihood cost function，配合softmax使用，batch的梯度/loss要求均值mean loss.backward() # 求loss对参数的梯度dw optimizer.step() # 梯度下降，w&#39;=w-η*dw if batch_idx % args.log_interval == 0: print(&#39;Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}&#39;.format( epoch, batch_idx * len(data), len(train_loader.dataset), 100. * batch_idx / len(train_loader), loss.item())) def test(args, model, device, test_loader): model.eval() # 告诉pytorch，这是预测（评价）阶段 test_loss = 0 correct = 0 with torch.no_grad(): # 预测时不需要误差反传，https://discuss.pytorch.org/t/model-eval-vs-with-torch-no-grad/19615/2 for data, target in test_loader: data, target = data.to(device), target.to(device) output = model(data) test_loss &#43;= F.nll_loss(output, target, reduction=&#39;sum&#39;).item() # sum up batch loss，预测时的loss求sum，L54再求均值 pred = output.argmax(dim=1, keepdim=True) # get the index of the max log-probability correct &#43;= pred.eq(target.view_as(pred)).sum().item() test_loss /= len(test_loader.dataset) print(&#39;\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n&#39;.format( test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset))) def plot1digit(data_loader): import numpy as np import matplotlib.pyplot as plt examples = enumerate(data_loader) batch_idx, (Xs, ys) = next(examples) # 读取到的是一个batch的所有数据 X=Xs[0].numpy()[0] # Xs[0]取出batch中的第一个数据，由tensor转换为numpy，因为pytorch tensor的格式是[channel, height, width]，所以最后[0]取出其第一个通道的[h,w] y=ys[0].numpy() # y没有通道，就一个标量值 np.savetxt(&#39;../../../fig/%d.csv&#39;%y, X, delimiter=&#39;,&#39;) plt.imshow(X, cmap=&#39;Greys&#39;) # or &#39;Greys_r&#39; plt.savefig(&#39;../../../fig/%d.png&#39;%y) plt.show() def main(): # Training settings parser = argparse.ArgumentParser(description=&#39;PyTorch MNIST Example&#39;) parser.add_argument(&#39;--batch-size&#39;, type=int, default=64, metavar=&#39;N&#39;, help=&#39;input batch size for training (default: 64)&#39;) parser.add_argument(&#39;--test-batch-size&#39;, type=int, default=1000, metavar=&#39;N&#39;, help=&#39;input batch size for testing (default: 1000)&#39;) parser.add_argument(&#39;--epochs&#39;, type=int, default=10, metavar=&#39;N&#39;, help=&#39;number of epochs to train (default: 10)&#39;) parser.add_argument(&#39;--lr&#39;, type=float, default=0.01, metavar=&#39;LR&#39;, help=&#39;learning rate (default: 0.01)&#39;) parser.add_argument(&#39;--momentum&#39;, type=float, default=0.5, metavar=&#39;M&#39;, help=&#39;SGD momentum (default: 0.5)&#39;) parser.add_argument(&#39;--no-cuda&#39;, action=&#39;store_true&#39;, default=False, help=&#39;disables CUDA training&#39;) parser.add_argument(&#39;--seed&#39;, type=int, default=1, metavar=&#39;S&#39;, help=&#39;random seed (default: 1)&#39;) parser.add_argument(&#39;--log-interval&#39;, type=int, default=10, metavar=&#39;N&#39;, help=&#39;how many batches to wait before logging training status&#39;) parser.add_argument(&#39;--save-model&#39;, action=&#39;store_true&#39;, default=False, help=&#39;For Saving the current Model&#39;) args = parser.parse_args() use_cuda = not args.no_cuda and torch.cuda.is_available() torch.manual_seed(args.seed) device = torch.device(&#34;cuda&#34; if use_cuda else &#34;cpu&#34;) kwargs = {&#39;num_workers&#39;: 1, &#39;pin_memory&#39;: True} if use_cuda else {} train_loader = torch.utils.data.DataLoader( datasets.MNIST(&#39;../data&#39;, train=True, download=True, transform=transforms.Compose([ # https://discuss.pytorch.org/t/can-some-please-explain-how-the-transforms-work-and-why-normalize-the-data/2461/3 transforms.ToTensor(), # 把[0,255]的(H,W,C)的图片转换为[0,1]的(channel,height,width)的图片 transforms.Normalize((0.1307,), (0.3081,)) # 进行z-score标准化，这两个数分别是MNIST的均值和标准差 ])), batch_size=args.batch_size, shuffle=True, **kwargs) test_loader = torch.utils.data.DataLoader( datasets.MNIST(&#39;../data&#39;, train=False, transform=transforms.Compose([ transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,)) ])), batch_size=args.test_batch_size, shuffle=True, **kwargs) # plot1digit(train_loader) model = Net().to(device) optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum) for epoch in range(1, args.epochs &#43; 1): train(args, model, device, train_loader, optimizer, epoch) test(args, model, device, test_loader) if (args.save_model): torch.save(model.state_dict(),&#34;mnist_cnn.pt&#34;) if __name__ == &#39;__main__&#39;: main() 首先是MNIST数据格式的问题，在L108~L120，我们使用Pytorch的DataLoader载入了训练和测试数据，数据格式本质上和本系列博客的第一篇博客介绍的是一致的，即每张图片都是28*28的灰度图片，因为是灰度图片，所以只有一个通道数，默认格式是(H,W,C)，且值域范围是[0,255]。但上述代码对原始图片进行了两个变换，分别是ToTensor和Normalize。ToTensor将[0,255]的灰度图片(H,W,C)转换为[0,1]的灰度图片(C,H,W)，即Pytorch对2D图片的格式要求都是channel在前。所以经过这一转换，一张图片的shape是(1,28,28)，是一个三维矩阵；如果是彩色图片的话，有R,G,B三个通道，C=3。Normalize对图片数据进行z-score标准化，即减去均值再除以标准差；L112的两个值就是预先计算的MNIST数据集的均值和标准差。这些操作的好处是能让模型更加平稳快速收敛。同第一篇博客一样，我们可以把Pytorch格式的图片打印出来以便直观理解，L61的plot1digit函数就是这个作用。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-05-19 22:07:51 +0800 CST'>May 19, 2019</span>&nbsp;·&nbsp;3 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（七）番外篇·Pytorch MNIST教程" href="http://localhost:1313/posts/2019-05-19-neural-networks-and-deep-learning-appendix-pytorch-mnist-tutorial/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（六）深度学习
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>今天我们终于进入到了本书的重头戏——深度学习。其实，这一章的深度学习主要介绍的是卷积神经网络，即CNN。
+本书之前的章节介绍的都是如下图的全连接网络，虽然全连接网络已经能够在MNIST数据集上取得98%以上的测试准确率，但有两个比较大的缺点：1. 训练参数太多，容易过拟合；2. 难以捕捉图片的局部信息。第一点很好理解，参数一多，网络就难以训练，难以加深。对于第二点，因为全连接的每个神经元都和上一层的所有神经元相连，无论距离远近，也就是说网络不会捕捉图片的局部信息和空间结构信息。
+本章要介绍的卷积神经网络，相对于全连接网络，有如下三个特点：1. 局部感知local receptive fields 2. 权值共享shared weights 3. 池化pooling，下面分别介绍这三部分内容。
+局部感知 对于MNIST的一张28*28灰度图片，全连接网络的输入把图片展开成一个维度为784的向量，这就天然丢失了图片的空间结构信息。而CNN的输入保持了图片28*28的二维空间结构信息，相应的，CNN的中间层也是二维的。这就涉及到输入层的二维图片和隐藏层的二维图片如何对应的问题。
+CNN使用一个被称为“卷积核”的东西，把输入图片转换为隐藏层的特征图（feature map），如下图所示，假设卷积核大小为5*5，则输入图片每5*5的一个小区域被转换为隐藏层的一个神经元（像素），这个小区域就称为局部感受野。
+当卷积核不断的在输入图片中移动时，假设每次移动一格（stride=1），则原来28*28的图片，经过一次卷积后，得到的feature map大小为24*24，相比输入图片小了一圈。
+权值共享 那么，这个卷积操作具体是怎样执行的呢，非常简单。5*5的卷积核本质是一个5*5的矩阵，矩阵中的每个值相当于这个卷积核的参数，或者说权值w。每次卷积时，5*5的矩阵和输入图片中5*5的感受野对应位相乘再相加得到隐藏层的一个值。
+下图是一个缩小版的动图例子，左图的绿色大图相当于输入的5*5图片，移动的黄色小图相当于当前卷积的感受野，大小为3*3。在这个3*3的感受野中，每个单元格居中的数字是输入图片的像素值，右下角的红色小字表示卷积核的权值。每次卷积操作，感受野内的图片像素和卷积核权值相乘再相加，得到右图红色小图中的一个单元格的值，这就完成了一次卷积。当黄色感受野不断在输入图片中移动时，右边的feature map也不断被填充，直到一轮卷积完成。整个过程进行了9次卷积，feature map的大小为3*3=9卷积次数。
+https://hackernoon.com/visualizing-parts-of-convolutional-neural-networks-using-keras-and-cats-5cc01b214e59
+这里又涉及到CNN的第二个特点——权值共享。注意到，对于上图的一轮卷积操作，不同感受野内右下角的权值矩阵是一样的，也就是说9次卷积的卷积核权值是一样的。权值共享有两个好处，一是特征位置无关，二是参数量大大下降。
+对于特征位置无关 。这个3*3的卷积核相当于一个特征提取器或者说滤波器，比如这个特征提取器能够提取“猫”这个特征，则无论猫在输入图片的左上角还是右下角，“猫”这个特征都能被提取出来，因为卷积核在小范围移动，无论“猫”位于图片的哪个区域，当卷积核移动到这个区域时，卷积得到的输出比较大，被激活，得到“猫”这个特征。所以CNN对位置不敏感，这对图像处理尤其有利。正因为这个特点，经过卷积核卷积操作之后的小图片（上图右边的红色图片）被称为特征图（feature map），因为它就是用卷积核提取出来的符合这个卷积核描述的一个特征。
+对于参数量大大下降。事实上，一次卷积操作除了上面动图显示的卷积核与感受野内的图片相乘再相加之外，还会对加和之后的值做一个激活输出。回到我们的MNIST例子，一次卷积操作用公式来表示就是：
+$$\begin{eqnarray}\sigma\left(b &#43; \sum_{l=0}^4 \sum_{m=0}^4 w_{l,m} a_{j&#43;l, k&#43;m} \right).\tag{1}\end{eqnarray}$$\(w\)表示卷积核权值矩阵，\(a\)表示感受野内的输入图片，两个累加\(\sum\)就是上面动图显示的相乘相加过程，得到和之后，还会加上一个偏移量\(b\)，最后进行激活输出\(\sigma\)。所以一个5*5的卷积核，参数量为5*5&#43;1=26。如果有20个卷积核，参数总量为20*26=520。但如果是全连接网络，假设隐藏层有30个，则参数量为784*30&#43;30=23550。所以仅考虑隐藏层的参数量，CNN就比全连接网络少了45倍的参数，参数量少了，就能加快训练，网络也有可能加深。
+池化 池化就很好理解了，对于卷积得到的feature map，再画一个框（类似于卷积层的感受野），把框内的最大值取出来作为池化之后的值，这就是max-pooling。池化的目的是用来简化信息的，相当于降维。池化的框也可以称为核kernel，如果kernel的大小是2*2的，则一个24*24的feature map，经过max-pooling之后就变成了12*12了，维度瞬间降了一半， 把原来的feature map变成了一个紧凑的feature map。
+池化层往往跟在卷积层的后面，下图表示一张28*28的图片，使用3个5*5的卷积核之后，得到了3个24*24的feature map，再经过2*2的max-pooling，得到3个12*12的feature map。
+到这里，CNN的三大特点就介绍完毕了。对于上图，三个卷积核相当于提取了三种特征，我们还需要完成最终的分类任务，这时候还得把全连接网络请过来。经过max-pooling之后，我们再接一个包含10个神经元的全连接层，作为输出层，完整的网络结果如下：
+最后的全连接层和我们前面介绍的全连接网络是完全一样的，只不过全连接的输入是3个经过max-pooling之后的feature map，再和输出层相连时，可以想象成先把3个12*12的feature map展开并首尾相连，得到一个3*12*12=432的向量，再和输出层的10个神经元进行全连接。这就是一个非常简单的CNN网络，包含一个输入层、一个卷积层、一个池化层和一个输出层。
+本文的代码示例network3.py中，构建了一个和上图类似的简单的CNN网络，如下图所示，使用了20个卷积核，相当于提取了20种特征；max-pooling之后使用了两个全连接层，前一层包含100个隐藏神经元，使用sigmoid激活；后一层包含10个神经元，使用softmax激活，作为输出层。就是这么一个简单的CNN网络，其在测试集上的准确率达到了98.78%，超过了本文之前构建的所有的全连接网络。
+由于原文使用的是已经不再维护的Theano，本博客不打算详细介绍其代码实现，我将在稍后的博文中分享Pytorch的CNN代码。不过我还是把原文对CNN的优化过程总结如下，用测试集的准确率作为性能指标：
+上图简单的CNN网络，98.78% 增加一个卷积层，且把激活函数换成ReLU，99.23% 数据增强，把原有的5000张图片，上下左右各平移一个像素，增加了4倍数据，99.37% 增加一个全连接层，且全连接层神经元增加为1000个，使用dropout=0.5，epoch相应减少到40个，99.6%。因为卷积层有权值共享，天然参数少防止过拟合，所以dropout一般只用于全连接层 模型融合ensemble，5个上述模型，采用majority vote，99.67%，已接近人类水平 虽然经过上述5步，准确率没有达到100%，但那些分类错误的图片，真的很难说分错了，因为图片看起来就不是它标注的结果（右上角），就应该是分错的结果（右下角）。总的来说，我觉得已经非常不错了。
+稍微解释两个问题。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-05-04 19:35:01 +0800 CST'>May 4, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（六）深度学习" href="http://localhost:1313/posts/2019-05-04-neural-networks-and-deep-learning-6-dl/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（五）为什么深度神经网络难以训练
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>本章我们将分析一下为什么深度神经网络难以训练的问题。
+首先来看问题：如果神经网络的层次不断加深，则在BP误差反向传播的过程中，网络前几层的梯度更新会非常慢，导致前几层的权重无法学习到比较好的值，这就是梯度消失问题（The vanishing gradient problem）。
+以我们在第三章学习的network2.py为例（交叉熵损失函数&#43;Sigmoid激活函数），我们可以计算每个神经元中误差对偏移量\(b\)的偏导\(\partial C/ \partial b\)，根据第二章BP网络的知识，\(\partial C/ \partial b\)也是\(\partial C/ \partial w\)的一部分（BP3和BP4的关系），所以如果\(\partial C/ \partial b\)的绝对值大，则说明梯度大，在误差反向传播的时候，\(b\)和\(w\)更新就快。
+假设network2的网络结构是[784,30,30,10]，即有两个隐藏层，则我们可以画出在误差反向传播过程中，隐藏层每个神经元的\(\partial C/ \partial b\)的大小，用柱子长度表示。由下图可知，我们发现第二个隐藏层的梯度普遍大于第一个隐藏层的梯度，这会是一般现象吗，还是偶然现象？
+既然梯度出现了层与层的差异，则可以定义第\(l\)层的梯度（如不加说明，则默认是误差\(C\)对偏移量\(b\)的梯度）向量的长度为\(\| \delta^l \|\)，比如\(\| \delta^1 \|\)表示第一个隐藏层中每个神经元的\(\partial C/ \partial b\)的绝对值之和，就是一范数，如果\(\| \delta^l \|\)越大，则说明这一层权重的更新越快。
+由此，我们可以画出当有两个隐藏层时，\(\| \delta^l \|\)随epoch的变化情况：
+当有三个隐藏层时：
+当有四个隐藏层时：
+我们发现，规律是惊人的一致，即越靠近输出层的隐藏层，\(\| \delta^l \|\)越大，即梯度更新越快；越靠近输入层的隐藏层，\(\| \delta^l \|\)越小，即梯度更新越慢。
+这就会导致梯度消失的问题（The vanishing gradient problem）：即在误差反向传播过程中，刚开始权重更新比较快，越到后面（越靠近输入层），则权重更新变得很慢，无法搜索到比较优的值。
+所以，对于同样的network2，其他参数都不变，只是单纯增加网络层数，验证集上的准确率反而会下降！按理说网络层数增加，验证集上的准确率会上升，或者不变，至少不应该下降啊，因为最不济增加的网络层什么都不做，准确率应该一样才对，为什么反而下降了呢。虽然层数增加了，但因为上述梯度消失问题，靠近输入层的权重反而没学好，因为权重是随机初始化的，所以验证集上的准确率反而下降了。
+那么，为什么层数增加会导致梯度消失问题呢，我们可以从BP的更新公式中一探究竟。
+为了简化问题，假设我们的网络每一层只有一个神经元：
+则根据BP的更新公式，可以计算得到
+$$\begin{eqnarray}\frac{\partial C}{\partial b_1} = \sigma&#39;(z_1) \, w_2 \sigma&#39;(z_2) \,w_3 \sigma&#39;(z_3) \, w_4 \sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}.\tag{1}\end{eqnarray}$$计算过程其实很简单，对照本博客开头的那张图，\(\sigma&#39;(z_4) \, \frac{\partial C}{\partial a_4}\)就是(BP1)，把(BP1)带入(BP2)，就是不断乘以\(w^{l&#43;1} \sigma&#39;(z^l)\)，然后就能得到下图的公式。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-04-14 19:09:46 +0800 CST'>April 14, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（五）为什么深度神经网络难以训练" href="http://localhost:1313/posts/2019-04-14-neural-networks-and-deep-learning-5-why-are-nn-hard-to-train/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>我们应该都听说过神经网络强大到能拟合任意一个函数，但细究起来很少有人能论证这个观点，这一章就用通俗易懂的图解方式来证明神经网络为什么能拟合任意一个函数。
+开始介绍之前，有两点需要注意：
+并不是说神经网络可以精确计算任意一个函数\(f(x)\)，而是说当隐藏层神经元增加时，可以无限逼近\(f(x)\)，比如对于任何一个输入\(x\)，网络的输出\(g(x)\)和正确值\(f(x)\)的差小于某个阈值，\(|g(x) – f(x)| &lt; \epsilon\)； 神经网络拟合的是连续函数，而不是那种不连续、离散、急剧变化的函数。 假设给定一个下图的连续函数，函数形式未知，本章将用图解的方式来证明，一个单隐层的神经网络就可以很好的拟合这个未知函数。
+首先，假设我们的隐藏层只有两个神经元，激活函数使用Sigmoid，并且我们暂时只关注上面那个神经元的参数和输出。则通过调整该神经元的\(w\)和\(b\)，可以得到不同形状的Sigmoid函数形式。
+极端情况下，如果\(w\)很大而\(b\)很小，则可以用Sigmoid函数模拟阶梯函数：
+如果令\(s = -b/w\)，则只用一个\(s\)就可以确定Sigmoid的函数图像：
+如果把隐藏层下面那个神经元也考虑进来，并且令隐藏层的两个神经元和输出层的神经元的连接权重互为相反数，则输出层未激活值\(z=w_1 a_1 &#43; w_2 a_2\)的函数图像变成了一个神奇的鼓包，这个鼓包就是我们后续拟合任意函数的基本单元。根据严格的函数形式，还可以知道\(w_1\)和\(w_2\)的绝对值控制着鼓包的高度，\(s_1\)和\(s_2\)的值控制着鼓包的位置和宽度。大家可以去原始网页上体验一下作者给出的可交互版本，很有意思。
+有了这个基本单元之后，我们可以通过增加隐藏层神经元的个数来增加鼓包的个数，比如再增加一对隐层神经元，可增加一个鼓包。虽然下图的例子中两个鼓包相互独立，但通过调整4个\(s\)，可以让两个鼓包相连甚至交错，大家可以去原网页试一试。
+继续增加隐层神经元个数，则可以继续增加鼓包的数量，如下图所示。
+到这里想必大家马上知道了为什么神经网络能拟合任何一个函数了，如果隐层神经元足够多，则右图的小鼓包可以足够密，通过调整每个鼓包的高度，则无穷多个鼓包的顶点连线可以拟合任意一个函数。这和我们求函数积分（函数下方面积）时使用多个小矩形近似是一个道理！
+所以对于本章开头的未知函数，我们通过调整不同鼓包的高度，可以使得小矩形面积之和与真实积分的差在\( \epsilon=0.4\)以内。如果无限增加隐层神经元个数，则可以无限逼近真实值。这就说明神经网络确实可以拟合任意一个函数。
+上述推导稍微需要注意的一点是，右图的输出是未激活函数值\(\sum_j w_j a_j\)，而网络真正的输出是激活值\(\sigma(\sum_j w_j a_j &#43; b)\)。这没有太大的关系，因为上面已经说明未激活输出能拟合任意函数，激活函数也是一个函数。增加激活函数就要求右图需要拟合激活函数和真实函数的嵌套函数。既然未激活输出能拟合任意函数，肯定能拟合这个嵌套函数\(\sigma^{-1} \circ f(x)\)，再用激活函数作用一下\(\sigma\circ\sigma^{-1} \circ f(x)\)，激活函数抵消了，正好得到\(f(x)\)。
+如果输入是多维，或者输出是多维，都是类似的道理。这就说明神经网络确实可以拟合任意函数，真的很强大哦。
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-04-07 18:34:01 +0800 CST'>April 7, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（四）图解神经网络为什么能拟合任意函数" href="http://localhost:1313/posts/2019-04-07-neural-networks-and-deep-learning-4-why-nn-can-compute-any-function/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·三）权重初始化及其他
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>权重初始化 在之前的章节中，我们都是用一个标准正态分布\(N(0,1^2)\)初始化所有的参数\(w\)和\(b\)，但是当神经元数量比较多时，会出现意想不到的问题。
+假设一个神经网络的输入层有1000个神经元，且某个样本的1000维输入中，恰好有500维是0，另500维是1。我们目前考察隐藏层的第一个神经元，则该神经元为激活的输出为\(z = \sum_j w_j x_j&#43;b\)，因为输入中的500维是0，所以\(z\)相当于有501个来自\(N(0,1^2)\)的随机变量相加。因为\(w_j\)和\(b\)的初始化都是独立同分布的，所以\(z\)也是一个正态分布，均值为0，但方差变成了\(\sqrt{501} \approx 22.4\)，即\(z\sim N(0,\sqrt{501}^2)\)。我们知道对于正态分布，如果方差越小，则分布的形状是高廋型的；如果方差越大，则分布的形状是矮胖型的。所以\(z\)有很大的概率取值会远大于1或远小于-1。又因为激活函数是sigmoid，当\(z\)远大于1或远小于-1时，\(\sigma (z)\)趋近于1或者0，且导数趋于0，变化缓慢，导致梯度消失。
+请注意，这里的梯度消失和之前介绍得梯度消失稍有不同，之前是说在误差反向传播过程中，损失函数对权重的导数中包含梯度消失项，所以可以通过更换损失函数来解决。但是这里的梯度消失并不是在误差反向传播过程中产生的，而是在正向传播产生的，跟损失函数没关系。
+解决这个问题的方法很简单，根据上面的分析，如果输入\(x_j\)全为1，\(w\)和\(b\)都来自\(N(0,1^2)\)，则\(z\sim N(0, \sqrt{n&#43;1}^2)\)，其中\(n\)为输入样本的维度。要减小\(z\)的方差，减小\(w\)和\(b\)的方差就可以了。因为\(b\)只有一个，对整体的影响不大，可以不修改\(b\)的分布，\(b\)依然来自\(N(0,1^2)\)。把\(w_j\)的分布修改为\(N(0, (\frac{1}{\sqrt{n}})^2)\)，此时\(z\sim N(0, \sqrt{2}^2)\)，\(\sqrt{2}=1.414\)就非常接近1了，\(z\)的分布也变成了一个高廋型的，梯度消失问题也就不存在了。
+如果是开头的例子，输入维度为1000，其中500为0，500为1，\(w_j\sim N(0, (\frac{1}{\sqrt{1000}})^2)\)，\(b\sim N(0,1^2)\)，则\(z\sim N(0, \sqrt{\frac{3}{2}}^2)\)，\(\sqrt{3/2} = 1.22\ldots\)也是高廋型的，不会有梯度消失的问题。
+由下图可知，在新的权重初始化策略下，网络很快就收敛了，比之前的方法快很多。
+怎样选择超参数 大原则：在网络优化的前期，尽量使网络结构、问题简单，以便快速得实验结果，不断尝试超参数取值，当找到正确的优化方向后，再慢慢把网络和问题变复杂，精细调整超参数。比如MNIST问题，开始可以减少训练数据，只取0和1的图片，做二分类；同时可以减少网络层数，验证集大小等，以便快速得到网络输出，判断网络性能变化。这样可以快速尝试新的超参数。
+学习率\(\eta\) 在误差反向传播中，学习率太大，虽然可以加速学习，但在后期可能导致网络震荡，无法收敛；学习率太小，导致学习速度太慢，训练时间过长。
+确定学习率的方法是：首先随便选定一个值，比如0.01，然后不断增大10倍：0.1, 1, 10, 100…如果发现cost曲线在震荡，说明选大了，要降低，直到找到一个比较合适的值。这个过程只要找到合适的数量级就可以了，不一定要非常精确。比如发现0.1是比较合适的，那么可以再尝试0.2,0.3…，如果发现0.5不错，可以设学习率为0.5的一半0.25，这样可以使得在后续epoch中，不容易发生震荡。最好的方法是可变学习率，即前期学习率稍大（0.5），后期学习率稍小（0.1）之类的。
+epoch no-improvement-in-ten rule，就是说如果模型在最近的10个epoch中，验证集的accuracy都没有提高，则可以stop了。在早期实验中可以这么做，后续精细优化时可以改变ten，比如no-improvement-in-20/30等。
+正则化参数\(\lambda\) 首先不要正则（\(\lambda=0\)），使用上面提到的方法确定学习率\(\eta\)，在确定的学习率情况下，正则\(\lambda=1\)开始进行优化，比如每次乘以10或者除以10，观察验证集上的accuracy指标，找到正则化所在的合适的数量级，然后再fine-tune。
+Mini-batch size 太小了，无法利用现有软件包的矩阵操作的优势，速度会很慢。极端情况下，如果mini-batch size=1，就是说每次只用一个sample做BP，则100次mini-batch=1会比一次mini-batch=100操作慢很多，因为很多软件包对矩阵操作有优化，而没有对for循环优化。太大了，则一次BP要很久，参数更新的次数也比较少。
+其他技术 随机梯度下降SGD的变种 海森矩阵法 SGD优化的目标就是最小化损失函数\(C\)，\(C\)是所有参数\(w = w_1, w_2, \ldots\)的函数，即\(C=C(w)\)。希望能够通过改变\(w\)，不断最小化\(C\)，即找一个\(\Delta w\)，使得\(C(w&#43;\Delta w)\)最小化。把\(C(w&#43;\Delta w)\)泰勒展开得到：
+$$\begin{eqnarray}C(w&#43;\Delta w) &amp; = &amp; C(w) &#43; \sum_j \frac{\partial C}{\partial w_j} \Delta w_j\nonumber \\ &amp; &amp; &#43; \frac{1}{2} \sum_{jk} \Delta w_j \frac{\partial^2 C}{\partial w_j\partial w_k} \Delta w_k &#43; \ldots\tag{1}\end{eqnarray}$$写成矩阵形式就是：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-04-06 17:52:56 +0800 CST'>April 6, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·三）权重初始化及其他" href="http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·二）过拟合与正则化
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>过拟合介绍 首先介绍一下神经网络中不同数据集的功能，包括训练集、验证集和测试集。
+训练集是用来训练网络参数的。当觉得在训练集上训练得差不多时，就可以在验证集上进行测试，如果验证集上的性能不好，则需要调整网络结构或者超参数，重新在训练集上训练。所以本质上验证集指导训练过程，也参与了训练和调参。为了防止网络对验证集过拟合，当网络在训练集和验证集上表现都不错时，就可以在测试集上进行测试了。测试集上的性能代表了模型的最终性能。
+当然如果发现网络在测试集上性能不好，可能还会反过来去优化网络，重新训练和验证，这么说测试集最终也变相参与了调优。如果一直这么推下去的话，就没完没了了，所以一般还是认为用验证集对模型进行优化，用测试集对模型性能进行测试。
+过拟合的含义就是网络在训练集上性能很好，但是在验证集（或者测试集）上的性能较差，这说明网络在训练集上训练过头了，对训练集产生了过拟合。为了便于叙述，本文没有验证集，直接使用测试集作为验证集对模型进行调优，所以主要考察网络在训练集和测试集上的性能表现。
+判断网络是否过拟合的方法就是观察网络在训练集和测试集上的accuracy和loss的变化曲线。对于accuracy，如果训练集的accuracy很高接近100%且收敛了，但测试集上的accuracy和训练集上的accuracy相差较大也收敛了（如下图收敛到82%左右），说明网络过拟合了。对于loss，如果训练集的loss一直在下降，但测试集的loss先下降后又上升，也说明网络过拟合了。这两种现象，虽然指标不同，但含义是一样的，即网络在训练集上的性能一直在提高甚至到完美水平，但在测试集上的性能提高到一定水平后不再变化甚至下降了。
+不过下面几张图反应的过拟合epoch时间可能不一样，比如对于测试集上的accuracy，可能在280左右过拟合，但是对于测试集上的loss，在15和280左右都可以认为是过拟合了，尤其是15，loss最低，之后loss反升，可以认为是一个合理的过拟合的点。具体哪个epoch之后过拟合，取决于问题本身关注哪个指标，比如MNIST分类问题，可能关注分类accuracy，所以可重点关注测试集上的accuracy那个图，认为是280左右过拟合，因为200~280的accuracy还一直有提升，虽然提升很有限。
+应对过拟合最好的方法就是增加训练数据，如果能把所有可能的数据都收集到，对所有数据产生过拟合，那相当于对所有数据都能预测得很好，那问题本质上已经解决了。
+但是，在实际应用场景中，不可能收集到所有数据，而且数据往往是严重不足的，此时，应对过拟合主要有三种方法：正则化、Dropout和数据增强，下面分别介绍这三个部分。
+正则化 正则化的思路就是修改损失函数，使损失函数考虑模型复杂度。考虑正则化的损失函数的通用公式如下：
+$$\begin{eqnarray} C = C_0(w,x,y) &#43; \lambda\Omega(w)\tag{1}\end{eqnarray}$$其中\(C_0\)为原始的没有正则化项的损失函数，比如MSE或者交叉熵损失等，\(\Omega(w)\)表示正则化项，即用来惩罚模型复杂度的，\(\lambda\)表示正则化参数，用来平衡\(C_0\)和\(\Omega(w)\)的重要性。
+正则化又分为L2正则和L1正则，它们很类似，先详细介绍下L2正则。
+举个例子，L2正则化后的损失函数如下：
+$$\begin{eqnarray} C = C_0 &#43; \frac{\lambda}{2n}\sum_w w^2,\tag{2}\end{eqnarray}$$前半部分就是普通的损失函数（比如MSE或者交叉熵损失），后半部分就是L2正则。L2正则是对网络中的所有权重\(w\)求平方和（\(\vec w\)的L2范数，所以叫L2正则），然后除以\(2n\)，其中\(n\)是训练样本数，除以2应该是为了后面求导方便。
+(2)式的直观含义是，\(\min C\)的过程中，我不但希望损失函数本身\(C_0\)足够小，还希望网络的权重\(w\)也比较小，最好不要出现很大的\(w\)。如果\(\lambda\)越大，表示正则化越厉害，对大的\(w\)惩罚越严重。
+加入L2正则后的梯度也很容易计算，如下：
+$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; \frac{\partial C_0}{\partial w} &#43; \frac{\lambda}{n} w \tag{3}\\ \frac{\partial C}{\partial b} &amp; = &amp; \frac{\partial C_0}{\partial b}.\tag{4}\end{eqnarray}$$对应的参数更新公式如下：
+$$\begin{eqnarray}b &amp; \rightarrow &amp; b -\eta \frac{\partial C_0}{\partial b}.\tag{5}\end{eqnarray}$$$$\begin{eqnarray} w &amp; \rightarrow &amp; w-\eta \frac{\partial C_0}{\partial w}-\frac{\eta \lambda}{n} w \tag{6}\\ &amp; = &amp; \left(1-\frac{\eta \lambda}{n}\right) w -\eta \frac{\partial C_0}{\partial w}. \tag{7}\end{eqnarray}$$由(5)可知，偏移量\(b\)的梯度更新和没有正则化时是一样的，因为正则化并没有惩罚\(b\)，这个后面会解释为什么。由(7)可知，对\(w\)的梯度更新和没有正则化时很类似，只不过需要先对\(w\)进行缩放，缩放因子为\(1-\frac{\eta\lambda}{n}\)，因为训练样本\(n\)往往很大，所以缩放因子在(0,1)，即先对\(w\)进行缩小，然后正常梯度下降，这种操作也被称为权值衰减。\(\lambda\)最好根据\(n\)的大小进行调整，如果\(n\)非常大的话，\(\lambda\)最好也大一些，否则权值衰减因子就会很小，正则化效果就不明显。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-03-24 12:14:22 +0800 CST'>March 24, 2019</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·二）过拟合与正则化" href="http://localhost:1313/posts/2019-03-24-neural-networks-and-deep-learning-3-2-overfitting-and-regularization/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（三·一）梯度消失
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>原文的第三章内容较多，本博客将分三个部分进行介绍：梯度消失、过拟合与正则化、权重初始化及其他，首先介绍梯度消失问题。
+为简单起见，假设网络只包含一个输入和一个神经元，网络的损失是均方误差损失MSE，激活函数是Sigmoid函数。则该网络的参数只包含权重\(w\)和偏移量\(b\)。我们想训练这个网络，使得当输入为1时，输出0。
+假设我们随机初始化\(w_0=0.6\)，\(b_0=0.9\)，则网络的损失随着训练的epoch变化曲线如下，看起来挺好的，一开始损失下降很快，随着epoch增加，损失下降逐渐平缓，直至收敛。
+但是，如果随机初始化\(w_0=2.0\)，\(b_0=2.0\)，则网络的损失一开始下降得很缓慢，要训练到快200个epoch时，损失才快速下降。可以看到同样是300个epoch，由于初始化权重的差别，损失下降的趋势完全不一样，而且对于下面这种情况，到300个epoch时，损失还有下降的空间，所以期望的output不如上面的接近目标值0。
+为什么同样的网络，只是因为初始化权重的差异，损失的变化曲线却相差这么多呢，这和我们选择的损失函数与激活函数有关。
+回顾一下，我们在上一讲的末尾介绍到如果损失函数是MSE且激活函数是Sigmoid时，有\(\delta^L = (a^L-y) \odot \{\sigma(z^L)(1-\sigma(z^L))\}\)，又因为网络只有一个神经元，所以梯度如下：
+$$\begin{eqnarray}\frac{\partial C}{\partial w} &amp; = &amp; (a-y)\sigma&#39;(z) x = a \sigma&#39;(z),\tag{1}\\\frac{\partial C}{\partial b} &amp; = &amp; (a-y)\sigma&#39;(z) = a \sigma&#39;(z)\tag{2}\end{eqnarray}$$其中第二个等号是把\(x=1\)和\(y=0\)带入得到的。由此可见，误差对两个参数\(w\)和\(b\)的梯度都和激活函数的导数有关，因为激活函数是Sigmoid，当神经元的输出接近0或1时，梯度几乎为0，误差反向传播就会非常慢，导致上图出现损失下降非常慢的现象。这就是梯度消失的原因。
+为了解决这个问题，我们可以采取两种策略，一是替换损失函数，一是替换激活函数。
+第一种方法是将MSE的损失函数替换为交叉熵损失函数，激活函数依然是Sigmoid。我们考虑一个比本文开头更复杂的网络，仍然是一个输出神经元，但包含多个输入神经元。
+此时，交叉熵损失函数定义如下，其中的\(n\)表示训练样本数，\(\frac{1}{n}\sum_x\)表示对所有输入样本\(x\)的交叉熵损失求均值。
+$$\begin{eqnarray}C = -\frac{1}{n} \sum_x \left[y \ln a &#43; (1-y ) \ln (1-a) \right]\tag{3}\end{eqnarray}$$我们首先考察为什么(3)可以是一个损失函数，损失函数需要满足如下两个条件：
+非负； 当网络输出和目标答案越接近，损失越小；反之损失越大。 简单代入几组不同的样本很容易验证交叉熵满足上述两个条件 ，所以交叉熵可以作为一个损失函数。
+下面我们再考察一下为什么交叉熵损失函数&#43;Sigmoid激活函数可以解决梯度消失的问题。首先推导交叉熵损失\(C\)对权重\(w_j\)和\(b\)的梯度：
+$$\begin{eqnarray}\frac{\partial C}{\partial w_j} &amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y }{\sigma(z)} -\frac{(1-y)}{1-\sigma(z)} \right)\frac{\partial \sigma}{\partial w_j} \tag{4}\\&amp; = &amp; -\frac{1}{n} \sum_x \left(\frac{y}{\sigma(z)}-\frac{(1-y)}{1-\sigma(z)} \right)\sigma&#39;(z) x_j\tag{5}\\&amp; = &amp; \frac{1}{n}\sum_x \frac{\sigma&#39;(z) x_j}{\sigma(z) (1-\sigma(z))}(\sigma(z)-y).\tag{6}\end{eqnarray}$$上式分子Sigmoid的导数正好可以和分母抵消，得到：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2019-03-18 10:33:32 +0800 CST'>March 18, 2019</span>&nbsp;·&nbsp;2 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（三·一）梯度消失" href="http://localhost:1313/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（二）BP网络
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>这一讲介绍误差反向传播（backpropagation）网络，简称BP网络。
+以上一讲介绍的MNIST手写数字图片分类问题为研究对象，首先明确输入输出：输入就是一张28×28的手写数字图片，展开后可以表示成一个长度为784的向量；输出可以表示为一个长度为10的one-hot向量，比如输入是一张“3”的图片，则输出向量为(0,0,0,1,0,0,0,0,0,0,0)。
+然后构造一个如下的三层全连接网络。第一层为输入层，包含784个神经元，正好对应输入的一张28×28的图片。第二层为隐藏层，假设隐藏层有15个神经元。第三层为输出层，正好10个神经元，对应该图片的one-hot结果。
+全连接网络表示上一层的每个神经元都和下一层的每个神经元有连接，即每个神经元的输入来自上一层所有神经元的输出，每个神经元的输出连接到下一层的所有神经元。每条连边上都有一个权重w。
+每个神经元执行的操作非常简单，就是把跟它连接的每个输入乘以边上的权重，然后累加起来。
+比如上面的一个神经元，它的输出就是：
+$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll}0 &amp; \mbox{if} \sum_j w_j x_j \leq \mbox{ threshold} \\1 &amp; \mbox{if} \sum_j w_j x_j &gt; \mbox{threshold}\end{array}\right.\tag{1}\end{eqnarray}$$其中的threshold就是该神经元激活的阈值，如果累加值超过threshold，则该神经元被激活，输出为1，否则为0。这就是最原始的感知机网络。感知机网络也可以写成如下的向量形式，用激活阈值b代替threshold，然后移到左边。神经网络中，每条边具有权重w，每个神经元具有激活阈值b。
+$$\begin{eqnarray}\mbox{output} = \left\{ \begin{array}{ll} 0 &amp; \mbox{if } w\cdot x &#43; b \leq 0 \\1 &amp; \mbox{if } w\cdot x &#43; b &gt; 0\end{array}\right.\tag{2}\end{eqnarray}$$ 但是感知机网络的这种激活方式不够灵活，它在threshold左右有一个突变，如果输入或者某个边上的权重稍微有一点变化，输出结果可能就千差万别了。于是后来人们提出了用sigmoid函数来当激活函数，它在0附近的斜率较大，在两边的斜率较小，能达到和阶梯函数类似的效果，而且函数光滑可导。sigmoid的函数形式如下，其中\(z\equiv w \cdot x &#43; b\)为神经元激活之前的值。
+$$\begin{eqnarray} \sigma(z) \equiv \frac{1}{1&#43;e^{-z}}\tag{3}\end{eqnarray}$$sigmmoid函数还有一个优点就是它的导数很好计算，可以用它本身来表示：
+$$\begin{eqnarray}\sigma&#39;(z)=\sigma(z)(1-\sigma(z))\tag{4}\end{eqnarray}$$BP网络的参数就是所有连线上的权重w和所有神经元中的激活阈值b，如果知道这些参数，给定一个输入x，则可以很容易的通过正向传播（feedforward）的方法计算到输出，即不断的执行\(w \cdot x &#43; b\)操作，然后用sigmoid激活，再把上一层的输出传递给下一层作为输入，直到最后一层。
+1 2 3 4 5 def feedforward(self, a): &#34;&#34;&#34;Return the output of the network if ``a`` is input.&#34;&#34;&#34; for b, w in zip(self.biases, self.weights): a = sigmoid(np.dot(w, a)&#43;b) return a 同时，网络的误差可以用均方误差（mean squared error, MSE）表示，即网络在最后一层的激活值（即网络的输出值）\(a\)和对应训练集输入\(x\)的正确答案\(y(x)\)的差的平方。有\(n\)个输入则误差取平均，\(\dfrac{1}{2}\)是为了后续求导方便。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-12-14 12:18:07 +0800 CST'>December 14, 2018</span>&nbsp;·&nbsp;2 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（二）BP网络" href="http://localhost:1313/posts/2018-12-14-neutral-networks-and-deep-learning-2-bp/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Neural Networks and Deep Learning（一）MNIST数据集介绍
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最近开始学习神经网络和深度学习，使用的是网上教程：http://neuralnetworksanddeeplearning.com/，这是学习心得第一讲，介绍经典的MNIST手写数字图片数据集。
+MNIST（Modified National Institute of Standards and Technology database）数据集改编自美国国家标准与技术研究所收集的更大的NIST数据集，该数据集来自250个不同人手写的数字图片，一半是人口普查局的工作人员，一半是高中生。该数据集包括60000张训练集图片和10000张测试集图片，训练集和测试集都提供了正确答案。每张图片都是28×28=784大小的灰度图片，也就是一个28×28的矩阵，里面每个值是一个像素点，值在[0,1]之间，0表示白色，1表示黑色，(0,1)之间表示不同的灰度。下面是该数据集中的一些手写数字图片，可以有一个感性的认识。
+MNIST数据集可以在Yann LeCun的网站上下载到：http://yann.lecun.com/exdb/mnist/，但是他提供的MNIST数据集格式比较复杂，需要自己写代码进行解析。目前很多深度学习框架都自带了MNIST数据集，比较流行的是转换为pkl格式的版本：http://deeplearning.net/data/mnist/mnist.pkl.gz，该版本把原始的60000张训练集进一步划分成了50000张小训练集和10000张验证集，下面以这个版本为例进行介绍。
+pkl是python内置的一种格式，可以将python的各种数据结构序列化存储到磁盘中，需要时又可以读取并反序列化到内存中。mnist.pkl.gz做了两次操作，先pkl序列化，再gz压缩存储，所以要读取该文件，需要先解压再反序列化，在python3中，读取mnist.pkl.gz的方式如下：
+1 2 3 4 5 import pickle import gzip f = gzip.open(‘../data/mnist.pkl.gz’, ‘rb’) training_data, validation_data, test_data = pickle.load(f, encoding=’bytes’) f.close() 这样就得到了训练集、验证集和测试集。将数据集序列化到文件中的方法也很简单，需要注意的是pickle在序列化和反序列化时有不同的协议，可以用protocol参数进行设置。
+1 2 3 4 dataset=[training_data, validation_data, test_data] f=gzip.open(‘../data/mnist3.pkl.gz’,’wb’) pickle.dump(dataset,f,protocol=3) f.close() 我们从mnist.pkl.gz读取到的training_data, validation_data, test_data这三个数据的结构是一样的，每个都是一个二维的tuple。以training_data为例，training_data[0]是训练样本，是一个50000×784的矩阵，表示有50000个训练样本，每个训练样本是一个784的一维数组，784就是把一张28×28的图片展开reshape成的一维数组；training_data[1]是训练样本对应的类标号，大小为50000的一维数组，每个值为0~9中的某个数，表示对应样本的数字标号。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2018-11-25 11:33:45 +0800 CST'>November 25, 2018</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to Neural Networks and Deep Learning（一）MNIST数据集介绍" href="http://localhost:1313/posts/2018-11-25-neutral-networks-and-deep-learning-1-mnist-dataset/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

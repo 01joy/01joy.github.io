@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>ReLU on bitJoy</title>
+    <link>http://localhost:1313/tags/relu/</link>
+    <description>Recent content in ReLU on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 06 Apr 2019 17:52:56 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/relu/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Neural Networks and Deep Learning（三·三）权重初始化及其他</title>
+      <link>http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/</link>
+      <pubDate>Sat, 06 Apr 2019 17:52:56 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/</guid>
+      <description>&lt;h1 id=&#34;权重初始化&#34;&gt;权重初始化&lt;/h1&gt;
+&lt;p&gt;在之前的章节中，我们都是用一个标准正态分布\(N(0,1^2)\)初始化所有的参数\(w\)和\(b\)，但是当神经元数量比较多时，会出现意想不到的问题。&lt;/p&gt;
+&lt;p&gt;假设一个神经网络的输入层有1000个神经元，且某个样本的1000维输入中，恰好有500维是0，另500维是1。我们目前考察隐藏层的第一个神经元，则该神经元为激活的输出为\(z = \sum_j w_j x_j+b\)，因为输入中的500维是0，所以\(z\)相当于有501个来自\(N(0,1^2)\)的随机变量相加。因为\(w_j\)和\(b\)的初始化都是独立同分布的，所以\(z\)也是一个正态分布，均值为0，但方差变成了\(\sqrt{501} \approx 22.4\)，即\(z\sim N(0,\sqrt{501}^2)\)。我们知道对于正态分布，如果方差越小，则分布的形状是高廋型的；如果方差越大，则分布的形状是矮胖型的。所以\(z\)有很大的概率取值会远大于1或远小于-1。又因为激活函数是sigmoid，当\(z\)远大于1或远小于-1时，\(\sigma (z)\)趋近于1或者0，且导数趋于0，变化缓慢，导致梯度消失。&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/tikz32.png&#34;&gt;&lt;/th&gt;
+          &lt;th style=&#34;text-align: center&#34;&gt;&lt;img loading=&#34;lazy&#34; src=&#34;http://localhost:1313/posts/2019-04-06-neural-networks-and-deep-learning-3-3-weight-initialization/ch3.8.png&#34;&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;请注意，这里的梯度消失和&lt;a href=&#34;https://bitjoy.net/posts/2019-03-18-neural-networks-and-deep-learning-3-1-gradient-vanishing/&#34;&gt;之前介绍得梯度消失&lt;/a&gt;稍有不同，之前是说在误差反向传播过程中，损失函数对权重的导数中包含梯度消失项，所以可以通过更换损失函数来解决。但是这里的梯度消失并不是在误差反向传播过程中产生的，而是在正向传播产生的，跟损失函数没关系。&lt;/p&gt;
+&lt;p&gt;解决这个问题的方法很简单，根据上面的分析，如果输入\(x_j\)全为1，\(w\)和\(b\)都来自\(N(0,1^2)\)，则\(z\sim N(0, \sqrt{n+1}^2)\)，其中\(n\)为输入样本的维度。要减小\(z\)的方差，减小\(w\)和\(b\)的方差就可以了。因为\(b\)只有一个，对整体的影响不大，可以不修改\(b\)的分布，\(b\)依然来自\(N(0,1^2)\)。把\(w_j\)的分布修改为\(N(0, (\frac{1}{\sqrt{n}})^2)\)，此时\(z\sim N(0, \sqrt{2}^2)\)，\(\sqrt{2}=1.414\)就非常接近1了，\(z\)的分布也变成了一个高廋型的，梯度消失问题也就不存在了。&lt;/p&gt;
+&lt;p&gt;如果是开头的例子，输入维度为1000，其中500为0，500为1，\(w_j\sim N(0, (\frac{1}{\sqrt{1000}})^2)\)，\(b\sim N(0,1^2)\)，则\(z\sim N(0, \sqrt{\frac{3}{2}}^2)\)，\(\sqrt{3/2} = 1.22\ldots\)也是高廋型的，不会有梯度消失的问题。&lt;/p&gt;
+&lt;p&gt;由下图可知，在新的权重初始化策略下，网络很快就收敛了，比之前的方法快很多。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/weight_initialization_30.png&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;怎样选择超参数&#34;&gt;怎样选择超参数&lt;/h1&gt;
+&lt;p&gt;大原则：在网络优化的前期，尽量使网络结构、问题简单，以便快速得实验结果，不断尝试超参数取值，当找到正确的优化方向后，再慢慢把网络和问题变复杂，精细调整超参数。比如MNIST问题，开始可以减少训练数据，只取0和1的图片，做二分类；同时可以减少网络层数，验证集大小等，以便快速得到网络输出，判断网络性能变化。这样可以快速尝试新的超参数。&lt;/p&gt;
+&lt;h1 id=&#34;学习率&#34;&gt;学习率\(\eta\)&lt;/h1&gt;
+&lt;p&gt;在误差反向传播中，学习率太大，虽然可以加速学习，但在后期可能导致网络震荡，无法收敛；学习率太小，导致学习速度太慢，训练时间过长。&lt;/p&gt;
+&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://i0.wp.com/neuralnetworksanddeeplearning.com/images/multiple_eta.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;确定学习率的方法是：首先随便选定一个值，比如0.01，然后不断增大10倍：0.1, 1, 10, 100…如果发现cost曲线在震荡，说明选大了，要降低，直到找到一个比较合适的值。这个过程只要找到合适的数量级就可以了，不一定要非常精确。比如发现0.1是比较合适的，那么可以再尝试0.2,0.3…，如果发现0.5不错，可以设学习率为0.5的一半0.25，这样可以使得在后续epoch中，不容易发生震荡。最好的方法是可变学习率，即前期学习率稍大（0.5），后期学习率稍小（0.1）之类的。&lt;/p&gt;
+&lt;h1 id=&#34;epoch&#34;&gt;epoch&lt;/h1&gt;
+&lt;p&gt;no-improvement-in-ten rule，就是说如果模型在最近的10个epoch中，验证集的accuracy都没有提高，则可以stop了。在早期实验中可以这么做，后续精细优化时可以改变ten，比如no-improvement-in-20/30等。&lt;/p&gt;
+&lt;h1 id=&#34;正则化参数&#34;&gt;正则化参数\(\lambda\)&lt;/h1&gt;
+&lt;p&gt;首先不要正则（\(\lambda=0\)），使用上面提到的方法确定学习率\(\eta\)，在确定的学习率情况下，正则\(\lambda=1\)开始进行优化，比如每次乘以10或者除以10，观察验证集上的accuracy指标，找到正则化所在的合适的数量级，然后再fine-tune。&lt;/p&gt;
+&lt;h1 id=&#34;mini-batch-size&#34;&gt;Mini-batch size&lt;/h1&gt;
+&lt;p&gt;太小了，无法利用现有软件包的矩阵操作的优势，速度会很慢。极端情况下，如果mini-batch size=1，就是说每次只用一个sample做BP，则100次mini-batch=1会比一次mini-batch=100操作慢很多，因为很多软件包对矩阵操作有优化，而没有对for循环优化。太大了，则一次BP要很久，参数更新的次数也比较少。&lt;/p&gt;
+&lt;h1 id=&#34;其他技术&#34;&gt;其他技术&lt;/h1&gt;
+&lt;h2 id=&#34;随机梯度下降sgd的变种&#34;&gt;随机梯度下降SGD的变种&lt;/h2&gt;
+&lt;h3 id=&#34;海森矩阵法&#34;&gt;海森矩阵法&lt;/h3&gt;
+&lt;p&gt;SGD优化的目标就是最小化损失函数\(C\)，\(C\)是所有参数\(w = w_1, w_2, \ldots\)的函数，即\(C=C(w)\)。希望能够通过改变\(w\)，不断最小化\(C\)，即找一个\(\Delta w\)，使得\(C(w+\Delta w)\)最小化。把\(C(w+\Delta w)\)泰勒展开得到：&lt;/p&gt;
+$$\begin{eqnarray}C(w+\Delta w) &amp; = &amp; C(w) + \sum_j \frac{\partial C}{\partial w_j} \Delta w_j\nonumber \\ &amp; &amp; + \frac{1}{2} \sum_{jk} \Delta w_j \frac{\partial^2 C}{\partial w_j\partial w_k} \Delta w_k + \ldots\tag{1}\end{eqnarray}$$&lt;p&gt;写成矩阵形式就是：&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

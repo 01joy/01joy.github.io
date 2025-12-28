@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>开源 | bitJoy</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/tags/%E5%BC%80%E6%BA%90/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E5%BC%80%E6%BA%90/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E5%BC%80%E6%BA%90/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    开源
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">LaTeX写作完美解决方案
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>
+\(\LaTeX\)的强大我就不赘述了，这里简单介绍一下怎样在Windows快速配置一个完美好用的\(\LaTeX\)环境。
+我大学刚接触\(\LaTeX\)的时候，使用的是CTeX，CTeX是一个大礼包，整合了编译器编辑器等，但是由于久不更新，很多宏包和语法都变了，而且CTeX附带的WinEdt是商业软件，30天之后需要收费，我又不想用盗版，所以就打算自己配置\(\LaTeX\)环境。
+目前使用的是MiKTeX&#43;Texmaker的完美组合！MiKTeX是\(\LaTeX\)编译器，Texmaker是\(\LaTeX\)编辑器。两者都是开源软件。
+MiKTeX非常棒的地方在于“MiKTeX has the ability to install needed packages automatically (on-the-fly)”，就是说，你用MiKTeX时，不需要担心某个宏包是否存在，你只管用就是了，MiKTeX会在你第一次用到某个宏包时，自动从网上下载，非常方便。正因为这样，MiKTeX的安装包很小，只有175MB。当然，因为是on-the-fly的，所以必须联网使用，而且MiKTeX只有Windows版本。
+MiKTeX自带了一个TeXworks编辑器的，但是这软件用户体验并不好。我以前一直都用WinEdt，很好用，但是它是商业软件，我又不想盗版（说到底是没钱…），所以换了Texmaker。Texmaker可以媲美WinEdt，软件布局合理，各种快捷键用起来也很方便。不过在上手之前要简单配置一下。
+如果是写英文文章，点击“快速构建”左边的箭头（或者F1快捷键），就能一键编译并刷新pdf视图。但是默认的快速构建使用的引擎是PdfLaTeX，如果你是中文用户，使用了xeCJK宏包，则必须使用XeLaTeX引擎编译，所以依次点击“选项-&gt;配置Texmaker-&gt;（左边）快速构建”，选择快速构建命令为”XeLaTeX &#43; View PDF”。
+构建好的PDF默认是以弹窗的形式展现的，我们可以设置让代码和PDF并排显示，这样方便在PDF和源代码之间切换，配置如下：
+Texmaker自带了一个PDF阅读器，当然你也可以使用外部阅读器，比如非常棒的Sumatra PDF，只需填入Sumatra PDF的路径跟上%.pdf，并选中External Viewer。
+Texmaker还有一个很好用的功能是“正向/反向搜索”。反向搜索是点击PDF某个位置，会跳到tex源代码对应位置，快捷方式是ctrl&#43;click。正向搜索是点击tex源代码某个位置，会跳到PDF对应的位置，默认快捷方式ctrl&#43;space，但是这个快捷方式好像用不了，可以自行配置成其他快捷方式，比如ctrl&#43;1，我当时是打开下图的快捷方式窗口才发现这个问题的。
+正反向搜索都可以通过鼠标右键菜单实现，但是快捷键还是更方便的。最重要的一点是，源文件*.tex所在路径不能有中文！！！要不然正反向搜索不能用，这点很重要，我当时郁闷了好久。
+另外还可以配置一下编辑器的字体，勾选”Backup documents every 10 min”之类的。
+OK，大功告成，这种三段式的界面、F1快速构建以及正向/反向搜索，用起来真是太顺手了，Just Enjoy \(\LaTeX\)~
+下面是我常用的\(\LaTeX\)中文模板：
+LaTeXDemo.pdf
+LaTeXDemo.tex
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2016-05-16 20:14:50 +0800 CST'>May 16, 2016</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to LaTeX写作完美解决方案" href="http://localhost:1313/posts/2016-05-16-an-easy-to-use-latex-toolkit/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

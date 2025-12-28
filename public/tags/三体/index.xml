@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>三体 on bitJoy</title>
+    <link>http://localhost:1313/tags/%E4%B8%89%E4%BD%93/</link>
+    <description>Recent content in 三体 on bitJoy</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 18 May 2019 22:35:51 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E4%B8%89%E4%BD%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>《三体》始末</title>
+      <link>http://localhost:1313/posts/2019-05-18-introduction-of-the-three-body-problem/</link>
+      <pubDate>Sat, 18 May 2019 22:35:51 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2019-05-18-introduction-of-the-three-body-problem/</guid>
+      <description>《三体》始末</description>
+    </item>
+  </channel>
+</rss>

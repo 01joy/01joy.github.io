@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>逻辑回归 | bitJoy</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header">
+  <h1>
+    逻辑回归
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">逻辑回归之Python应用实例
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>上一篇博客主要介绍了逻辑回归的理论知识，这篇博客咱们用Python机器学习包sklearn中的LogisticRegression做一个分类的实例。
+数据还是学生样本，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。先上分类效果图：
+完整的Python代码如下：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 # -*- coding: utf-8 -*- &#34;&#34;&#34; Created on Wed Nov 08 17:49:41 2017 @author: zhenlin &#34;&#34;&#34; import numpy as np import pandas as pd from sklearn.cross_validation import train_test_split from sklearn.linear_model import LogisticRegression import matplotlib.pyplot as plt from sklearn.metrics import precision_recall_curve from sklearn.metrics import classification_report # 1. 构造数据 sample_number = 200 # 第一个高斯分布参数 mean1 = [0, 4] # 两个维度上的均值 cov1 = [[5, 3], [3, 10]] # 两个维度的协方差矩阵，必须满足对称半正定 # 第二个高斯分布参数 mean2 = [7, 5] cov2 = [[7, 2], [2, 15]] # 从两个二元高斯分布中随机采样数据点 class1_x1, class1_x2 = np.random.multivariate_normal(mean1, cov1, sample_number).T # .T表示转置 class2_x1, class2_x2 = np.random.multivariate_normal(mean2, cov2, sample_number).T # 两个高斯分布对应两个类标号 data = [[class1_x1[i],class1_x2[i],0] for i in range(sample_number)]&#43;[[class2_x1[i],class2_x2[i],1] for i in range(sample_number)] # 填充到pandas中 data = pd.DataFrame(data,columns=[&#39;score1&#39;,&#39;score2&#39;,&#39;result&#39;]) score_data = data[[&#39;score1&#39;,&#39;score2&#39;]] result_data = data[&#39;result&#39;] # 2. 训练模型 average_precision = 0 # 平均准确度 iters = 10 # 交叉验证次数 for i in xrange(iters): # 数据划分，80%用于训练，20%用于预测 x_train, x_test, y_train, y_test = train_test_split(score_data, result_data, test_size = 0.2) # 构造默认逻辑回归模型 model = LogisticRegression() # 训练 model.fit(x_train, y_train) # 预测 predict_y = model.predict(x_test) # 计算测试集上的准确度 average_precision &#43;= np.mean(predict_y == y_test) average_precision /= iters # 3. 绘制分类面 - 法1 x1_min, x1_max = score_data[&#39;score1&#39;].min() - .5, score_data[&#39;score1&#39;].max() &#43; .5 def generate_face(prob): y = -np.log(1.0 / prob - 1.0) n = 500 x1 = np.linspace(x1_min, x1_max, n) # w1x1&#43;w2x2&#43;b=y x2 = (-model.coef_[0][0] / float(model.coef_[0][1])) * x1 &#43; (y - model.intercept_) / float(model.coef_[0][1]) return x1, x2 pos_data = data[data[&#39;result&#39;] == 1] neg_data = data[data[&#39;result&#39;] == 0] plt.scatter(x = pos_data[&#39;score1&#39;], y = pos_data[&#39;score2&#39;], color = &#39;black&#39;, marker = &#39;o&#39;) plt.scatter(x = neg_data[&#39;score1&#39;], y = neg_data[&#39;score2&#39;], color = &#39;red&#39;, marker = &#39;*&#39;) face_04_x1, face_04_x2 = generate_face(0.4) face_05_x1, face_05_x2 = generate_face(0.5) face_06_x1, face_06_x2 = generate_face(0.6) plt.plot(face_04_x1, face_04_x2) plt.plot(face_05_x1, face_05_x2) plt.plot(face_06_x1, face_06_x2) plt.xlim(score_data[&#39;score1&#39;].min(), score_data[&#39;score1&#39;].max()) plt.ylim(score_data[&#39;score2&#39;].min(), score_data[&#39;score2&#39;].max()) plt.xlabel(&#39;score1&#39;) plt.ylabel(&#39;score2&#39;) plt.legend([&#39;prob_threshold = 0.4&#39;, &#39;prob_threshold = 0.5&#39;, &#39;prob_threshold = 0.6&#39;], loc=&#39;center left&#39;, bbox_to_anchor=(1, 0.865)) plt.show() # 4. 绘制分类面 - 法2 pos_data = data[data[&#39;result&#39;] == 1] neg_data = data[data[&#39;result&#39;] == 0] h = 0.02 s1_min, s1_max = score_data[&#39;score1&#39;].min() - .5, score_data[&#39;score1&#39;].max() &#43; .5 s2_min, s2_max = score_data[&#39;score2&#39;].min() - .5, score_data[&#39;score2&#39;].max() &#43; .5 # 生成s1在[s1_min, s1_max]，且s2在[s2_min, s2_max]的网格数据点 # meshgrid含义参见：http://blog.sciencenet.cn/blog-791749-675394.html s1, s2 = np.meshgrid(np.arange(s1_min, s1_max, h), np.arange(s2_min, s2_max, h)) # 把两个坐标的值按列拼在一起构成二维数据点 Z = model.predict(np.c_[s1.ravel(), s2.ravel()]) # 绘制边界和散点 Z = Z.reshape(s1.shape) # 坐标点是(s1[i], s2[i])，对应颜色是Z[i]，颜色主题使用plt.cm.Paired plt.pcolormesh(s1, s2, Z, cmap = plt.cm.Paired) plt.scatter(x = pos_data[&#39;score1&#39;], y = pos_data[&#39;score2&#39;], color = &#39;black&#39;, marker = &#39;o&#39;) plt.scatter(x = neg_data[&#39;score1&#39;], y = neg_data[&#39;score2&#39;], color = &#39;red&#39;, marker = &#39;*&#39;) plt.xlim(s1.min(), s1.max()) plt.ylim(s2.min(), s2.max()) plt.xlabel(&#39;score1&#39;) plt.ylabel(&#39;score2&#39;) plt.show() # 5. 评估模型 # 对于测试数据，模型输出1的概率 answer = model.predict_proba(x_test)[:,1] # 计算不同概率阈值下的P和R precision, recall, thresholds = precision_recall_curve(y_test, answer) # prob &gt; 0.5的报告为1 report = answer &gt; 0.5 print(classification_report(y_test, report, target_names = [&#39;neg&#39;, &#39;pos&#39;])) print(&#39;average precision: %f&#39;%average_precision) # 6. 绘制PRC曲线 # step阶跃图，在点(recall[i],precision[i])进行跳变 plt.step(recall, precision, color=&#39;b&#39;, alpha=0.2, where=&#39;post&#39;) # 对PRC下方填充颜色 plt.fill_between(recall, precision, step=&#39;post&#39;, alpha=0.2, color=&#39;b&#39;) plt.xlabel(&#39;Recall&#39;) plt.ylabel(&#39;Precision&#39;) plt.ylim([0.0, 1.05]) plt.xlim([0.0, 1.0]) plt.title(&#39;2-class Precision-Recall curve&#39;) plt.show() 下面将逐模块介绍代码细节，大神可以略过。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2017-12-05 21:20:01 +0800 CST'>December 5, 2017</span>&nbsp;·&nbsp;4 min</footer>
+  <a class="entry-link" aria-label="post link to 逻辑回归之Python应用实例" href="http://localhost:1313/posts/2017-12-05-logistic-regression-in-python/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">初探逻辑回归
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>最近实验室在组织学习NG的机器学习视频，我也跟进了一下。讲到逻辑回归那一课，一直想不明白，逻辑回归到底是怎样分类的？逻辑回归的分类面在哪里？逻辑回归有像SVM的max margin那样清晰的推导过程吗？为什么需要Sigmoid函数？今天就让我们来一窥逻辑回归的始末。
+假设有一堆学生样本，为了简单起见，只有两个特征，分别是两门课的分数score1和score2，类标号y表示这个学生是否能被录取。可视化如下图，黑点表示y=1即被录取，红点表示y=0即未被录取，可以看到黑点处在score1和score2都比较高的区域。我们的任务就是给定这些训练样本，需要确定一个分类面来划分这两类数据。
+分类面的实质就是\(y=\mathbf{w^T x}&#43;b\)，其中\(\mathbf{w}\)和\(\mathbf{x}\)都是向量，对应到本例中，展开为\(y=w_1x_1&#43;w_2x_2&#43;b\)。所以，寻找分类面的过程就是寻找倾斜度\(\mathbf{w}\)和截距\(b\)。
+因为分类的结果是离散的，只有0或者1，可以用感知机来分类。即
+但是怎样找这里的\(\mathbf{w}\)和\(b\)使得分类结果最好呢，我们需要定义一个优化的目标函数或者说损失函数。这里只能定义为分类错误的个数，只能一点点挪动超平面来找分类错误最少的超平面了，即只能用暴力枚举的方法来找\(\mathbf{w}\)和\(b\)。
+另一种方法是令我们的分类面算出来的值和真实标号越接近越好，即最小化误差\((\mathbf{w^T}x^{(i)}&#43;b-y^{(i)})^2\)，然后通过梯度下降求解\(\mathbf{w}\)和\(b\)。
+但是这会有一个问题，对于上图数据，可以求到一个比较好的分类面，如下左图。但是如果数据中出现了如下右图右边的一个离群点或者噪声，为了最小化这个点的误差，即\((\mathbf{w^T}x^{(i)}&#43;b-1)^2\)，导致分类面往右偏了，这一偏直接导致很多y=1的样本分类错误。所以这种最小化误差的方法对离群点很敏感。
+假设分类超平面还是\(f(\mathbf{x})=\mathbf{w^T x}&#43;b\)，我们希望的分类效果是这样的：\(f(\mathbf{x})=0\)是分类面；\(f(\mathbf{x})&gt;0\)分类为1，且不管\(f(\mathbf{x})\)多大，都分为1；\(f(\mathbf{x})&lt;0\)分类为0，且不管\(f(\mathbf{x})\)多小，都分为0。
+因为类标号是离散的{0,1}，所以想到把\(f(\mathbf{x})\)映射到[0,1]之间，即\(g(f(\mathbf{x}))\)。为了满足上述条件，\(g(f(\mathbf{x}))\)需要满足：
+\(g(0)=0.5\)，即在分类面上无法判断类标号是0还是1 当\(f(\mathbf{x})&gt;0\)时，\(g(f(\mathbf{x}))&gt;0.5\) 当\(f(\mathbf{x})\rightarrow&#43;\infty\)，\(g(f(\mathbf{x}))\rightarrow 1\)，且\(g&#39;(f(\mathbf{x}))\rightarrow 0\)，即对于上右图右边的离群点，分类为1，且导数趋近于0，表示对其不敏感 当\(f(\mathbf{x})&lt;0\)时，\(g(f(\mathbf{x}))&lt;0.5\) 当\(f(\mathbf{x})\rightarrow-\infty\)，\(g(f(\mathbf{x}))\rightarrow 0\)，且\(g&#39;(f(\mathbf{x}))\rightarrow 0\)，和第3点类似 满足上述性质的函数之一就是Sigmoid函数，其定义域为\([-\infty,&#43;\infty]\)，值域为[0,1]，正好把原始的函数结果\(f(\mathbf{x})\)映射到了[0,1]，而概率的取值范围正好是[0,1]，所以Sigmoid函数正好可以作为分类为1的概率。
+所以逻辑回归最终的形式就是：
+$$g(\mathbf{x})=\frac{1}{1&#43;e^{-(\mathbf{w^T x}&#43;b)}}$$分类面依然还是\(f(\mathbf{x})=\mathbf{w^T x}&#43;b=0\)，因为\(f(\mathbf{x})=0\)时，\(g(\mathbf{x})=0.5\)，正好满足上述条件1。
+Sigmoid函数的另一个优点是，它把原始函数值映射到了概率空间，这样就可以用极大似然的方法求解参数\(\mathbf{w}\)和\(b\)。下面用参数\(\mathbf{\theta}\)代表参数\(\mathbf{w}\)和\(b\)，用\(h_{\mathbf{\theta}}(\mathbf{x})\)代表\(g(f(\mathbf{x}))\)。则有：
+$$P(y=1|\mathbf{x};\mathbf{\theta})=h_{\mathbf{\theta}}(\mathbf{x})$$$$P(y=0|\mathbf{x};\mathbf{\theta})=1-h_{\mathbf{\theta}}(\mathbf{x})$$合并成一个式子就是：
+$$P(y|\mathbf{x};\mathbf{\theta})=h_{\mathbf{\theta}}(\mathbf{x})^y(1-h_{\mathbf{\theta}}(\mathbf{x}))^{1-y}$$由于所有样本独立同分布（I.I.D.），似然函数就是
+$$L(\mathbf{\theta})=P(\mathbf{y}|X;\mathbf{\theta})=\prod\limits_{i}P(y^{(i)}|\mathbf{x}^{(i)};\mathbf{\theta})=\prod\limits_{i}h_{\mathbf{\theta}}(\mathbf{x}^{(i)})^{y^{(i)}}(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))^{1-y^{(i)}}$$最大化似然的含义就是，在给定样本\(X\)的情况下，我们想找一个参数\(\mathbf{\theta}\)，使得观测到类标号\(\mathbf{y}\)的概率最大。
+最大化似然等价于最大化log似然，log展开之后就是：
+$$l(\mathbf{\theta})=logL(\mathbf{\theta})=\sum\limits_{i}y^{(i)}logh_{\mathbf{\theta}}(\mathbf{x}^{(i)})&#43;(1-y^{(i)})log(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))$$而很巧的是，最大化log似然，其实等效于最小化log对数损失。对于单个样本，损失为：
+$$cost(h_{\theta}(\mathbf{x}),y) = \begin{cases}-log(h_{\theta}(\mathbf{x})) &amp; \text {if y=1} \\ -log(1-h_{\theta}(\mathbf{x})) &amp; \text{if y=0} \end{cases}$$即如果正确类标号是1，但算出来的\(h_{\theta}(\mathbf{x})\)很接近0的话，则损失\(-log(h_{\theta}(\mathbf{x}))\)就会很大。类标号为0的情况类似。把这两种情况合成一个式子就是：
+$$cost(h_{\theta}(\mathbf{x}),y) = -ylog(h_{\theta}(\mathbf{x})) – (1-y)log(1-h_{\theta}(\mathbf{x}))$$所有样本的损失之和就是：
+$$J(\mathbf{\theta})=cost(h_{\theta}(X),\mathbf{y}) = \sum\limits_{i}-y^{(i)}logh_{\mathbf{\theta}}(\mathbf{x}^{(i)})-(1-y^{(i)})log(1-h_{\mathbf{\theta}}(\mathbf{x}^{(i)}))$$所以最大化对数似然\(\max l(\mathbf{\theta})\)和最小化对数损失\(\min J(\mathbf{\theta})\)是等效的！最优化求解的方法用梯度下降和牛顿法都可以。
+和Sigmoid很像的函数还有很多，比如y=arctan(x)也可以，不过Sigmoid有一个很好的特点，即它的导数可以由自身算出来，\(f&#39;(x)=f(x)(1-f(x))\)。
+传统的逻辑回归只能处理二分类问题，那么怎样将其扩展到解决多分类问题呢？有两种方法，一种方法是建立k个二元分类器，比如类标号有A,B,C，则建立3个二元分类器，分别是1）A和非A；2）B和非B；3）C和非C。训练每个2元分类器时，都对所有的数据重新标号为0或1，这样共需要训练k个二元分类器。
+还有一种方法是直接将二元逻辑回归推广到多元回归，即Softmax回归，有关Softmax回归的内容，请参考此博客，非常详细。简单来说，二元逻辑回归的假设函数是：多元Softmax回归的假设函数在形式上有所不同：其中是模型的参数。请注意这一项对概率分布进行归一化，使得所有概率之和为1。
+Softmax回归的损失函数如下，其实就是logistic回归损失函数的推广：
+二元逻辑回归是多元Softmax回归在k=2时的特例，令k=2并利用Softmax回归参数冗余的特点，可以得到一般形式的二元逻辑回归假设函数，具体可以看原博客。
+面对一个多元分类问题，是选择Softmax回归还是k个二元分类器呢，这取决于你的类别之间是否互斥，如果互斥，可以用Softmax回归，否则，请用k个二元分类器。
+这就是逻辑回归的理论知识，下一篇博客将介绍逻辑回归在Python中的应用。
+参考：
+http://www.cnblogs.com/sparkwen/p/3441197.html https://tech.meituan.com/intro_to_logistic_regression.html http://blog.csdn.net/bitcarmanlee/article/details/51165444 http://ufldl.stanford.edu/wiki/index.php/Softmax%E5%9B%9E%E5%BD%92 </p>
+  </div>
+  <footer class="entry-footer"><span title='2017-11-26 18:54:44 +0800 CST'>November 26, 2017</span>&nbsp;·&nbsp;1 min</footer>
+  <a class="entry-link" aria-label="post link to 初探逻辑回归" href="http://localhost:1313/posts/2017-11-26-introduction-to-logistic-regression/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

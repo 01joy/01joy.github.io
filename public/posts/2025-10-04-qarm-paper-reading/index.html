@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>论文阅读：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou | bitJoy</title>
+<meta name="keywords" content="Semantic ID, QARM, 快手, 多模态, 推荐系统, CIKM">
+<meta name="description" content="
+基本信息
+
+论文标题：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou
+作者单位：快手
+论文链接：https://arxiv.org/pdf/2411.11739
+来源：CIKM 2025
+
+Motivation：论文要解决的问题是什么
+多模态emb在搜推场景应用时通常采用如下图的两阶段方式，先预训练多模态emb，然后作为一个冻结特征放到搜推模型中。这种方式存在2个问题：
+
+表征不对齐：多模态emb预训练的任务通常是图片分类或者文本的MLM，和下游搜推任务不对齐
+表征不更新：多模态emb在搜推任务中作为冻结特征，没有更新
+
+本文的方法就是想要解决上述2个问题。
+
+对齐搜推任务的多模态emb预训练
+为了解决多模态emb表征不对齐的问题，本文提出的多模态emb预训练任务直接对齐搜推场景，使用U2I和I2I召回模型，挖掘出相似item pair，然后通过对比学习微调多模态大模型。
+具体来说，通过U2I和I2I模型，能够拿到item emb；然后用每一个target item emb去行为流中检索出最相似的商品，作为trigger item emb。&lt;trigger, target&gt;构成一对正样本，然后进行对比学习训练。
+通过召回模型构造的训练样本，和搜推场景的协同信号对齐了，解决了开头提到的第一个问题，即表征不对齐的问题。
+
+Semantic id生产方法
+Semantic id的生产方法如上图右半部分所示，有两种方式：
+
+VQ：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然后任意来一个item emb，通过对底池emb进行KNN搜索，找出top-k相似商品，假设是(a,b,&hellip;,k)，则VQ编码的semantic id就是(a,b,&hellip;,k)。文中取k=25，感觉挺大的。。。
+RQ-Kmeans：对圈定的N个item emb不断进行Kmeans聚类、求残差、残差继续Kmeans聚类的过程。文中取迭代次数为L=6，但是没说每次聚到多少个类。
+
+注意：文中的RQ-Kmeans方法和RQ-VAE还不一样，RQ-Kmeans没有训练过程，也没有重构loss，纯粹是每次进行聚类，然后选聚类中心作为码本的过程。文中也没有对比过为啥不用RQ-VAE。
+产出两套semantic id之后，直接在下游排序任务中进行端到端更新，解决开头提到的表征不更新的问题。具体建模方法比较常规，不是本文的重点，略讲。
+评论
+
+可借鉴
+
+多模态emb预训练任务是i2i的，直接和下游搜推任务对齐
+semantic id有两种产出方式，VQ和RQ-Kmeans，尽可能多地保留原始多模态emb的信息
+
+
+可改进
+
+多模态emb预训练和下游任务对齐，在2025年不算新鲜事了，常规操作。而且文中i2i的构造过程依赖U2I和I2I召回模型，有外部依赖，不够漂亮
+VQ的方法，k=25这也太长了吧，相当于一个小型行为流了，会导致下游任务的特征处理更复杂
+为什么用RQ-Kmeans而不是RQ-VAE，没有任何说明与对比
+从pretrain emb量化成semantic id的过程中，存在严重的信息丢失，这在Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs论文中有讨论
+
+
+">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2025-10-04-qarm-paper-reading/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-10-04-qarm-paper-reading/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      论文阅读：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou
+    </h1>
+    <div class="post-meta"><span title='2025-10-04 18:24:40 +0800 CST'>October 4, 2025</span>&nbsp;·&nbsp;1 min
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e4%bf%a1%e6%81%af" aria-label="基本信息">基本信息</a></li>
+                <li>
+                    <a href="#motivation%e8%ae%ba%e6%96%87%e8%a6%81%e8%a7%a3%e5%86%b3%e7%9a%84%e9%97%ae%e9%a2%98%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Motivation：论文要解决的问题是什么">Motivation：论文要解决的问题是什么</a></li>
+                <li>
+                    <a href="#%e5%af%b9%e9%bd%90%e6%90%9c%e6%8e%a8%e4%bb%bb%e5%8a%a1%e7%9a%84%e5%a4%9a%e6%a8%a1%e6%80%81emb%e9%a2%84%e8%ae%ad%e7%bb%83" aria-label="对齐搜推任务的多模态emb预训练">对齐搜推任务的多模态emb预训练</a></li>
+                <li>
+                    <a href="#semantic-id%e7%94%9f%e4%ba%a7%e6%96%b9%e6%b3%95" aria-label="Semantic id生产方法">Semantic id生产方法</a></li>
+                <li>
+                    <a href="#%e8%af%84%e8%ae%ba" aria-label="评论">评论</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="/posts/2025-10-04-qarm-paper-reading/QARM-paper-cover.png"></p>
+<h1 id="基本信息">基本信息<a hidden class="anchor" aria-hidden="true" href="#基本信息">#</a></h1>
+<ul>
+<li>论文标题：QARM: Quantitative Alignment Multi-Modal Recommendation at Kuaishou</li>
+<li>作者单位：快手</li>
+<li>论文链接：<a href="https://arxiv.org/pdf/2411.11739">https://arxiv.org/pdf/2411.11739</a></li>
+<li>来源：CIKM 2025</li>
+</ul>
+<h1 id="motivation论文要解决的问题是什么">Motivation：论文要解决的问题是什么<a hidden class="anchor" aria-hidden="true" href="#motivation论文要解决的问题是什么">#</a></h1>
+<p>多模态emb在搜推场景应用时通常采用如下图的两阶段方式，先预训练多模态emb，然后作为一个冻结特征放到搜推模型中。这种方式存在2个问题：</p>
+<ul>
+<li><strong>表征不对齐</strong>：多模态emb预训练的任务通常是图片分类或者文本的MLM，和下游搜推任务不对齐</li>
+<li><strong>表征不更新</strong>：多模态emb在搜推任务中作为冻结特征，没有更新</li>
+</ul>
+<p>本文的方法就是想要解决上述2个问题。
+<img loading="lazy" src="/posts/2025-10-04-qarm-paper-reading/QARM-fig1.png"></p>
+<h1 id="对齐搜推任务的多模态emb预训练">对齐搜推任务的多模态emb预训练<a hidden class="anchor" aria-hidden="true" href="#对齐搜推任务的多模态emb预训练">#</a></h1>
+<p>为了解决多模态emb表征不对齐的问题，本文提出的多模态emb预训练任务直接对齐搜推场景，使用U2I和I2I召回模型，挖掘出相似item pair，然后通过对比学习微调多模态大模型。</p>
+<p>具体来说，通过U2I和I2I模型，能够拿到item emb；然后用每一个target item emb去行为流中检索出最相似的商品，作为trigger item emb。&lt;trigger, target&gt;构成一对正样本，然后进行对比学习训练。</p>
+<p>通过召回模型构造的训练样本，和搜推场景的协同信号对齐了，解决了开头提到的第一个问题，即表征不对齐的问题。</p>
+<p><img loading="lazy" src="/posts/2025-10-04-qarm-paper-reading/QARM-fig3.png"></p>
+<h1 id="semantic-id生产方法">Semantic id生产方法<a hidden class="anchor" aria-hidden="true" href="#semantic-id生产方法">#</a></h1>
+<p>Semantic id的生产方法如上图右半部分所示，有两种方式：</p>
+<ul>
+<li><strong>VQ</strong>：直接圈定一定数量（如N）的item emb作为底池，编号1~N，然后任意来一个item emb，通过对底池emb进行KNN搜索，找出top-k相似商品，假设是(a,b,&hellip;,k)，则VQ编码的semantic id就是(a,b,&hellip;,k)。文中取k=25，感觉挺大的。。。</li>
+<li><strong>RQ-Kmeans</strong>：对圈定的N个item emb不断进行Kmeans聚类、求残差、残差继续Kmeans聚类的过程。文中取迭代次数为L=6，但是没说每次聚到多少个类。</li>
+</ul>
+<p>注意：文中的RQ-Kmeans方法和RQ-VAE还不一样，RQ-Kmeans没有训练过程，也没有重构loss，纯粹是每次进行聚类，然后选聚类中心作为码本的过程。文中也没有对比过为啥不用RQ-VAE。</p>
+<p>产出两套semantic id之后，直接在下游排序任务中进行端到端更新，解决开头提到的表征不更新的问题。具体建模方法比较常规，不是本文的重点，略讲。</p>
+<h1 id="评论">评论<a hidden class="anchor" aria-hidden="true" href="#评论">#</a></h1>
+<ul>
+<li>可借鉴
+<ul>
+<li>多模态emb预训练任务是i2i的，直接和下游搜推任务对齐</li>
+<li>semantic id有两种产出方式，VQ和RQ-Kmeans，尽可能多地保留原始多模态emb的信息</li>
+</ul>
+</li>
+<li>可改进
+<ul>
+<li>多模态emb预训练和下游任务对齐，在2025年不算新鲜事了，常规操作。而且文中i2i的构造过程依赖U2I和I2I召回模型，有外部依赖，不够漂亮</li>
+<li>VQ的方法，k=25这也太长了吧，相当于一个小型行为流了，会导致下游任务的特征处理更复杂</li>
+<li>为什么用RQ-Kmeans而不是RQ-VAE，没有任何说明与对比</li>
+<li>从pretrain emb量化成semantic id的过程中，存在严重的信息丢失，这在<a href="https://bitjoy.net/posts/2025-10-04-mme-sid-paper-reading/">Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</a>论文中有讨论</li>
+</ul>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/semantic-id/">Semantic ID</a></li>
+      <li><a href="http://localhost:1313/tags/qarm/">QARM</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%BF%AB%E6%89%8B/">快手</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/">多模态</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">推荐系统</a></li>
+      <li><a href="http://localhost:1313/tags/cikm/">CIKM</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-10-05-das-paper-reading/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>论文阅读：DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2025-10-04-mme-sid-paper-reading/">
+    <span class="title">Next »</span>
+    <br>
+    <span>论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

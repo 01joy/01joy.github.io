@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>论文阅读：Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation | bitJoy</title>
+<meta name="keywords" content="Semantic ID, PSRQ, MCCA, 网易, 多模态, 推荐系统, CIKM">
+<meta name="description" content="
+基本信息
+
+论文标题：Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation
+作者单位：网易云音乐
+论文链接：https://arxiv.org/pdf/2508.20359
+来源：CIKM 2025
+
+Motivation：论文要解决的问题是什么
+多模态emb在搜推的应用方式，通常是先将多模态emb转换成semantic id，然后把semantic id用到搜推模型中，这种方式有如下两个问题：
+
+模态内语义退化：多模态emb转换成semantic id通常使用RQ-VAE或者RQ-KMeans的方法，这种方法在不断残差的过程中，后续残差聚类结果已经不能反映初始emb的聚类效果了。其实就是semantic id的沙漏问题，具体可以看这篇文章，后续有空再分享这个问题。
+
+简单来说，如下图所示，初始有DJ、Rock、Lullaby、Choir四个类，但是对残差emb（即RQ-VAE的第二层）聚类的话，初始的四个类的item就打散了，会聚到不同的簇中，也就是RQ-VAE的后续层的聚类效果已经和初始emb的聚类效果很不一样了，这就是文中说的语义退化问题
+
+
+模态间建模差异：搜推场景的item通常有多种模态特征，比如文本、图像、音频等，传统方法在多模态融合方面比较简单，不能很好地捕捉多模态之间的关系。
+
+
+PSRQ生产semantic id
+本文是音乐推荐场景，主要用到两种模态：text和audio，分别用百川和MERT提取text和audio的模态emb。
+生产semantic id的方法如下图所示：
+
+fig2a是传统的RQ-KMeans的方法，每一层都用上一层的残差进行聚类。如上文所述，由于沙漏问题，会导致后续层次的semantic id存在语义退化问题
+fig2b是本文新提出的PSRQ量化方法，在RQ-KMeans基础上，每一层除了有上一层的残差向量，还会concat上初始emb减去残差emb后的向量。这样就能区分出残差相似，但初始emb不同的item了，也就避免了RQ方法的沙漏问题，后续semantic id也能保留初始emb的语义信息。fig1d能看出来第二层semantic id仍然能够反映初始emb的分类效果。
+
+
+Semantic id在下游的应用方法
+如下图所示：
+
+每个item有两套多模态emb：text和audio，但是有三套semantic id，除了text和audio各自产一套semantic id之外，还会把text和audio的emb concat起来，再产一套semantic id，相当于多模态融合的semantic id
+semantic id的emb在排序模型中随机初始化，然后端到端训练
+semantic id在用户建模时，使用DIN模型，query用的是多模态融合的semantic id emb，行为流分别用text和audio的semantic id emb。作者说这种方法既能捕捉到单模态细粒度的信息，又能建模跨模态的交互信息
+
+
+评论
+
+可借鉴
+
+PSRQ的semantic id生产方法确实很有意思，在每一层都用上原始emb，这样不同簇的item在每一层都能分开，不会出现沙漏问题，使得每一层的semantic id都能保留原始emb的语义聚类信息
+产了多套semantic id，单模态semantic id是常规操作；多模态emb concat后也产一套semantic id，是个创新点
+用户建模时query用多模态semantic id，行为流用单模态semantic id，也是个创新点，虽然论文说这种方法效果最好，但是有点存疑
+论文有个实验结果对比了不同semantic id量化方法的效果，结论是：PSRQ &gt; RQ-KMeans = RQ-VAE &gt; VQ &gt; PQ
+
+
+可改进
+
+pretrain emb和semantic id的生产都没有对齐协同信号
+semantic id在下游应用时直接端到端训练，而没有使用codebook初始化，会不会丢失信息比较多？
+产semantic id的过程中，模态内语义退化的问题，描述了现象，但是没有用定量的指标来说明问题，感觉可以借鉴【论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs】的方法，定量说明后续层的semantic id的聚类效果或者说区分能力相比初始emb已经相差甚远了
+fig2b中，第一层的codebook的dim=d，后续层的codebook的dim=2d，那么后续层的残差dim也是2d，那么初始emb怎么和后续的残差emb相减呢，维度对不上啊？我理解可能是这样的，后续层聚类的时候用的是concat的dim=2d的emb，但是算聚类中心的时候只用了残差本身的emb，这样就能解释得通了，但是文中对这部分的细节没有解释。
+
+
+">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/2025-10-06-psrq-paper-reading/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.36819bea596090d8b48cf10d9831382996197aa7e4fc86f792f7c08c9ca4d23b.css" integrity="sha256-NoGb6llgkNi0jPENmDE4KZYZeqfk/Ib3kvfAjJyk0js=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/2025-10-06-psrq-paper-reading/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+    
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script>
+  MathJax = {
+    tex: {
+      displayMath: [['\\[', '\\]'], ['$$', '$$']],  
+      inlineMath: [['\\(', '\\)']]                  
+    },
+    loader:{
+      load: ['ui/safe']
+    },
+  };
+</script>
+    
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="bitJoy (Alt + H)">bitJoy</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/categories" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/about" title="About">
+                    <span>About</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      论文阅读：Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation
+    </h1>
+    <div class="post-meta"><span title='2025-10-06 21:01:25 +0800 CST'>October 6, 2025</span>&nbsp;·&nbsp;1 min
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%9f%ba%e6%9c%ac%e4%bf%a1%e6%81%af" aria-label="基本信息">基本信息</a></li>
+                <li>
+                    <a href="#motivation%e8%ae%ba%e6%96%87%e8%a6%81%e8%a7%a3%e5%86%b3%e7%9a%84%e9%97%ae%e9%a2%98%e6%98%af%e4%bb%80%e4%b9%88" aria-label="Motivation：论文要解决的问题是什么">Motivation：论文要解决的问题是什么</a></li>
+                <li>
+                    <a href="#psrq%e7%94%9f%e4%ba%a7semantic-id" aria-label="PSRQ生产semantic id">PSRQ生产semantic id</a></li>
+                <li>
+                    <a href="#semantic-id%e5%9c%a8%e4%b8%8b%e6%b8%b8%e7%9a%84%e5%ba%94%e7%94%a8%e6%96%b9%e6%b3%95" aria-label="Semantic id在下游的应用方法">Semantic id在下游的应用方法</a></li>
+                <li>
+                    <a href="#%e8%af%84%e8%ae%ba" aria-label="评论">评论</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p><img loading="lazy" src="/posts/2025-10-06-psrq-paper-reading/PSRQ-paper-cover.png"></p>
+<h1 id="基本信息">基本信息<a hidden class="anchor" aria-hidden="true" href="#基本信息">#</a></h1>
+<ul>
+<li>论文标题：Progressive Semantic Residual Quantization for Multimodal-Joint Interest Modeling in Music Recommendation</li>
+<li>作者单位：网易云音乐</li>
+<li>论文链接：<a href="https://arxiv.org/pdf/2508.20359">https://arxiv.org/pdf/2508.20359</a></li>
+<li>来源：CIKM 2025</li>
+</ul>
+<h1 id="motivation论文要解决的问题是什么">Motivation：论文要解决的问题是什么<a hidden class="anchor" aria-hidden="true" href="#motivation论文要解决的问题是什么">#</a></h1>
+<p>多模态emb在搜推的应用方式，通常是先将多模态emb转换成semantic id，然后把semantic id用到搜推模型中，这种方式有如下两个问题：</p>
+<ul>
+<li><strong>模态内语义退化</strong>：多模态emb转换成semantic id通常使用RQ-VAE或者RQ-KMeans的方法，这种方法在不断残差的过程中，后续残差聚类结果已经不能反映初始emb的聚类效果了。其实就是semantic id的沙漏问题，具体可以看<a href="https://arxiv.org/abs/2407.21488">这篇文章</a>，后续有空再分享这个问题。
+<ul>
+<li>简单来说，如下图所示，初始有DJ、Rock、Lullaby、Choir四个类，但是对残差emb（即RQ-VAE的第二层）聚类的话，初始的四个类的item就打散了，会聚到不同的簇中，也就是RQ-VAE的后续层的聚类效果已经和初始emb的聚类效果很不一样了，这就是文中说的语义退化问题</li>
+</ul>
+</li>
+<li><strong>模态间建模差异</strong>：搜推场景的item通常有多种模态特征，比如文本、图像、音频等，传统方法在多模态融合方面比较简单，不能很好地捕捉多模态之间的关系。</li>
+</ul>
+<p><img loading="lazy" src="/posts/2025-10-06-psrq-paper-reading/PSRQ-fig1.png"></p>
+<h1 id="psrq生产semantic-id">PSRQ生产semantic id<a hidden class="anchor" aria-hidden="true" href="#psrq生产semantic-id">#</a></h1>
+<p>本文是音乐推荐场景，主要用到两种模态：text和audio，分别用百川和MERT提取text和audio的模态emb。</p>
+<p>生产semantic id的方法如下图所示：</p>
+<ul>
+<li>fig2a是传统的RQ-KMeans的方法，每一层都用上一层的残差进行聚类。如上文所述，由于沙漏问题，会导致后续层次的semantic id存在语义退化问题</li>
+<li>fig2b是本文新提出的PSRQ量化方法，在RQ-KMeans基础上，每一层除了有上一层的残差向量，还会concat上初始emb减去残差emb后的向量。<strong>这样就能区分出残差相似，但初始emb不同的item了</strong>，也就避免了RQ方法的沙漏问题，后续semantic id也能保留初始emb的语义信息。fig1d能看出来第二层semantic id仍然能够反映初始emb的分类效果。</li>
+</ul>
+<p><img loading="lazy" src="/posts/2025-10-06-psrq-paper-reading/PSRQ-fig2.png"></p>
+<h1 id="semantic-id在下游的应用方法">Semantic id在下游的应用方法<a hidden class="anchor" aria-hidden="true" href="#semantic-id在下游的应用方法">#</a></h1>
+<p>如下图所示：</p>
+<ul>
+<li>每个item有两套多模态emb：text和audio，但是有三套semantic id，除了text和audio各自产一套semantic id之外，还会把text和audio的emb concat起来，再产一套semantic id，相当于多模态融合的semantic id</li>
+<li>semantic id的emb在排序模型中随机初始化，然后端到端训练</li>
+<li>semantic id在用户建模时，使用DIN模型，query用的是多模态融合的semantic id emb，行为流分别用text和audio的semantic id emb。作者说这种方法既能捕捉到单模态细粒度的信息，又能建模跨模态的交互信息</li>
+</ul>
+<p><img loading="lazy" src="/posts/2025-10-06-psrq-paper-reading/PSRQ-fig3.png"></p>
+<h1 id="评论">评论<a hidden class="anchor" aria-hidden="true" href="#评论">#</a></h1>
+<ul>
+<li>可借鉴
+<ul>
+<li>PSRQ的semantic id生产方法确实很有意思，在每一层都用上原始emb，这样不同簇的item在每一层都能分开，不会出现沙漏问题，使得每一层的semantic id都能保留原始emb的语义聚类信息</li>
+<li>产了多套semantic id，单模态semantic id是常规操作；多模态emb concat后也产一套semantic id，是个创新点</li>
+<li>用户建模时query用多模态semantic id，行为流用单模态semantic id，也是个创新点，虽然论文说这种方法效果最好，但是有点存疑</li>
+<li>论文有个实验结果对比了不同semantic id量化方法的效果，结论是：PSRQ &gt; RQ-KMeans = RQ-VAE &gt; VQ &gt; PQ</li>
+</ul>
+</li>
+<li>可改进
+<ul>
+<li>pretrain emb和semantic id的生产都没有对齐协同信号</li>
+<li>semantic id在下游应用时直接端到端训练，而没有使用codebook初始化，会不会丢失信息比较多？</li>
+<li>产semantic id的过程中，模态内语义退化的问题，描述了现象，但是没有用定量的指标来说明问题，感觉可以借鉴<a href="https://bitjoy.net/posts/2025-10-04-mme-sid-paper-reading/">【论文阅读：Empowering Large Language Model for Sequential Recommendation via Multimodal Embeddings and Semantic IDs】</a>的方法，定量说明后续层的semantic id的聚类效果或者说区分能力相比初始emb已经相差甚远了</li>
+<li>fig2b中，第一层的codebook的dim=d，后续层的codebook的dim=2d，那么后续层的残差dim也是2d，那么初始emb怎么和后续的残差emb相减呢，维度对不上啊？我理解可能是这样的，后续层聚类的时候用的是concat的dim=2d的emb，但是算聚类中心的时候只用了残差本身的emb，这样就能解释得通了，但是文中对这部分的细节没有解释。</li>
+</ul>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/semantic-id/">Semantic ID</a></li>
+      <li><a href="http://localhost:1313/tags/psrq/">PSRQ</a></li>
+      <li><a href="http://localhost:1313/tags/mcca/">MCCA</a></li>
+      <li><a href="http://localhost:1313/tags/%E7%BD%91%E6%98%93/">网易</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/">多模态</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">推荐系统</a></li>
+      <li><a href="http://localhost:1313/tags/cikm/">CIKM</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/2025-10-07-grid-paper-reading/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>论文阅读：Generative Recommendation with Semantic IDs: A Practitioner’s Handbook</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/2025-10-05-das-paper-reading/">
+    <span class="title">Next »</span>
+    <br>
+    <span>论文阅读：DAS: Dual-Aligned Semantic IDs Empowered Industrial Recommender System</span>
+  </a>
+</nav>
+
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="01joy/01joy.github.io"
+        data-repo-id="R_kgDOPefF-w"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOPefF-84CuPVG"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">bitJoy</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
