@@ -5,7 +5,7 @@ title: 'CS224N（1.8）Introduction and Word Vectors'
 categories: ['0和1','Stanford CS224N: NLP with Deep Learning']
 tags: ['CBOW','词向量','NLP','skip-gram','Softmax','SVD','word2vec']
 ---
-今天开始介绍大名鼎鼎的NLP网课Stanford-CS224N。第一讲内容为课程简介和词向量。
+今天开始介绍大名鼎鼎的NLP网课Stanford-CS224N，我学的是Winter 2019的版本，课程网站：[https://web.stanford.edu/class/archive/cs/cs224n/cs224n.1194/](https://web.stanford.edu/class/archive/cs/cs224n/cs224n.1194/)。第一讲内容为课程简介和词向量。
 
 词向量即用来表示这个词的含义的向量。早期的NLP常用one-hot编码来表示词向量，假如词典中共有10000个词，则这个one-hot向量长度就是10000，该词在词典中所处位置对应的值为1，其他值为0。
 
