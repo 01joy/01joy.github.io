@@ -3,7 +3,7 @@ date: '2025-12-13T18:25:12+08:00'
 draft: false
 title: '论文阅读：Large Reasoning Embedding Models: Towards Next-Generation Dense Retrieval Paradigm'
 categories: ["Paper Reading"]
-tags: ["多模态","大模型","Embedding","强化学习","GRPO"]
+tags: ["多模态","大模型","Embedding","强化学习","GRPO","阿里巴巴"]
 ---
 ![](LREM-paper-cover.png)
 
