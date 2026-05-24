@@ -3,7 +3,7 @@ date: '2025-10-07T12:09:43+08:00'
 draft: false
 title: '论文阅读：Generative Recommendation with Semantic IDs: A Practitioner’s Handbook'
 categories: ["Paper Reading"]
-tags: ["Semantic ID","生成式推荐","GRID","Snap","CIKM"]
+tags: ["Semantic ID","生成式","推荐","GRID","Snap","CIKM"]
 ---
 ![](GRID-paper-cover.png)
 
