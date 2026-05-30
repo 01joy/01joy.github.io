@@ -180,7 +180,7 @@ $$
 \hat{A}_{i,l} = \frac{\Delta R_{i,l} - \text{mean}_{j \in [G]}(\Delta R_{j,l})}{\text{std}_{j \in [G]}(\Delta R_{j,l}) + \delta}. \tag{15}
 $$
 
-上面的公式15我直接copy原文的公式，但是感觉原文有误，△R应该改成R？即用公式13的结果，而不是公式14的结果。
+上面的公式15我直接copy原文的公式，但是感觉原文有误，\(\Delta R\)应该改成R？即用公式13的结果，而不是公式14的结果。
 
 
 **前缀门控（prefix gate）**
