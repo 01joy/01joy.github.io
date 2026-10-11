@@ -45,6 +45,10 @@ languages:
           weight: 4
         - name: About
           url: about
+          weight: 5
+        - name: RSS
+          url: posts/index.xml
+          weight: 6
 params:
   comments: true
   math: true
