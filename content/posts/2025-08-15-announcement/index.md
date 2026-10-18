@@ -47,3 +47,6 @@ $$ a^*=x-b^* $$
 $$
 a^*=x-b^*
 $$
+
+测试文字格式：
+这是**粗体**，这是{{< rawhtml >}}<span style="color: red;">红色</span>{{< /rawhtml >}}字体。
